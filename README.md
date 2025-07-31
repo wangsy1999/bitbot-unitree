@@ -2,4 +2,5 @@
 
 TODO:
 1. Collision in gazebo. The visual collision is much more faster than the reduced collision.
+1. Define topic name in config file.
 

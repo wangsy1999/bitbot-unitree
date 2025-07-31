@@ -16,8 +16,6 @@ class GzImu final : public GzDevice {
 
   inline double GetYaw() { return yaw_; }
 
-  inline std::array<double, 9> GetRotationMatrix() { return rot_mat_; }
-
   inline double GetAccX() { return acc_x_; }
 
   inline double GetAccY() { return acc_y_; }
@@ -33,12 +31,12 @@ class GzImu final : public GzDevice {
  private:
   virtual void Input(const RosInterface::Ptr ros_interface) final;
   virtual void Output(const RosInterface::Ptr ros_interface) final;
+  virtual void UpdateModel(const RosInterface::Ptr ros_interface) final;
   virtual void UpdateRuntimeData() final;
 
   double roll_ = 0;
   double pitch_ = 0;
   double yaw_ = 0;
-  std::array<double, 9> rot_mat_ = {0};
   double acc_x_ = 0;
   double acc_y_ = 0;
   double acc_z_ = 0;

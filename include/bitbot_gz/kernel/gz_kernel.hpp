@@ -15,7 +15,6 @@ class GzKernel
   GzKernel(std::string config_file)
       : KernelTpl<GzKernel<UserData, cts...>, GzBus, UserData, cts...>(
             config_file) {
-    // TODO
     pugi::xml_node const& bitbot_node = this->parser_->GetBitbotNode();
 
     ros_interface_ = std::make_shared<RosInterface>();
@@ -26,24 +25,28 @@ class GzKernel
 
   ~GzKernel() = default;
 
- private:
+ public:
   void doStart() {
     RCLCPP_INFO(rclcpp::get_logger("bitbot kernel"), "Kernel started.");
   }
 
   void doRun() {
-    // this->busmanager_.UpdateDevices();
+    RCLCPP_DEBUG(rclcpp::get_logger("bitbot_ros_interface"), "once");
     std::chrono::high_resolution_clock::time_point this_time =
         std::chrono::high_resolution_clock::now();
     std::chrono::high_resolution_clock::time_point last_time = this_time;
     std::chrono::high_resolution_clock::time_point end_time = this_time;
 
-    while (rclcpp::ok()) {
-      while (ros_interface_->IsClockReady()) {
+    while (!ros_interface_->IsSystemReady()) {
+      std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
+    this->busmanager_.UpdateDevices();
+
+    while (rclcpp::ok() && !this->kernel_config_data_.stop_flag) {
+      while (!ros_interface_->IsClockReady()) {
         std::this_thread::sleep_for(std::chrono::microseconds(10));
       }
 
-      this->kernel_runtime_data_.kernel_loop_count++;
       this->kernel_runtime_data_.periods_count++;
       this_time = std::chrono::high_resolution_clock::now();
       this->kernel_runtime_data_.period =
@@ -65,8 +68,6 @@ class GzKernel
       this->KernelPrivateLoopEndTask();
     }
   }
-
-  void PowerOn() { this->kernel_config_data_.power_on_finish_flag = true; }
 
  private:
   RosInterface::Ptr ros_interface_;

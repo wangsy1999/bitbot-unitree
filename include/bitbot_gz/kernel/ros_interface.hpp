@@ -1,6 +1,8 @@
 #ifndef GZ_NODE_HPP
 #define GZ_NODE_HPP
 
+#include <map>
+
 #include "rclcpp/rclcpp.hpp"
 #include "rosgraph_msgs/msg/clock.hpp"
 #include "sensor_msgs/msg/imu.hpp"
@@ -16,6 +18,7 @@ class RosInterface : public rclcpp::Node {
   using Ptr = std::shared_ptr<RosInterface>;
   RosInterface() : rclcpp::Node("bitbot_ros_interface") {
     timer_ready_.store(false);
+    joint_map_ready_.store(false);
 
     joint_command_publisher_ =
         this->create_publisher<std_msgs::msg::Float64MultiArray>(
@@ -25,6 +28,13 @@ class RosInterface : public rclcpp::Node {
             "/joint_states", 10,
             [this](const sensor_msgs::msg::JointState::SharedPtr msg) {
               std::lock_guard<std::mutex> lock(this->data_lock_);
+              if (!joint_map_ready_.load()) {
+                this->joint_name_index_map_.clear();
+                for (size_t i = 0; i < msg->name.size(); ++i) {
+                  this->joint_name_index_map_[msg->name[i]] = i;
+                }
+                joint_map_ready_.store(true);
+              }
               this->joint_state_msg_ = msg;
             });
     imu_subscriber_ = this->create_subscription<sensor_msgs::msg::Imu>(
@@ -70,15 +80,35 @@ class RosInterface : public rclcpp::Node {
 
   bool IsSystemReady() {
     std::lock_guard<std::mutex> lock(this->data_lock_);
-    if (joint_state_msg_ != nullptr && imu_msg_ != nullptr)
+    if (joint_map_ready_.load() && imu_msg_ != nullptr)
       return true;
     else
       return false;
   }
 
-  static void RunRosSpin(SharedPtr ptr) {
-    std::thread ros_loop([ptr]() { rclcpp::spin(ptr); });
-    ros_loop.join();
+  size_t GetJointIndex(std::string const& joint_name) {
+    std::lock_guard<std::mutex> lock(data_lock_);
+    if (joint_map_ready_.load()) {
+      auto it = joint_name_index_map_.find(joint_name);
+      if (it != joint_name_index_map_.end()) {
+        return it->second;
+      } else {
+        RCLCPP_ERROR(rclcpp::get_logger("bitbot_ros_interface"),
+                     "Joint name %s not found in map.", joint_name.c_str());
+        return static_cast<size_t>(-1);
+      }
+    } else {
+      RCLCPP_ERROR(rclcpp::get_logger("bitbot_ros_interface"),
+                   "Joint map is not ready.");
+      return static_cast<size_t>(-1);
+    }
+  }
+
+  static void RunRosSpin(Ptr ptr) {
+    RCLCPP_INFO(rclcpp::get_logger("bitbot_ros_interface"),
+                "Starting ROS spin loop...");
+    ptr->ros_loop_ =
+        std::make_shared<std::thread>([ptr]() { rclcpp::spin(ptr); });
   }
 
  private:
@@ -96,6 +126,11 @@ class RosInterface : public rclcpp::Node {
   std_msgs::msg::Float64MultiArray joint_command_msg_;
   sensor_msgs::msg::Imu::SharedPtr imu_msg_;
   std::atomic_bool timer_ready_;
+
+  std::atomic_bool joint_map_ready_;
+  std::map<std::string, size_t> joint_name_index_map_;
+
+  std::shared_ptr<std::thread> ros_loop_;
 };
 
 }  // namespace bitbot

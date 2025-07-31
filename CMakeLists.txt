@@ -29,6 +29,7 @@ find_package(trajectory_msgs REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(rosgraph_msgs REQUIRED)
+find_package(ament_index_cpp REQUIRED)
 # uncomment the following section in order to fill in
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
@@ -48,7 +49,14 @@ target_include_directories(bitbot_gz PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>
 )
-ament_target_dependencies(bitbot_gz rclcpp trajectory_msgs std_msgs sensor_msgs rosgraph_msgs)
+ament_target_dependencies(bitbot_gz
+  rclcpp
+  trajectory_msgs
+  std_msgs
+  sensor_msgs
+  rosgraph_msgs
+  ament_index_cpp
+)
 target_link_libraries(bitbot_gz BitbotKernel)
 
 # Torque control demo

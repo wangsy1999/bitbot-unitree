@@ -21,7 +21,7 @@ class GzDevice : public Device {
   ~GzDevice() = default;
 
   // Method to w/r gz simulation
-  // virtual void UpdateModel() = 0;
+  virtual void UpdateModel(const RosInterface::Ptr ros_interface) = 0;
   virtual void Input(const RosInterface::Ptr ros_interface) = 0;
   virtual void Output(const RosInterface::Ptr ros_interface) = 0;
 

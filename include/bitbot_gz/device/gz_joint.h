@@ -20,6 +20,7 @@ class GzJoint final : public GzDevice {
  private:
   virtual void Input(const RosInterface::Ptr ros_interface) final;
   virtual void Output(const RosInterface::Ptr ros_interface) final;
+  virtual void UpdateModel(const RosInterface::Ptr ros_interface) final;
   virtual void UpdateRuntimeData() final;
 
   inline double GetActualPosition() { return actual_position_; }
@@ -38,10 +39,15 @@ class GzJoint final : public GzDevice {
   GzJointType joint_type_;
   bool enable_ = true;
 
+  size_t ros_joint_index_;
+
   double initial_pos_ = 0.0;
   double p_gain_ = 0.0;
   double d_gain_ = 0.0;
   double i_gain_ = 0.0;
+
+  double pos_i_ = 0.0;          // Integral term for position control
+  double last_velocity_ = 0.0;  // Last velocity for velocity control
 
   double actual_position_ = 0.0;
   double actual_velocity_ = 0.0;

@@ -41,12 +41,32 @@ GzJoint::~GzJoint() {}
 
 void GzJoint::Input(const RosInterface::Ptr ros_interface) {
   auto joint_state_msg = ros_interface->GetJointState();
-  // TODO
+  actual_position_ = joint_state_msg->position[ros_joint_index_];
+  actual_velocity_ = joint_state_msg->velocity[ros_joint_index_];
+  actual_torque_ = joint_state_msg->effort[ros_joint_index_];
 }
 
 void GzJoint::Output(const RosInterface::Ptr ros_interface) {
   auto& joint_command_msg = ros_interface->GetJointCommand();
-  // TODO
+
+  switch (joint_type_) {
+    case GzJointType::POSITION:
+      pos_i_ += (target_position_ - actual_position_);
+      joint_command_msg.data[ros_joint_index_] =
+          p_gain_ * (target_position_ - actual_position_) -
+          d_gain_ * actual_velocity_ + i_gain_ * pos_i_;
+      break;
+    case GzJointType::VELOCITY:
+      joint_command_msg.data[ros_joint_index_] =
+          p_gain_ * (target_velocity_ - actual_velocity_) -
+          d_gain_ * (actual_velocity_ - last_velocity_);
+      break;
+    case GzJointType::TORQUE:
+      joint_command_msg.data[ros_joint_index_] = target_torque_;
+      break;
+    default:
+      break;
+  }
 }
 
 void GzJoint::UpdateRuntimeData() {
@@ -59,6 +79,9 @@ void GzJoint::UpdateRuntimeData() {
   monitor_data_[4] = target_velocity_;
   monitor_data_[5] = actual_torque_;
   monitor_data_[6] = target_torque_;
+}
+void GzJoint::UpdateModel(const RosInterface::Ptr ros_interface) {
+  ros_joint_index_ = ros_interface->GetJointIndex(name_);
 }
 
 }  // namespace bitbot

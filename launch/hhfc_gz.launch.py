@@ -24,11 +24,19 @@ def generate_launch_description():
         DeclareLaunchArgument(
             "gui",
             default_value="true",
-            description="Launch Gazebo with GUI and RViz",
+            description="Launch Gazebo with GUI",
+        )
+    )
+    declared_arguments.append(
+        DeclareLaunchArgument(
+            "rviz",
+            default_value="false",
+            description="Launch RViz",
         )
     )
 
     gui = LaunchConfiguration("gui")
+    rviz = LaunchConfiguration("rviz")
 
     gazebo_gui = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
@@ -141,7 +149,7 @@ def generate_launch_description():
         name="rviz2",
         output="log",
         arguments=["-d", rviz_config_file],
-        condition=IfCondition(gui),
+        condition=IfCondition(rviz),
     )
 
     set_gz_env_var = SetEnvironmentVariable(
