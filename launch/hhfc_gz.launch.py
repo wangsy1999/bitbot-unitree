@@ -140,7 +140,6 @@ def generate_launch_description():
         package="controller_manager",
         executable="spawner",
         arguments=[
-            # "joint_trajectory_controller",
             "effort_controller",
             "--param-file",
             robot_controllers_config,
@@ -154,6 +153,13 @@ def generate_launch_description():
         output="log",
         arguments=["-d", rviz_config_file],
         condition=IfCondition(rviz),
+    )
+
+    bitbot_node = Node(
+        package="bitbot_gz",
+        executable="main_app",
+        name="main_app",
+        output="screen",
     )
 
     set_gz_env_var = SetEnvironmentVariable(
@@ -170,5 +176,6 @@ def generate_launch_description():
         jsb_spawner_node,
         jtc_spawner_node,
         rviz_node,
+        bitbot_node,
     ]
     return LaunchDescription(declared_arguments + nodes)

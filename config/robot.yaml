@@ -189,7 +189,7 @@ RobotConfig:
       use_absolute_clock: false
       control_period: 0.01
       stand_threshold: 0.045
-      model_path: "/home/dknt/Project/bitbot_gz_ws/src/bitbot-gz/checkpoint/robust_beta.onnx"
+      model_path: "/home/dknt/Project/bitbot_gz_ws/src/bitbot_gz/checkpoint/robust_beta.onnx"
       obs_buffer_size: 15
 
       log_data: true
@@ -249,7 +249,7 @@ RobotConfig:
       policy_type: "Humanoid"
       use_absolute_clock: false
       control_period: 0.01
-      model_path: "/home/dknt/Project/bitbot_gz_ws/src/bitbot-gz/checkpoint/alpha_msl.onnx"
+      model_path: "/home/dknt/Project/bitbot_gz_ws/src/bitbot_gz/checkpoint/alpha_msl.onnx"
       obs_buffer_size: 15
 
       log_data: true
@@ -285,7 +285,7 @@ RobotConfig:
       use_absolute_clock: false
       control_period: 0.01
       obs_buffer_size: 15
-      model_path: "/home/dknt/Project/bitbot_gz_ws/src/bitbot-gz/checkpoint/terrain_alpha.onnx"
+      model_path: "/home/dknt/Project/bitbot_gz_ws/src/bitbot_gz/checkpoint/terrain_alpha.onnx"
 
       log_data: true
       log_dir: "/home/dknt/Project/bitbot_gz_ws/log//policy"

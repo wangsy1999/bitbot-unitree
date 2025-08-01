@@ -37,7 +37,7 @@ class GzKernel
     std::chrono::high_resolution_clock::time_point last_time = this_time;
     std::chrono::high_resolution_clock::time_point end_time = this_time;
 
-    while (!ros_interface_->IsSystemReady()) {
+    while (rclcpp::ok() && !ros_interface_->IsSystemReady()) {
       std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
     this->busmanager_.UpdateDevices();

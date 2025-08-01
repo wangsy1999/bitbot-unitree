@@ -12,7 +12,5 @@ ros2 run bitbot_gz main_app
 ```
 
 TODO:
-1. Check collision in gazebo.
-1. Define topic name in config file.
-1. Customize default world SDF file.
+1. Write a gazebo plugin to reset robot states while keeping ros-controller working.
 
