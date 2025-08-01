@@ -38,11 +38,19 @@ def generate_launch_description():
     gui = LaunchConfiguration("gui")
     rviz = LaunchConfiguration("rviz")
 
+    gazebo_world_file = PathJoinSubstitution(
+        [
+            FindPackageShare("bitbot_gz"),
+            "world",
+            "empty.sdf",
+        ]
+    )
+
     gazebo_gui = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             [FindPackageShare("ros_gz_sim"), "/launch/gz_sim.launch.py"]
         ),
-        launch_arguments=[("gz_args", " -r -v 3 empty.sdf")],
+        launch_arguments=[("gz_args", ["-r -v 3 ", gazebo_world_file])],
         condition=IfCondition(gui),
     )
     gazebo_headless = IncludeLaunchDescription(

@@ -17,12 +17,6 @@ class GzJoint final : public GzDevice {
   GzJoint(const pugi::xml_node& device_node);
   ~GzJoint();
 
- private:
-  virtual void Input(const RosInterface::Ptr ros_interface) final;
-  virtual void Output(const RosInterface::Ptr ros_interface) final;
-  virtual void UpdateModel(const RosInterface::Ptr ros_interface) final;
-  virtual void UpdateRuntimeData() final;
-
   inline double GetActualPosition() { return actual_position_; }
 
   inline double GetActualVelocity() { return actual_velocity_; }
@@ -34,6 +28,12 @@ class GzJoint final : public GzDevice {
   inline void SetTargetVelocity(double vel) { target_velocity_ = vel; }
 
   inline void SetTargetTorque(double torque) { target_torque_ = torque; }
+
+ private:
+  virtual void Input(const RosInterface::Ptr ros_interface) final;
+  virtual void Output(const RosInterface::Ptr ros_interface) final;
+  virtual void UpdateModel(const RosInterface::Ptr ros_interface) final;
+  virtual void UpdateRuntimeData() final;
 
  private:
   GzJointType joint_type_;

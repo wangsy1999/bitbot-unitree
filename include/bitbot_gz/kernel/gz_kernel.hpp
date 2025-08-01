@@ -43,7 +43,7 @@ class GzKernel
     this->busmanager_.UpdateDevices();
 
     while (rclcpp::ok() && !this->kernel_config_data_.stop_flag) {
-      while (!ros_interface_->IsClockReady()) {
+      while (rclcpp::ok() && !ros_interface_->IsClockReady()) {
         std::this_thread::sleep_for(std::chrono::microseconds(10));
       }
 

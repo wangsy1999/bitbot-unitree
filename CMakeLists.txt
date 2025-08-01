@@ -1,10 +1,6 @@
 cmake_minimum_required(VERSION 3.8)
 project(bitbot_gz)
 
-if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-  add_compile_options(-Wall -Wextra -Wpedantic)
-endif()
-
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_BUILD_TYPE Release)
@@ -21,8 +17,16 @@ BitbotAddDependency(
   USE_LOCAL_FILE TRUE
 )
 
-include_directories("/usr/include/eigen3")
-# find dependencies
+include(FetchContent)
+FetchContent_Declare(
+  ovinf
+  GIT_REPOSITORY git@github.com:Dknt0/ovinf.git 
+  GIT_TAG main
+)
+FetchContent_MakeAvailable(ovinf)
+
+find_package(OpenVINO REQUIRED)
+find_package(yaml-cpp REQUIRED)
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(trajectory_msgs REQUIRED)
@@ -30,9 +34,7 @@ find_package(std_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(rosgraph_msgs REQUIRED)
 find_package(ament_index_cpp REQUIRED)
-# uncomment the following section in order to fill in
-# further dependencies manually.
-# find_package(<dependency> REQUIRED)
+include_directories("/usr/include/eigen3")
 
 aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/src/device BITBOT_GZ_DEVICE_SRC)
 aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/src/bus BITBOT_GZ_BUS_SRC)
@@ -59,37 +61,24 @@ ament_target_dependencies(bitbot_gz
 )
 target_link_libraries(bitbot_gz BitbotKernel)
 
-# Torque control demo
-add_executable(torque_control src/torque_control.cc)
-ament_target_dependencies(torque_control rclcpp trajectory_msgs std_msgs sensor_msgs)
-
 add_executable(main_app main.cc)
 target_include_directories(main_app PUBLIC
   include
+  ${OVINF_INCLUDED}
+  ${OpenVINO_INCLUDE_DIRS}
 )
 target_link_libraries(main_app
   bitbot_gz
+  ovinf
 )
 
 install(TARGETS
-  torque_control bitbot_gz main_app
+  bitbot_gz main_app
   DESTINATION lib/${PROJECT_NAME}
 )
 install(
-  DIRECTORY launch config urdf rviz
+  DIRECTORY launch config urdf rviz world
   DESTINATION share/${PROJECT_NAME}
 )
-
-if(BUILD_TESTING)
-  find_package(ament_lint_auto REQUIRED)
-  # the following line skips the linter which checks for copyrights
-  # comment the line when a copyright and license is added to all source files
-  set(ament_cmake_copyright_FOUND TRUE)
-  # the following line skips cpplint (only works in a git repo)
-  # comment the line when this package is in a git repo and when
-  # a copyright and license is added to all source files
-  set(ament_cmake_cpplint_FOUND TRUE)
-  ament_lint_auto_find_test_dependencies()
-endif()
 
 ament_package()

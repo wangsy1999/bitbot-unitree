@@ -33,6 +33,7 @@ class RosInterface : public rclcpp::Node {
                 for (size_t i = 0; i < msg->name.size(); ++i) {
                   this->joint_name_index_map_[msg->name[i]] = i;
                 }
+                this->joint_command_msg_.data.resize(msg->name.size());
                 joint_map_ready_.store(true);
               }
               this->joint_state_msg_ = msg;
@@ -50,7 +51,11 @@ class RosInterface : public rclcpp::Node {
         });
   }
 
-  ~RosInterface() = default;
+  ~RosInterface() {
+    if (ros_loop_ && ros_loop_->joinable()) {
+      ros_loop_->join();
+    }
+  }
 
   void PublishJointCommand() {
     joint_command_publisher_->publish(joint_command_msg_);

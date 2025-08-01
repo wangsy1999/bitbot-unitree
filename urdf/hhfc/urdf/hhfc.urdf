@@ -912,10 +912,10 @@
       <visualize>true</visualize>
       <topic>imu_data</topic>
       <plugin filename="ignition-gazebo-imu-system" name="ignition::gazebo::systems::Imu">
-        <ros>
-          <namespace></namespace>
-          <remapping>imu_data:=imu_data</remapping>
-        </ros>
+        <!-- <ros> -->
+        <!--   <namespace></namespace> -->
+        <!--   <remapping>imu_data:=imu_data</remapping> -->
+        <!-- </ros> -->
       </plugin>
     </sensor>
   </gazebo>

@@ -5,18 +5,13 @@
 int main(int argc, char** argv) {
   rclcpp::init(argc, argv);
 
-  std::string config_file =
-      ament_index_cpp::get_package_share_directory("bitbot_gz") +
-      "/config/hhfc_gz.xml";
-  Kernel kernel(config_file);
-
-  kernel.RegisterConfigFunc(&ConfigFunc);
-  kernel.RegisterFinishFunc(&FinishFunc);
-  kernel.RegisterEvent("wait", Events::Wait, &EventWait);
-  kernel.RegisterState("waiting", States::Waiting, &StateWaiting, {});
-  kernel.SetFirstState(States::Waiting);
-
-  kernel.Run();
+  std::string config_path =
+      ament_index_cpp::get_package_share_directory("bitbot_gz");
+  MakeBitbotEverywhere everyone(config_path + "/config/hhfc_gz.xml",
+                                config_path + "/config/robot.yaml");
+  everyone.WillMake();
+  everyone.BeMaking();
+  everyone.HaveMade();
 
   rclcpp::shutdown();
   return 0;

@@ -30,6 +30,9 @@ GzJoint::GzJoint(const pugi::xml_node& device_node) : GzDevice(device_node) {
   } else if (mode_str == "torque") {
     joint_type_ = GzJointType::TORQUE;
   } else {
+    RCLCPP_ERROR(rclcpp::get_logger("bitbot_gz"),
+                 "Invalid joint mode: %s. Defaulting to NONE.",
+                 mode_str.c_str());
     joint_type_ = GzJointType::NONE;
   }
   ConfigParser::ParseAttribute2d(p_gain_, device_node.attribute("p_gain"));

@@ -18,11 +18,10 @@ void GzBus::doRegisterDevices() {
 }
 
 void GzBus::WriteBus() {
-  // TODO
   for (auto& device : devices_) {
-    // device->Output(ros_interface_);
+    device->Output(ros_interface_);
   }
-  // ros_interface_->PublishJointCommand();
+  ros_interface_->PublishJointCommand();
 }
 
 void GzBus::ReadBus() {
