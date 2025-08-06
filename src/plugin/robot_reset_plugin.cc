@@ -4,6 +4,7 @@
 #include <gz/plugin/Register.hh>
 #include <gz/sim/EntityComponentManager.hh>
 #include <gz/sim/Joint.hh>
+#include <gz/sim/Link.hh>
 #include <gz/sim/System.hh>
 #include <gz/sim/components.hh>
 #include <gz/sim/components/Joint.hh>
@@ -30,6 +31,7 @@ class RobotResetPlugin : public System,
                          EntityComponentManager& ecm,
                          EventManager& event_mgr) override {
     robot_name_ = sdf->Get<std::string>("robot_name");
+    reset_height_ = sdf->Get<double>("reset_height");
 
     this->node_.Subscribe("/keyboard/keypress", &RobotResetPlugin::OnKeyPress,
                           this);
@@ -48,8 +50,6 @@ class RobotResetPlugin : public System,
               const components::Model* model) -> bool {
             if (name->Data() == robot_name_) {
               model_entity_ = entity;
-              gzerr << "Reset plugin found model entity: " << robot_name_
-                    << std::endl;
               return false;
             }
             return true;
@@ -63,20 +63,52 @@ class RobotResetPlugin : public System,
           [&](const Entity& entity, const components::Name* name,
               const components::ParentEntity* parent_entity,
               const components::Joint* joint) -> bool {
-            joint_entities_.push_back(entity);
+            if (parent_entity->Data() == model_entity_) {
+              joint_entities_.push_back(entity);
+            }
             return true;
           });
     }
 
+    // Find link entities
+    if (link_entities_.size() == 0) {
+      ecm.Each<components::Name, components::ParentEntity, components::Link>(
+          [&](const Entity& entity, const components::Name* name,
+              components::ParentEntity* parent_entity,
+              components::Link* link) -> bool {
+            link_entities_.push_back(entity);
+            return true;
+          });
+    }
+
+    if (cmd_clean_flag_.load()) {
+      for (auto& link_entity : link_entities_) {
+        gz::sim::Link link(link_entity);
+        ecm.RemoveComponent<components::LinearVelocityCmd>(link_entity);
+        ecm.RemoveComponent<components::AngularVelocityCmd>(link_entity);
+      }
+      cmd_clean_flag_.store(false);
+    }
+
     if (reset_requested_.load()) {
-      // Set zero position
-      for (auto& joint_entity_ : joint_entities_) {
-        ecm.CreateComponent(joint_entity_,
-                            components::JointPositionReset({0.0}));
+      // Set joint zero position
+      for (auto& joint_entity : joint_entities_) {
+        gz::sim::Joint joint(joint_entity);
+        joint.ResetPosition(ecm, {0.0});
+        joint.SetVelocity(ecm, {0.0});
+      }
+      // Set link velocity
+      for (auto& link_entity : link_entities_) {
+        gz::sim::Link link(link_entity);
+        ecm.CreateComponent(link_entity,
+                            components::LinearVelocityCmd({0.0, 0.0, 0.0}));
+        ecm.CreateComponent(link_entity,
+                            components::AngularVelocityCmd({0.0, 0.0, 0.0}));
       }
       // Reset base pose
-      auto model_pose = ecm.Component<components::Pose>(model_entity_);
-      *model_pose = components::Pose(math::Pose3d(0, 0, 0.91, 0, 0, 0));
+      gz::sim::Model model(model_entity_);
+      model.SetWorldPoseCmd(ecm, math::Pose3d(0, 0, reset_height_, 0, 0, 0));
+      cmd_clean_flag_.store(true);
       reset_requested_.store(false);
     }
   }
@@ -92,11 +124,14 @@ class RobotResetPlugin : public System,
 
  private:
   std::string robot_name_;
+  double reset_height_;
   std::list<gz::sim::Entity> joint_entities_;
+  std::list<gz::sim::Entity> link_entities_;
   gz::sim::Entity model_entity_{gz::sim::kNullEntity};
 
   transport::Node node_;
   std::atomic_bool reset_requested_{false};
+  std::atomic_bool cmd_clean_flag_{false};
 };
 
 GZ_ADD_PLUGIN(RobotResetPlugin, gz::sim::System,

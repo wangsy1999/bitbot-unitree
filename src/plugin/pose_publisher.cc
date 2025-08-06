@@ -78,7 +78,6 @@ class PosePublisher : public gz::sim::System,
               const gz::sim::components::Name *name) -> bool {
             if (parent->Data() == model_entity_ && name->Data() == link_name_) {
               link_entity_ = child_entity;
-              gzmsg << "Found link entity: " << link_name_ << std::endl;
               return false;  // Stop iterating once we find the link
             }
             return true;  // Continue iterating
