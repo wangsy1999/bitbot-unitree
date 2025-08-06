@@ -83,6 +83,8 @@ class RobotResetPlugin : public System,
 
     if (cmd_clean_flag_.load()) {
       for (auto& link_entity : link_entities_) {
+        // This is a bug of gazebo harmonic. Velocity commands are not removed
+        // automatically
         gz::sim::Link link(link_entity);
         ecm.RemoveComponent<components::LinearVelocityCmd>(link_entity);
         ecm.RemoveComponent<components::AngularVelocityCmd>(link_entity);

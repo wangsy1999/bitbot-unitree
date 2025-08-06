@@ -1036,7 +1036,6 @@
     <plugin filename="PosePublisherPlugin" name="gz::sim::systems::PosePublisherPlugin">
       <model_name>hhfc</model_name>
       <link_name>base_thorax</link_name>
-      <topic_name>/robot_pose_gt</topic_name>
     </plugin>
   </gazebo>
 

@@ -163,11 +163,11 @@ def generate_launch_description():
         arguments=[
             "0.0",
             "0.0",
-            "0.91",
             "0.0",
             "0.0",
             "0.0",
-            "world",
+            "0.0",
+            "base_link",
             "base_thorax",
         ],
     )
@@ -198,6 +198,6 @@ def generate_launch_description():
         jtc_spawner_node,
         rviz_node,
         bitbot_node,
-        static_transform_node,
+        # static_transform_node,
     ]
     return LaunchDescription(declared_arguments + nodes)

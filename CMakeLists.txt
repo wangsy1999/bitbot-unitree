@@ -35,6 +35,7 @@ find_package(sensor_msgs REQUIRED)
 find_package(rosgraph_msgs REQUIRED)
 find_package(ament_index_cpp REQUIRED)
 find_package(geometry_msgs REQUIRED)
+find_package(tf2_ros REQUIRED)
 include_directories("/usr/include/eigen3")
 
 find_package(gz-sim8 REQUIRED)
@@ -85,6 +86,7 @@ add_library(PosePublisherPlugin SHARED src/plugin/pose_publisher.cc)
 ament_target_dependencies(PosePublisherPlugin
   rclcpp
   geometry_msgs
+  tf2_ros
 )
 target_link_libraries(PosePublisherPlugin
   gz-sim8::gz-sim8

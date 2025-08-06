@@ -1,4 +1,6 @@
-#include <geometry_msgs/msg/pose_stamped.hpp>
+#include <tf2_ros/transform_broadcaster.h>
+
+#include <geometry_msgs/msg/transform_stamped.hpp>
 #include <gz/sim/Entity.hh>
 #include <gz/sim/EntityComponentManager.hh>
 #include <gz/sim/System.hh>
@@ -24,15 +26,14 @@ class PosePublisher : public gz::sim::System,
     // Get model name from SDF plugin config
     model_name_ = sdf->Get<std::string>("model_name");
     link_name_ = sdf->Get<std::string>("link_name");
-    topic_name_ = sdf->Get<std::string>("topic_name");
 
     if (!rclcpp::ok()) {
       rclcpp::init(0, nullptr);
     }
 
     ros_node_ = rclcpp::Node::make_shared("gz_pose_publisher");
-    pose_pub_ = ros_node_->create_publisher<geometry_msgs::msg::PoseStamped>(
-        topic_name_, 10);
+    tf_broadcaster_ =
+        std::make_shared<tf2_ros::TransformBroadcaster>(ros_node_);
 
     gzmsg << "PosePublisher plugin initialized for model: " << model_name_
           << std::endl;
@@ -76,7 +77,7 @@ class PosePublisher : public gz::sim::System,
               const gz::sim::components::Link *link,
               const gz::sim::components::ParentEntity *parent,
               const gz::sim::components::Name *name) -> bool {
-            if (parent->Data() == model_entity_ && name->Data() == link_name_) {
+            if (name->Data() == link_name_) {
               link_entity_ = child_entity;
               return false;  // Stop iterating once we find the link
             }
@@ -90,6 +91,11 @@ class PosePublisher : public gz::sim::System,
       }
     }
 
+    // 100 hz
+    if (update_count_++ % 10 != 0) {
+      return;
+    }
+
     auto model_pose_component =
         ecm.Component<gz::sim::components::Pose>(model_entity_);
     // Link pose is relative to model pose, so we need both
@@ -101,30 +107,36 @@ class PosePublisher : public gz::sim::System,
     auto link_world_pose =
         model_pose_component->Data() * link_pose_component->Data();
 
-    geometry_msgs::msg::PoseStamped pose_msg;
-    pose_msg.header.stamp = rclcpp::Clock().now();
-    pose_msg.header.frame_id = "world";
-    pose_msg.pose.position.x = link_world_pose.Pos().X();
-    pose_msg.pose.position.y = link_world_pose.Pos().Y();
-    pose_msg.pose.position.z = link_world_pose.Pos().Z();
-    pose_msg.pose.orientation.x = link_world_pose.Rot().X();
-    pose_msg.pose.orientation.y = link_world_pose.Rot().Y();
-    pose_msg.pose.orientation.z = link_world_pose.Rot().Z();
-    pose_msg.pose.orientation.w = link_world_pose.Rot().W();
+    // Use gazebo time instead of ROS time
+    geometry_msgs::msg::TransformStamped transform_msg;
+    auto sec = info.simTime.count();
+    auto nanosec = sec % static_cast<int>(1e9);
+    transform_msg.header.stamp.sec = sec / static_cast<int>(1e9);
+    transform_msg.header.stamp.nanosec = nanosec;
+    transform_msg.header.frame_id = "world";
+    transform_msg.child_frame_id = link_name_;
 
-    this->pose_pub_->publish(pose_msg);
+    transform_msg.transform.translation.x = link_world_pose.Pos().X();
+    transform_msg.transform.translation.y = link_world_pose.Pos().Y();
+    transform_msg.transform.translation.z = link_world_pose.Pos().Z();
+    transform_msg.transform.rotation.x = link_world_pose.Rot().X();
+    transform_msg.transform.rotation.y = link_world_pose.Rot().Y();
+    transform_msg.transform.rotation.z = link_world_pose.Rot().Z();
+    transform_msg.transform.rotation.w = link_world_pose.Rot().W();
+
+    this->tf_broadcaster_->sendTransform(transform_msg);
   }
 
  private:
   std::string model_name_;
   std::string link_name_{"base_link"};
-  std::string topic_name_{"/robot_pose_gt"};
 
   gz::sim::Entity model_entity_{gz::sim::kNullEntity};
   gz::sim::Entity link_entity_{gz::sim::kNullEntity};
 
   rclcpp::Node::SharedPtr ros_node_;
-  rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr pose_pub_;
+  std::shared_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
+  size_t update_count_{0};
 };
 
 #include <gz/plugin/Register.hh>
