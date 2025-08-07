@@ -48,7 +48,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <box size="0.02 0.1 0.02"/>
+        <box size="0.1 0.02 0.02"/>
       </geometry>
       <material name="">
         <color rgba="0.0 0.0 1.0 0.7" />
@@ -56,7 +56,7 @@
     </visual>
   </link>
   <joint name="camera_joint" type="fixed">
-    <origin xyz="0.1 0.0 0.0" rpy="0 0.3490658503988659 0" />
+    <origin xyz="0.1 0.0 0.0" rpy="-1.9198621771937625 0.0 -1.57079632679489661923" />
     <parent link="base_thorax" />
     <child link="camera_link" />
     <axis xyz="0 1 0" />
@@ -945,7 +945,7 @@
   <!-- RGBD camera plugin -->
   <gazebo reference="camera_link">
     <sensor name='depth_camera_sensor' type='depth_camera'>
-      <pose>0 0 0 0 0 0</pose>
+      <pose>0 0 0 1.57079632679489661923 -1.57079632679489661923 0</pose>
       <topic>/depth_camera/image_raw</topic>
       <camera_info_topic>/depth_camera/camera_info</camera_info_topic>
       <update_rate>20</update_rate>
@@ -956,6 +956,7 @@
           <width>640</width>
           <height>480</height>
           <format>R_FLOAT32</format>
+          <!-- <format>L_INT16</format> -->
           <anti_aliasing>4</anti_aliasing>
         </image>
         <clip>
@@ -976,15 +977,12 @@
           <center>0.5 0.5</center>
         </distortion>
         <lens>
-          <type>stereographic</type>
-          <scale_to_hfov>true</scale_to_hfov>
-          <cutoff_angle>1.5707963267948966</cutoff_angle>
-          <env_texture_size>256</env_texture_size>
+          <type>pinhole</type>
         </lens>
       </camera>
     </sensor>
     <sensor name='color_camera_sensor' type='camera'>
-      <pose>0 0 0 0 0 0</pose>
+      <pose>0 0 0 1.57079632679489661923 -1.57079632679489661923 0</pose>
       <topic>/color_camera/image_raw</topic>
       <camera_info_topic>/color_camera/camera_info</camera_info_topic>
       <update_rate>20</update_rate>
@@ -1015,10 +1013,7 @@
           <center>0.5 0.5</center>
         </distortion>
         <lens>
-          <type>stereographic</type>
-          <scale_to_hfov>true</scale_to_hfov>
-          <cutoff_angle>1.5707963267948966</cutoff_angle>
-          <env_texture_size>256</env_texture_size>
+          <type>pinhole</type>
         </lens>
       </camera>
     </sensor>
