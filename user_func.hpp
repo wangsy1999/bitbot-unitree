@@ -234,8 +234,8 @@ class MakeBitbotEverywhere {
         [this](bitbot::EventValue key_state, UserData &) {
           double value = *reinterpret_cast<double *>(&key_state);
           command_[2] = value;
-          logger_->info("current velocity: x={} y={} w={}", command_[0],
-                        command_[1], command_[2]);
+          // logger_->info("current velocity: x={} y={} w={}", command_[0],
+          //               command_[1], command_[2]);
           return std::nullopt;
         });
 

@@ -5,8 +5,6 @@ Panels:
     Property Tree Widget:
       Expanded:
         - /Global Options1
-        - /RobotModel1
-        - /TF1
       Splitter Ratio: 0.5
     Tree Height: 594
   - Class: rviz_common/Selection
@@ -60,87 +58,7 @@ Visualization Manager:
         Expand Joint Details: false
         Expand Link Details: false
         Expand Tree: false
-        Larm_shoulder_p:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
         Link Tree Style: Links in Alphabetic Order
-        Lleg_ankle_p:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        Lleg_ankle_r:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        Lleg_hip_p:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        Lleg_hip_r:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        Lleg_hip_y:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        Lleg_knee:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        Rarm_shoulder_p:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        Rleg_ankle_p:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        Rleg_ankle_r:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        Rleg_hip_p:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        Rleg_hip_r:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        Rleg_hip_y:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        Rleg_knee:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        base_thorax:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        camera_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
       Mass Properties:
         Inertia: false
         Mass: false
@@ -156,69 +74,13 @@ Visualization Manager:
       Frame Timeout: 15
       Frames:
         All Enabled: true
-        Larm_shoulder_p:
-          Value: true
-        Lleg_ankle_p:
-          Value: true
-        Lleg_ankle_r:
-          Value: true
-        Lleg_hip_p:
-          Value: true
-        Lleg_hip_r:
-          Value: true
-        Lleg_hip_y:
-          Value: true
-        Lleg_knee:
-          Value: true
-        Rarm_shoulder_p:
-          Value: true
-        Rleg_ankle_p:
-          Value: true
-        Rleg_ankle_r:
-          Value: true
-        Rleg_hip_p:
-          Value: true
-        Rleg_hip_r:
-          Value: true
-        Rleg_hip_y:
-          Value: true
-        Rleg_knee:
-          Value: true
-        base_thorax:
-          Value: true
-        camera_link:
-          Value: true
-        world:
-          Value: true
       Marker Scale: 1
       Name: TF
       Show Arrows: true
       Show Axes: true
       Show Names: false
       Tree:
-        base_thorax:
-          Larm_shoulder_p:
-            {}
-          Lleg_hip_p:
-            Lleg_hip_r:
-              Lleg_hip_y:
-                Lleg_knee:
-                  Lleg_ankle_p:
-                    Lleg_ankle_r:
-                      {}
-          Rarm_shoulder_p:
-            {}
-          Rleg_hip_p:
-            Rleg_hip_r:
-              Rleg_hip_y:
-                Rleg_knee:
-                  Rleg_ankle_p:
-                    Rleg_ankle_r:
-                      {}
-          camera_link:
-            {}
-        world:
-          {}
+        {}
       Update Interval: 0
       Value: true
   Enabled: true
@@ -267,25 +129,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 3.4508283138275146
+      Distance: 10.056848526000977
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 0.0664977952837944
-        Y: 0.1706526130437851
-        Z: 0.16869184374809265
+        X: 0.01942826248705387
+        Y: 0.09112564474344254
+        Z: 0.07228201627731323
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.21039892733097076
+      Pitch: 0.26039889454841614
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 5.6654276847839355
+      Yaw: 5.2354278564453125
     Saved: ~
 Window Geometry:
   Displays:

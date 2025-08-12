@@ -159,21 +159,6 @@ def generate_launch_description():
         arguments=["-d", rviz_config_file],
         condition=IfCondition(rviz),
     )
-    static_transform_node = Node(
-        package="tf2_ros",
-        executable="static_transform_publisher",
-        name="static_transform_publisher",
-        arguments=[
-            "0.0",
-            "0.0",
-            "0.0",
-            "0.0",
-            "0.0",
-            "0.0",
-            "base_link",
-            "base_thorax",
-        ],
-    )
 
     bitbot_node = Node(
         package="bitbot_gz",
@@ -201,6 +186,5 @@ def generate_launch_description():
         jtc_spawner_node,
         rviz_node,
         bitbot_node,
-        # static_transform_node,
     ]
     return LaunchDescription(declared_arguments + nodes)
