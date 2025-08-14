@@ -34,6 +34,8 @@ find_package(std_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(rosgraph_msgs REQUIRED)
 find_package(ament_index_cpp REQUIRED)
+find_package(grid_map_msgs REQUIRED)
+find_package(grid_map_ros REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(tf2_ros REQUIRED)
 include_directories("/usr/include/eigen3")
@@ -70,6 +72,13 @@ target_include_directories(main_app PUBLIC
   include
   ${OVINF_INCLUDED}
   ${OpenVINO_INCLUDE_DIRS}
+)
+ament_target_dependencies(bitbot_gz
+  rclcpp
+  sensor_msgs
+  grid_map_ros
+  grid_map_msgs
+  tf2_ros
 )
 target_link_libraries(main_app
   bitbot_gz

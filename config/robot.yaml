@@ -1,6 +1,6 @@
 RobotConfig:
   robot_name: "hhfc"
-  type: "mujoco"
+  type: "gz"
   joint_size: 14
   motor_size: 14
   switching_time: 0.50
@@ -41,7 +41,6 @@ RobotConfig:
     log_data: false # true
     log_dir: "/home/dknt/Project/bitbot_gz_ws/log/extra"
     motor_pos_filter:
-      # type: "None"
       type: "PassThrough"
       lower_bound: [-3.14, -3.14, -3.14, -3.14, -3.14, -3.14,
                     -3.14, -3.14, -3.14, -3.14, -3.14, -3.14,
@@ -50,8 +49,6 @@ RobotConfig:
                     3.14, 3.14, 3.14, 3.14, 3.14, 3.14,
                     3.14, 3.14] 
     motor_vel_filter:
-      # type: "None"
-      # type: "PassThrough"
       type: "Mean"
       history_length: 3
       lower_bound: [-50.0, -50.0, -50.0, -50.0, -50.0, -50.0,
@@ -61,20 +58,26 @@ RobotConfig:
                     50.0, 50.0, 50.0, 50.0, 50.0, 50.0,
                     50.0, 50.0] 
     ang_vel_filter:
-      # type: "None"
       type: "PassThrough"
       upper_bound: [100.0, 100.0, 100.0]
       lower_bound: [-100.0, -100.0, -100.0]
     acc_filter:
-      # type: "None"
       type: "PassThrough"
       upper_bound: [100.0, 100.0, 100.0]
       lower_bound: [-100.0, -100.0, -100.0]
     euler_filter:
-      # type: "None"
       type: "PassThrough"
       upper_bound: [100.0, 100.0, 100.0]
       lower_bound: [-100.0, -100.0, -100.0]
+
+    # Scan points parameters
+    scan_size: 132
+    scan_x_num: 12
+    scan_y_num: 11
+    scan_x_res: 0.15
+    scan_y_res: 0.15
+    scan_x_bias: -0.45
+    scan_y_bias: -0.75
 
   executor:
     torque_limit:  # Nm
@@ -253,7 +256,7 @@ RobotConfig:
       obs_buffer_size: 15
 
       log_data: false #  true
-      log_dir: "/home/dknt/Project/bitbot_gz_ws/log//policy"
+      log_dir: "/home/dknt/Project/bitbot_gz_ws/log/policy"
       log_name: "walking"
 
       device: "CPU"
@@ -288,7 +291,7 @@ RobotConfig:
       model_path: "/home/dknt/Project/bitbot_gz_ws/src/bitbot_gz/checkpoint/terrain_alpha.onnx"
 
       log_data: false # true
-      log_dir: "/home/dknt/Project/bitbot_gz_ws/log//policy"
+      log_dir: "/home/dknt/Project/bitbot_gz_ws/log/policy"
       log_name: "robust"
 
       device: "CPU"
@@ -306,6 +309,44 @@ RobotConfig:
       clip_action: 18.0
       realtime: true # false
       stick_to_core: 7
+
+      policy_joint_names: *default_policy_joint_names
+      policy_default_position: *default_policy_default_position
+
+  policy_perceptive:
+    p_gains: *default_p_gains
+    d_gains: *default_d_gains
+    decimation: 20
+    perception_enabled: true
+
+    inference:
+      policy_type: "Perceptive"
+      control_period: 0.02
+      obs_buffer_size: 10
+      # TODO
+      model_path: "/home/dknt/Project/bitbot_gz_ws/src/bitbot_gz/checkpoint/terrain_alpha.onnx"
+
+      log_data: false # true
+      log_dir: "/home/dknt/Project/bitbot_gz_ws/log/policy"
+      log_name: "robust"
+
+      device: "CPU"
+      cycle_time: 1.0
+      single_obs_size: 45
+      scan_size: 132
+      action_size: 12
+      action_scale: 0.5
+      obs_scales:
+        ang_vel: 1.0
+        lin_vel: 2.0
+        command: 1.0
+        dof_pos: 1.0
+        dof_vel: 0.05
+        proj_gravity: 1.0
+        scan: 1.0
+      clip_action: 18.0
+      realtime: false
+      stick_to_core: 8
 
       policy_joint_names: *default_policy_joint_names
       policy_default_position: *default_policy_default_position

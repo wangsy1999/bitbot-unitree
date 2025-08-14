@@ -64,7 +64,7 @@ class MakeBitbotEverywhere {
     standing_controller_ = std::make_shared<ovinf::PolicyController>(
         robot_, config["RobotConfig"]["policy_standing"]);
     walking_controller_ = std::make_shared<ovinf::PolicyController>(
-        robot_, config["RobotConfig"]["policy_walking"]);
+        robot_, config["RobotConfig"]["policy_perceptive"]);
     robust_controller_ = std::make_shared<ovinf::PolicyController>(
         robot_, config["RobotConfig"]["policy_robust"]);
     current_policy_controller_ = standing_controller_;
