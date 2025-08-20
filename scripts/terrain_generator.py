@@ -91,18 +91,6 @@ class TerrainGenerator:
     def AddBox(
         self, position=[1.0, 0.0, 0.0], euler=[0.0, 0.0, 0.0], size=[0.1, 0.1, 0.1]
     ):
-        # model = xml_et.SubElement(self.world, "model")
-        # model.attrib["name"] = "box_" + str(self.box_index)
-        #
-        # static = xml_et.SubElement(model, "static")
-        # static.text = "true"
-        #
-        # pose = xml_et.SubElement(model, "pose")
-        # pose.text = list_to_str(position + euler)
-        #
-        # link = xml_et.SubElement(model, "link")
-        # link.attrib["name"] = "link"
-
         link = xml_et.SubElement(self.model, "link")
         link.attrib["name"] = "link" + str(self.box_index)
         pose = xml_et.SubElement(link, "pose")
@@ -240,48 +228,58 @@ def Slope(tg: TerrainGenerator):
     tg.AddBox(position=[-1.0, 0.0, 0.0], euler=[0.0, 0.20, 0.0], size=[10.0, 5.0, 0.03])
 
 
-def Stairs(tg: TerrainGenerator):
+def Stairs(tg: TerrainGenerator, init_pos=np.array([1.0, 2.0, 0.0])):
+    width = 0.5
+    stair_nums = 5
+
+    init_pos_up = init_pos + np.array([0.0, 0.0, 0.0])
+    init_pos_down = init_pos + np.array([width * (stair_nums * 2 + 1), 0.0, 0.0])
+
     tg.AddStairs(
-        init_pos=[-2.0, 0.0, 0.0],
-        yaw=3.14,
-        width=0.4,
-        height=0.15,
-        length=2.0,
-        stair_nums=5,
-    )
-    tg.AddStairs(
-        init_pos=[-6.4, 0.0, 0.0],
+        init_pos=init_pos_up.tolist(),
         yaw=0.0,
-        width=0.4,
+        width=width,
         height=0.15,
         length=2.0,
-        stair_nums=5,
+        stair_nums=stair_nums,
+    )
+    tg.AddStairs(
+        init_pos=init_pos_down.tolist(),
+        yaw=3.14,
+        width=width,
+        height=0.15,
+        length=2.0,
+        stair_nums=stair_nums,
     )
 
 
-def Gap(tg: TerrainGenerator):
+def Gap(tg: TerrainGenerator, init_pos=np.array([1.0, -2.0, 0.0])):
     bias_x = 3.0
     platform_l = 1.0
-    gap_size = 0.5
+    gap_size = [0.6, 0.6, 0.6, 0.6]
     height = 0.5
 
+    slope_pos = init_pos + np.array([bias_x - 2.46 / 2, 0.0, height / 2])
     tg.AddBox(
-        position=[bias_x + platform_l / 2.0, 0.0, height / 2],
-        euler=[0.0, 0.0, 0.0],
-        size=[platform_l, 2.0, height],
-    )
-    tg.AddBox(
-        position=[gap_size + bias_x + 1.5 * platform_l, 0.0, height / 2],
-        euler=[0.0, 0.0, 0.0],
-        size=[platform_l, 2.0, height],
-    )
-
-    tg.AddBox(
-        position=[bias_x - 2.46 / 2, 0.0, 0.25],
+        position=slope_pos.tolist(),
         euler=[0.0, -0.20, 0.0],
         size=[2.51, 2.0, 0.005],
     )
-    # tg.AddBox(position=[1.0, 0.0, 0.0], euler=[0.0, 0.20, 0.0], size=[3.0, 2.0, 0.03])
+
+    box_pos = init_pos + np.array([bias_x + platform_l / 2.0, 0.0, height / 2])
+    tg.AddBox(
+        position=box_pos.tolist(),
+        euler=[0.0, 0.0, 0.0],
+        size=[platform_l, 2.0, height],
+    )
+
+    for gap in gap_size:
+        box_pos = box_pos + np.array([platform_l + gap, 0.0, 0.0])
+        tg.AddBox(
+            position=box_pos.tolist(),
+            euler=[0.0, 0.0, 0.0],
+            size=[platform_l, 2.0, height],
+        )
 
 
 if __name__ == "__main__":

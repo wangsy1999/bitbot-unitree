@@ -56,7 +56,7 @@
     </visual>
   </link>
   <joint name="camera_joint" type="fixed">
-    <origin xyz="0.1 0.0 0.0" rpy="-1.9198621771937625 0.0 -1.57079632679489661923" />
+    <origin xyz="0.1 0.0 0.0" rpy="-2.181661564992912 0.0 -1.57079632679489661923" />
     <parent link="base_thorax" />
     <child link="camera_link" />
     <axis xyz="0 1 0" />
@@ -110,7 +110,7 @@
       lower="-1.5708"
       upper="3.1416"
       effort="250"
-      velocity="5000" />
+      velocity="20" />
   </joint>
   <link
     name="Lleg_hip_r">
@@ -159,7 +159,7 @@
       lower="-0.12217"
       upper="0.52359" 
       effort="100"
-      velocity="5000" />
+      velocity="15" />
   </joint>
   <link
     name="Lleg_hip_y">
@@ -208,7 +208,7 @@
       lower="-1.0472"
       upper="1.2217" 
       effort="100"
-      velocity="5000" />
+      velocity="20" />
   </joint>
   <link
     name="Lleg_knee">
@@ -257,7 +257,7 @@
       lower="-1.5708"
       upper="0"
       effort="250"
-      velocity="5000" />
+      velocity="15" />
   </joint>
   <link
     name="Lleg_ankle_p">
@@ -306,7 +306,7 @@
       lower="-0.6981317007977318"
       upper="0.6981317007977318"
       effort="100"
-      velocity="5000" />
+      velocity="15" />
   </joint>
   <link
     name="Lleg_ankle_r">
@@ -362,7 +362,7 @@
       lower="-0.3490658503988659"
       upper="0.3490658503988659"
       effort="100"
-      velocity="5000" />
+      velocity="15" />
   </joint>
   <link
     name="Rleg_hip_p">
@@ -411,7 +411,7 @@
       lower="-1.5708"
       upper="3.1416"
       effort="250"
-      velocity="5000" />
+      velocity="20" />
   </joint>
   <link
     name="Rleg_hip_r">
@@ -460,7 +460,7 @@
       lower="-0.52359"
       upper="0.12217" 
       effort="100"
-      velocity="5000" />
+      velocity="20" />
   </joint>
   <link
     name="Rleg_hip_y">
@@ -509,7 +509,7 @@
       lower="-1.2217"
       upper="1.0472"
       effort="100"
-      velocity="5000" />
+      velocity="20" />
   </joint>
   <link
     name="Rleg_knee">
@@ -558,7 +558,7 @@
       lower="-1.5708"
       upper="0"
       effort="250"
-      velocity="5000" />
+      velocity="15" />
   </joint>
   <link
     name="Rleg_ankle_p">
@@ -607,7 +607,7 @@
       lower="-0.6981317007977318"
       upper="0.6981317007977318"
       effort="100"
-      velocity="5000" />
+      velocity="15" />
   </joint>
   <link
     name="Rleg_ankle_r">
@@ -663,7 +663,7 @@
       lower="-0.3490658503988659"
       upper="0.3490658503988659"
       effort="100"
-      velocity="5000" />
+      velocity="15" />
   </joint>
   <link
     name="Larm_shoulder_p">
@@ -960,7 +960,7 @@
           <anti_aliasing>4</anti_aliasing>
         </image>
         <clip>
-          <near>0.1</near>
+          <near>0.5</near>
           <far>10</far>
         </clip>
         <noise>
