@@ -1,4 +1,9 @@
-build
-install
-log
-checkpoint
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs
+/out
+/build
+/builds
+/vcpkg_installed
