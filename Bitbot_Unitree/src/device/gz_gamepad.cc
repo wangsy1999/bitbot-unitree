@@ -29,7 +29,6 @@ namespace bitbot
             "lx",
             "rx",
             "ry",
-            "L2",
             "ly"
         };
         monitor_data_.resize(monitor_header_.headers.size());
@@ -115,9 +114,8 @@ namespace bitbot
         monitor_data_[15] = static_cast<double>(this->gamepad_->left.pressed);
         monitor_data_[16] = static_cast<double>(this->gamepad_->lx);
         monitor_data_[17] = static_cast<double>(this->gamepad_->rx);
-        monitor_data_[18] = static_cast<double>(this->gamepad_->ly);
-        monitor_data_[19] = static_cast<double>(this->gamepad_->l2);
-        monitor_data_[20] = static_cast<double>(this->gamepad_->ly);
+        monitor_data_[18] = static_cast<double>(this->gamepad_->ry);
+        monitor_data_[19] = static_cast<double>(this->gamepad_->ly);
     }
 
 };

@@ -28,6 +28,7 @@ namespace bitbot {
     void ReadBus();
     void RegisterDevices();
     void Init(pugi::xml_node& bitbot_node, KernelInterface* interface, const std::unordered_map<std::string, EventId>& map);
+    void UpdateEvnentIDMap(const std::unordered_map<std::string, EventId>& map);
     void PowerOn();
     void PowerOff();
     bool isSystemReady() { return received.load(); }

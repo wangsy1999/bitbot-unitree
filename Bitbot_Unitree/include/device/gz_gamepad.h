@@ -18,6 +18,11 @@ namespace bitbot {
             this->kernel_interface = interface;
         }
 
+        void updateEventIDMap(const std::unordered_map<std::string, EventId>& map)
+        {
+            this->EventMap = map;
+        }
+
     private:
         virtual void Input(const IOType& IO) final;
         virtual IOType Output() final;

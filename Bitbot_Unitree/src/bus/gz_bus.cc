@@ -50,6 +50,14 @@ namespace bitbot {
 		this->low_command_publisher_->InitChannel();
 	}
 
+	void GzBus::UpdateEvnentIDMap(const std::unordered_map<std::string, EventId>& map)
+	{
+		UnitreeGamepad* ptr = dynamic_cast<UnitreeGamepad*>(this->gamepad_device_);
+		if (ptr != nullptr)
+		{
+			ptr->updateEventIDMap(map);
+		}
+	}
 
 	void GzBus::Init(pugi::xml_node& bus_node, KernelInterface* interface, const std::unordered_map<std::string, EventId>& map)
 	{
