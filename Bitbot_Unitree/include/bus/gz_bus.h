@@ -11,6 +11,7 @@
 
 #include "unitree/robot/channel/channel_publisher.hpp"
 #include "unitree/robot/channel/channel_subscriber.hpp"
+#include "unitree/robot/b2/motion_switcher/motion_switcher_client.hpp"
 
 #include "thread"
 #include "mutex"
@@ -27,7 +28,7 @@ namespace bitbot {
     void WriteBus();
     void ReadBus();
     void RegisterDevices();
-    void Init(pugi::xml_node& bitbot_node, KernelInterface* interface, const std::unordered_map<std::string, EventId>& map);
+    void Init(pugi::xml_node& bitbot_node, KernelInterface* interface, const std::unordered_map<std::string, std::string>& KeyEventMap);
     void PowerOn();
     void PowerOff();
     bool isSystemReady() { return received.load(); }
@@ -46,6 +47,8 @@ namespace bitbot {
     const std::string MAINBOARD_STATE_TOPIC = "rt/lf/mainboardstate";
     const std::string BMS_STATE_TOPIC = "rt/lf/bmsstate";
     const std::string LOW_CMD_TOPIC = "rt/lowcmd";
+
+    std::shared_ptr<unitree::robot::b2::MotionSwitcherClient> msc_;
 
 
     //handler 抓手，支撑点，着力点，立足点，发力点，依托点，牛鼻子，总开关。方法，工具，载体，平台。

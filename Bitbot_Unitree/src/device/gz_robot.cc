@@ -7,7 +7,7 @@ namespace bitbot
     {
         basic_type_ = (uint32_t)BasicDeviceType::SENSOR;
         type_ = (uint32_t)GzDeviceType::GZ_MOTHERBOARD;
-        monitor_header_.headers = { "current","voltage","temperature" };
+        monitor_header_.headers = { "temperature" };
         monitor_data_.resize(monitor_header_.headers.size());
     }
 
@@ -26,5 +26,6 @@ namespace bitbot
 
     void UnitreeMotherboard::UpdateRuntimeData()
     {
+        monitor_data_[0] = this->Motherboard.temperature()[0];
     }
 };

@@ -51,7 +51,7 @@ namespace bitbot {
 	}
 
 
-	void GzBus::Init(pugi::xml_node& bus_node, KernelInterface* interface, const std::unordered_map<std::string, EventId>& map)
+	void GzBus::Init(pugi::xml_node& bus_node, KernelInterface* interface, const std::unordered_map<std::string, std::string>& KeyEventMap)
 	{
 		std::string mode_pr_str;
 		ConfigParser::ParseAttribute2s(mode_pr_str, bus_node.attribute("mode_pr"));
@@ -129,7 +129,7 @@ namespace bitbot {
 				if (this->gamepad_device_ == nullptr)
 				{
 					UnitreeGamepad* ptr = dynamic_cast<UnitreeGamepad*>(dev);
-					ptr->init(interface, map);
+					ptr->init(interface, KeyEventMap);
 					this->gamepad_device_ = static_cast<GzDevice*>(ptr);
 				}
 				else
@@ -160,6 +160,16 @@ namespace bitbot {
 		ConfigParser::ParseAttribute2s(NetWorkCardName, bus_node.attribute("NetWorkCardName"));
 		this->logger_->info("DDSNetWorkCardName: {}", NetWorkCardName);
 		unitree::robot::ChannelFactory::Instance()->Init(0, NetWorkCardName);
+		this->msc_ = std::make_shared<unitree::robot::b2::MotionSwitcherClient>();
+		msc_->SetTimeout(5.0f);
+		msc_->Init();
+		std::string form, name;
+		while (msc_->CheckMode(form, name), !name.empty()) {
+			if (msc_->ReleaseMode())
+				this->logger_->error("Failed to switch to Release Mode");
+			sleep(5);
+		}
+
 		//init publishers and subscribers
 		this->InitPublishersAndSubscribers();
 	}
