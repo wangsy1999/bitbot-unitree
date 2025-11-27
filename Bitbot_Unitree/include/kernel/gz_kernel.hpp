@@ -64,13 +64,13 @@ namespace bitbot {
       constexpr float ms_to_ms = 1 / 1e3;
       constexpr float s_to_ms = 1e3;
 
-      while (rclcpp::ok() && !this->busmanager_.isSystemReady()) {
+      while (!this->busmanager_.isSystemReady()) {
         this->logger_->info("Waiting for unitree system to be ready...");
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
       }
       this->logger_->info("unitree system is ready.");
 
-      while (rclcpp::ok() && !this->kernel_config_data_.stop_flag)
+      while (!this->kernel_config_data_.stop_flag)
       {
         start_time = std::chrono::high_resolution_clock::now();
         this->kernel_runtime_data_.periods_count++;
@@ -97,7 +97,7 @@ namespace bitbot {
             this->logger_->warn("program time out!");
         }
       }
-      
+
       this->logger_->info("Bitbot Unitree Kernel stopped.");
     }
 

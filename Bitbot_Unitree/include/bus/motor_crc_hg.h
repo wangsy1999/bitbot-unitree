@@ -9,9 +9,8 @@
 
 #include <array>
 
-#include "rclcpp/rclcpp.hpp"
-#include "unitree_hg/msg/low_cmd.hpp"
-#include "unitree_hg/msg/motor_cmd.hpp"
+#include "unitree/idl/hg/LowCmd_.hpp"
+#include "unitree/idl/hg/MotorCmd_.hpp"
 
 typedef struct {
   uint8_t mode;  // desired working mode
@@ -32,6 +31,6 @@ typedef struct {
 } LowCmd;
 
 uint32_t crc32_core(uint32_t* ptr, uint32_t len);
-void get_crc(unitree_hg::msg::LowCmd& msg);
+void get_crc(unitree_hg::msg::dds_::LowCmd_& msg);
 
 #endif

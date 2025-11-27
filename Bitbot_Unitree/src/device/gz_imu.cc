@@ -12,16 +12,16 @@ namespace bitbot {
   GzImu::~GzImu() {}
 
   void GzImu::Input(const IOType& IO) {
-    auto imu_state = std::get<unitree_hg::msg::IMUState>(IO);
-    this->roll_ = imu_state.rpy[0];
-    this->pitch_ = imu_state.rpy[1];
-    this->yaw_ = imu_state.rpy[2];
-    this->gyro_x_ = imu_state.gyroscope[0];
-    this->gyro_y_ = imu_state.gyroscope[1];
-    this->gyro_z_ = imu_state.gyroscope[2];
-    this->acc_x_ = imu_state.accelerometer[0];
-    this->acc_y_ = imu_state.accelerometer[1];
-    this->acc_z_ = imu_state.accelerometer[2];
+    auto imu_state = std::get<unitree_hg::msg::dds_::IMUState_>(IO);
+    this->roll_ = imu_state.rpy()[0];
+    this->pitch_ = imu_state.rpy()[1];
+    this->yaw_ = imu_state.rpy()[2];
+    this->gyro_x_ = imu_state.gyroscope()[0];
+    this->gyro_y_ = imu_state.gyroscope()[1];
+    this->gyro_z_ = imu_state.gyroscope()[2];
+    this->acc_x_ = imu_state.accelerometer()[0];
+    this->acc_y_ = imu_state.accelerometer()[1];
+    this->acc_z_ = imu_state.accelerometer()[2];
   }
 
   IOType GzImu::Output() {

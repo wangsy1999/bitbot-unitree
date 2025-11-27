@@ -6,15 +6,9 @@
 #include "device/gz_joint.h"
 #include "bitbot_kernel/bus/bus_manager.hpp"
 
-#include "unitree_hg/msg/motor_state.hpp"
-#include "unitree_hg/msg/imu_state.hpp"
-#include "unitree_hg/msg/main_board_state.hpp"
-#include "unitree_hg/msg/bms_state.hpp"
-#include "unitree_hg/msg/low_cmd.hpp"
-#include "unitree_hg/msg/low_state.hpp"
-#include "rclcpp/rclcpp.hpp"
-#include "rclcpp/publisher.hpp"
-#include "rclcpp/subscription.hpp"
+#include "unitree/robot/channel/channel_publisher.hpp"
+#include "unitree/robot/channel/channel_subscriber.hpp"
+
 #include "thread"
 #include "mutex"
 
@@ -35,34 +29,41 @@ namespace bitbot {
     bool isSystemReady() { return received.load(); }
 
   private:
-    void LowStateCallback(const unitree_hg::msg::LowState::SharedPtr msg);
-    void AlterImuCallback(const unitree_hg::msg::IMUState::SharedPtr msg);
-    void MainBoardStateCallback(const unitree_hg::msg::MainBoardState::SharedPtr msg);
-    void BmsStateCallback(const unitree_hg::msg::BmsState::SharedPtr msg);
+    void LowStateCallback(const void* msg);
+    void AlterImuCallback(const void* msg);
+    void MainBoardStateCallback(const void* msg);
+    void BmsStateCallback(const void* msg);
+
+    void InitPublishersAndSubscribers();
 
   private:
-    rclcpp::Publisher<unitree_hg::msg::LowCmd>::SharedPtr low_command_publisher_;
-    rclcpp::Subscription<unitree_hg::msg::LowState>::SharedPtr low_state_subscriber_;
-    rclcpp::Subscription<unitree_hg::msg::IMUState>::SharedPtr alter_imu_subscriber_;
-    rclcpp::Subscription<unitree_hg::msg::MainBoardState>::SharedPtr main_board_state_subscriber_;
-    rclcpp::Subscription<unitree_hg::msg::BmsState>::SharedPtr bms_state_subscriber_;
+    const std::string LOW_STATE_TOPIC = "rt/lowstate";
+    const std::string ALTER_IMU_STATE_TOPIC = "rt/secondary_imu";
+    const std::string MAINBOARD_STATE_TOPIC = "rt/lf/mainboardstate";
+    const std::string BMS_STATE_TOPIC = "rt/lf/bmsstate";
+    const std::string LOW_CMD_TOPIC = "rt/lowcmd";
 
-    rclcpp::Node::SharedPtr node_;
+
+    //handler 抓手，支撑点，着力点，立足点，发力点，依托点，牛鼻子，总开关。方法，工具，载体，平台。
+    unitree::robot::ChannelPublisherPtr<unitree_hg::msg::dds_::LowCmd_> low_command_publisher_;
+    unitree::robot::ChannelSubscriberPtr<unitree_hg::msg::dds_::LowState_> low_state_subscriber_;
+    unitree::robot::ChannelSubscriberPtr<unitree_hg::msg::dds_::IMUState_> alter_imu_subscriber_;
+    unitree::robot::ChannelSubscriberPtr<unitree_hg::msg::dds_::MainBoardState_> main_board_state_subscriber_;
+    unitree::robot::ChannelSubscriberPtr<unitree_hg::msg::dds_::BmsState_> bms_state_subscriber_;
 
     //注意读写时加锁解锁
     std::mutex motor_state_lock_;
-    std::array<unitree_hg::msg::MotorState, 35> motor_states_;
+    std::array<unitree_hg::msg::dds_::MotorState_, 35> motor_states_;
     std::mutex motor_cmd_lock_;
-    std::array<unitree_hg::msg::MotorCmd, 35> motor_cmds_;
+    std::array<unitree_hg::msg::dds_::MotorCmd_, 35> motor_cmds_;
     std::mutex imu_state_lock_;
-    std::array<unitree_hg::msg::IMUState, 2> imu_states_;
+    std::array<unitree_hg::msg::dds_::IMUState_, 2> imu_states_;
     std::mutex main_board_state_lock_;
-    unitree_hg::msg::MainBoardState main_board_state_msg_;
+    unitree_hg::msg::dds_::MainBoardState_ main_board_state_msg_;
     std::mutex bms_state_lock_;
-    unitree_hg::msg::BmsState bms_state_msg_;
+    unitree_hg::msg::dds_::BmsState_ bms_state_msg_;
 
     // ros bus node spin thread
-    std::thread spin_thread_;
     std::atomic<bool> received = false;
 
     //device list

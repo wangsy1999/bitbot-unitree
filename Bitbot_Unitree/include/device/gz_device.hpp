@@ -3,11 +3,16 @@
 
 #include "variant"
 #include "bitbot_kernel/device/device.hpp"
-#include "unitree_hg/msg/motor_state.hpp"
-#include "unitree_hg/msg/imu_state.hpp"
-#include "unitree_hg/msg/main_board_state.hpp"
-#include "unitree_hg/msg/bms_state.hpp"
-#include "unitree_hg/msg/low_cmd.hpp"
+
+#include "unitree/idl/hg/MotorState_.hpp"
+#include "unitree/idl/hg/LowState_.hpp"
+#include "unitree/idl/hg/IMUState_.hpp"
+#include "unitree/idl/hg/MainBoardState_.hpp"
+#include "unitree/idl/hg/BmsState_.hpp"
+#include "unitree/idl/hg/MotorCmd_.hpp"
+#include "unitree/idl/hg/LowCmd_.hpp"
+
+
 
 namespace bitbot {
 
@@ -20,11 +25,12 @@ namespace bitbot {
     GZ_MOTHERBOARD
   };
 
-  using IOType = std::variant<unitree_hg::msg::MotorState,
-    unitree_hg::msg::IMUState,
-    unitree_hg::msg::MainBoardState,
-    unitree_hg::msg::BmsState,
-    unitree_hg::msg::MotorCmd>;
+
+  using IOType = std::variant<unitree_hg::msg::dds_::MotorState_,
+    unitree_hg::msg::dds_::IMUState_,
+    unitree_hg::msg::dds_::MainBoardState_,
+    unitree_hg::msg::dds_::BmsState_,
+    unitree_hg::msg::dds_::MotorCmd_>;
 
   class GzDevice : public Device {
   public:

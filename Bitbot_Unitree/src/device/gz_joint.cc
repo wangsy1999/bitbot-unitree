@@ -28,32 +28,32 @@ namespace bitbot {
   GzJoint::~GzJoint() {}
 
   void GzJoint::Input(const IOType& IO) {
-    auto motor_state = std::get<unitree_hg::msg::MotorState>(IO);
-    this->actual_position_ = motor_state.q;
-    this->actual_velocity_ = motor_state.dq;
-    this->actual_torque_ = motor_state.tau_est;
-    this->mode_ = motor_state.mode;
-    this->temp[0] = motor_state.temperature[0];
-    this->temp[1] = motor_state.temperature[1];
+    auto motor_state = std::get<unitree_hg::msg::dds_::MotorState_>(IO);
+    this->actual_position_ = motor_state.q();
+    this->actual_velocity_ = motor_state.dq();
+    this->actual_torque_ = motor_state.tau_est();
+    this->mode_ = motor_state.mode();
+    this->temp[0] = motor_state.temperature()[0];
+    this->temp[1] = motor_state.temperature()[1];
   }
 
   IOType GzJoint::Output() {
-    unitree_hg::msg::MotorCmd motor_cmd;
+    unitree_hg::msg::dds_::MotorCmd_ motor_cmd;
     if (power_on_ && enable_) { //必须上电且使能才能控制
-      motor_cmd.mode = mode_;
-      motor_cmd.q = target_position_;
-      motor_cmd.dq = target_velocity_;
-      motor_cmd.tau = target_torque_;
-      motor_cmd.kp = p_gain_;
-      motor_cmd.kd = d_gain_;
+      motor_cmd.mode() = mode_;
+      motor_cmd.q() = target_position_;
+      motor_cmd.dq() = target_velocity_;
+      motor_cmd.tau() = target_torque_;
+      motor_cmd.kp() = p_gain_;
+      motor_cmd.kd() = d_gain_;
     }
     else {
-      motor_cmd.mode = 0;  // Idle
-      motor_cmd.q = 0.0;
-      motor_cmd.dq = 0.0;
-      motor_cmd.tau = 0.0;
-      motor_cmd.kp = 0.0;
-      motor_cmd.kd = 0.0;
+      motor_cmd.mode() = 0;  // Idle
+      motor_cmd.q() = 0.0;
+      motor_cmd.dq() = 0.0;
+      motor_cmd.tau() = 0.0;
+      motor_cmd.kp() = 0.0;
+      motor_cmd.kd() = 0.0;
     }
     return motor_cmd;
   }

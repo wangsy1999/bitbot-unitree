@@ -2,7 +2,7 @@
 <bitbot>
     <logger path="logs" level="debug"/>
     <backend port="12888" settings_file="setting.json"/>
-    <Unitree BusFrequency="500" mode_machine="29DoF" mode_pr="PR"/>
+    <Unitree BusFrequency="500" mode_machine="29DoF" mode_pr="PR" NetWorkCardName="eth0"/>
     <bus>
         <device id="0" type="GzJoint" name="L_LEG_HIP_PITCH" enable="1" kp="40" kd="1.5"/>
         <device id="1" type="GzJoint" name="L_LEG_HIP_ROLL" enable="1" kp="40" kd="1.5"/>

@@ -9,15 +9,15 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 aux_source_directory(src/bus SRC_BUS)
 aux_source_directory(src/device SRC_DEVICE)
 
-find_package(yaml-cpp REQUIRED)
-find_package(rclcpp REQUIRED)
-find_package(trajectory_msgs REQUIRED)
-find_package(std_msgs REQUIRED)
-find_package(sensor_msgs REQUIRED)
-find_package(ament_index_cpp REQUIRED)
-find_package(geometry_msgs REQUIRED)
-find_package(unitree_api REQUIRED)
-find_package(unitree_hg REQUIRED)
+include(FetchContent)
+FetchContent_Declare(
+    unitree_sdk2
+    URL file://${CMAKE_CURRENT_SOURCE_DIR}/pkg/unitree_sdk2.zip
+    OVERRIDE_FIND_PACKAGE
+)
+FetchContent_MakeAvailable(unitree_sdk2)
+
+find_package(unitree_sdk2 REQUIRED)
 
 message("BUILDING BITBOT UNITREE")
 message("MAKE BITBOT EVERY WHERE!")
@@ -54,15 +54,5 @@ target_include_directories(bitbotUnitree PUBLIC
 
 target_link_libraries(bitbotUnitree 
     BitbotKernel
-)
-
-ament_target_dependencies(bitbotUnitree
-    rclcpp
-    trajectory_msgs
-    std_msgs
-    sensor_msgs
-    rosgraph_msgs
-    ament_index_cpp
-    unitree_hg
-    unitree_api
+    unitree_sdk2
 )
