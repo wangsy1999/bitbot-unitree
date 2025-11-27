@@ -170,16 +170,17 @@ namespace bitbot {
 		ConfigParser::ParseAttribute2s(NetWorkCardName, bus_node.attribute("NetWorkCardName"));
 		this->logger_->info("DDSNetWorkCardName: {}", NetWorkCardName);
 		unitree::robot::ChannelFactory::Instance()->Init(0, NetWorkCardName);
-		//this->msc_ = std::make_shared<unitree::robot::b2::MotionSwitcherClient>();
-		// this->msc_.reset(new unitree::robot::b2::MotionSwitcherClient());
-		// msc_->SetTimeout(5.0f);
-		// msc_->Init();
-		// std::string form, name;
-		// while (msc_->CheckMode(form, name), !name.empty()) {
-		// 	if (msc_->ReleaseMode())
-		// 		this->logger_->error("Failed to switch to Release Mode");
-		// 	sleep(5);
-		// }
+		this->msc_ = std::make_shared<unitree::robot::b2::MotionSwitcherClient>();
+		msc_->SetTimeout(5.0f);
+		msc_->Init();
+		std::string form, name;
+		this->logger_->info("Waiting for MotionSwitcher to be ready...");
+		while (msc_->CheckMode(form, name), !name.empty()) {
+			if (msc_->ReleaseMode())
+				this->logger_->error("Failed to switch to Release Mode");
+			sleep(5);
+		}
+		this->logger_->info("MotionSwitcher is ready.");
 
 		//init publishers and subscribers
 		this->InitPublishersAndSubscribers();

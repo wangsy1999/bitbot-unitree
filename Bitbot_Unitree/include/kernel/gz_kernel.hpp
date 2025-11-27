@@ -61,6 +61,7 @@ namespace bitbot {
         }
 
         void doRun() {
+            this->busmanager_.UpdateEvnentIDMap(this->events_name_id_map_);
             std::chrono::high_resolution_clock::time_point start_time = std::chrono::high_resolution_clock::now();
             std::chrono::high_resolution_clock::time_point last_time = start_time;
             std::chrono::high_resolution_clock::time_point end_time = start_time;
