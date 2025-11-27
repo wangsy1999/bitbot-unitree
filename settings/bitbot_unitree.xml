@@ -4,40 +4,40 @@
     <backend port="12888" settings_file="setting.json"/>
     <Unitree BusFrequency="500" mode_machine="29DoF" mode_pr="PR" NetWorkCardName="eth0"/>
     <bus>
-        <device id="0" type="GzJoint" name="L_LEG_HIP_PITCH" enable="1" kp="0" kd="0"/>
-        <device id="1" type="GzJoint" name="L_LEG_HIP_ROLL" enable="1" kp="0" kd="0"/>
-        <device id="2" type="GzJoint" name="L_LEG_HIP_YAW" enable="1" kp="0" kd="0"/>
-        <device id="3" type="GzJoint" name="L_LEG_KNEE" enable="1" kp="0" kd="0"/>
-        <device id="4" type="GzJoint" name="L_LEG_ANKLE_PITCH" enable="1" kp="0" kd="0"/>
-        <device id="5" type="GzJoint" name="L_LEG_ANKLE_ROLL" enable="1" kp="0" kd="0"/>
-        <device id="6" type="GzJoint" name="R_LEG_HIP_PITCH" enable="1" kp="0" kd="0"/>
-        <device id="7" type="GzJoint" name="R_LEG_HIP_ROLL" enable="1" kp="0" kd="0"/>
-        <device id="8" type="GzJoint" name="R_LEG_HIP_YAW" enable="1" kp="0" kd="0"/>
-        <device id="9" type="GzJoint" name="R_LEG_KNEE" enable="1" kp="0" kd="0"/>
-        <device id="10" type="GzJoint" name="R_LEG_ANKLE_PITCH" enable="1" kp="0" kd="0"/>
-        <device id="11" type="GzJoint" name="R_LEG_ANKLE_ROLL" enable="1" kp="0" kd="0"/>
-        <device id="12" type="GzJoint" name="WAIST_YAW" enable="1" kp="0" kd="0"/>
-        <device id="13" type="GzJoint" name="WAIST_ROLL" enable="1" kp="0" kd="0"/>
-        <device id="14" type="GzJoint" name="WAIST_PITCH" enable="1" kp="0" kd="0"/>
-        <device id="15" type="GzJoint" name="L_SHOULDER_PITCH" enable="1" kp="0" kd="0"/>
-        <device id="16" type="GzJoint" name="L_SHOULDER_ROLL" enable="1" kp="0" kd="0"/>
-        <device id="17" type="GzJoint" name="L_SHOULDER_YAW" enable="1" kp="0" kd="0"/>
-        <device id="18" type="GzJoint" name="L_ELBOW" enable="1" kp="0" kd="0"/>
-        <device id="19" type="GzJoint" name="L_WRIST_ROLL" enable="1" kp="0" kd="0"/>
-        <device id="20" type="GzJoint" name="L_WRIST_PITCH" enable="1" kp="0" kd="0"/>
-        <device id="21" type="GzJoint" name="L_WRIST_YAW" enable="0" kp="0" kd="0"/>
-        <device id="22" type="GzJoint" name="R_SHOULDER_PITCH" enable="1" kp="0" kd="0"/>
-        <device id="23" type="GzJoint" name="R_SHOULDER_ROLL" enable="1" kp="0" kd="0"/>
-        <device id="24" type="GzJoint" name="R_SHOULDER_YAW" enable="1" kp="0" kd="0"/>
-        <device id="25" type="GzJoint" name="R_ELBOW" enable="1" kp="0" kd="0"/>
-        <device id="26" type="GzJoint" name="R_WRIST_ROLL" enable="1" kp="0" kd="0"/>
-        <device id="27" type="GzJoint" name="R_WRIST_PITCH" enable="1" kp="0" kd="0"/>
-        <device id="28" type="GzJoint" name="R_WRIST_YAW" enable="1" kp="0" kd="0"/>
+        <device id="0" type="UnitreeJoint" name="L_LEG_HIP_PITCH" enable="1" kp="0" kd="0"/>
+        <device id="1" type="UnitreeJoint" name="L_LEG_HIP_ROLL" enable="1" kp="0" kd="0"/>
+        <device id="2" type="UnitreeJoint" name="L_LEG_HIP_YAW" enable="1" kp="0" kd="0"/>
+        <device id="3" type="UnitreeJoint" name="L_LEG_KNEE" enable="1" kp="0" kd="0"/>
+        <device id="4" type="UnitreeJoint" name="L_LEG_ANKLE_PITCH" enable="1" kp="0" kd="0"/>
+        <device id="5" type="UnitreeJoint" name="L_LEG_ANKLE_ROLL" enable="1" kp="0" kd="0"/>
+        <device id="6" type="UnitreeJoint" name="R_LEG_HIP_PITCH" enable="1" kp="0" kd="0"/>
+        <device id="7" type="UnitreeJoint" name="R_LEG_HIP_ROLL" enable="1" kp="0" kd="0"/>
+        <device id="8" type="UnitreeJoint" name="R_LEG_HIP_YAW" enable="1" kp="0" kd="0"/>
+        <device id="9" type="UnitreeJoint" name="R_LEG_KNEE" enable="1" kp="0" kd="0"/>
+        <device id="10" type="UnitreeJoint" name="R_LEG_ANKLE_PITCH" enable="1" kp="0" kd="0"/>
+        <device id="11" type="UnitreeJoint" name="R_LEG_ANKLE_ROLL" enable="1" kp="0" kd="0"/>
+        <device id="12" type="UnitreeJoint" name="WAIST_YAW" enable="1" kp="0" kd="0"/>
+        <device id="13" type="UnitreeJoint" name="WAIST_ROLL" enable="1" kp="0" kd="0"/>
+        <device id="14" type="UnitreeJoint" name="WAIST_PITCH" enable="1" kp="0" kd="0"/>
+        <device id="15" type="UnitreeJoint" name="L_SHOULDER_PITCH" enable="1" kp="0" kd="0"/>
+        <device id="16" type="UnitreeJoint" name="L_SHOULDER_ROLL" enable="1" kp="0" kd="0"/>
+        <device id="17" type="UnitreeJoint" name="L_SHOULDER_YAW" enable="1" kp="0" kd="0"/>
+        <device id="18" type="UnitreeJoint" name="L_ELBOW" enable="1" kp="0" kd="0"/>
+        <device id="19" type="UnitreeJoint" name="L_WRIST_ROLL" enable="1" kp="0" kd="0"/>
+        <device id="20" type="UnitreeJoint" name="L_WRIST_PITCH" enable="1" kp="0" kd="0"/>
+        <device id="21" type="UnitreeJoint" name="L_WRIST_YAW" enable="0" kp="0" kd="0"/>
+        <device id="22" type="UnitreeJoint" name="R_SHOULDER_PITCH" enable="1" kp="0" kd="0"/>
+        <device id="23" type="UnitreeJoint" name="R_SHOULDER_ROLL" enable="1" kp="0" kd="0"/>
+        <device id="24" type="UnitreeJoint" name="R_SHOULDER_YAW" enable="1" kp="0" kd="0"/>
+        <device id="25" type="UnitreeJoint" name="R_ELBOW" enable="1" kp="0" kd="0"/>
+        <device id="26" type="UnitreeJoint" name="R_WRIST_ROLL" enable="1" kp="0" kd="0"/>
+        <device id="27" type="UnitreeJoint" name="R_WRIST_PITCH" enable="1" kp="0" kd="0"/>
+        <device id="28" type="UnitreeJoint" name="R_WRIST_YAW" enable="1" kp="0" kd="0"/>
         
-        <device id="30" type="GzImu" name="imu"/>
-        <device id="31" type="GzImu" name="alter_imu"/>
-        <device id="32" type="GzBattery" name="battery"/>
-        <device id="33" type="GzMotherboard" name="mothorboard"/>
-        <device id="34" type="GzGamepad" name="unitree_gamepad" dead_zone="0.01" smooth="0.03"/>
+        <device id="30" type="UnitreeImu" name="imu"/>
+        <device id="31" type="UnitreeImu" name="alter_imu"/>
+        <device id="32" type="UnitreeBattery" name="battery"/>
+        <device id="33" type="UnitreeMotherboard" name="mothorboard"/>
+        <device id="34" type="UnitreeGamepad" name="unitree_gamepad" dead_zone="0.01" smooth="0.03"/>
     </bus>
 </bitbot>

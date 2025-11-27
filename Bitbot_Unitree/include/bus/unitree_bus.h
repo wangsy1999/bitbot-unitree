@@ -1,12 +1,11 @@
-#ifndef GZ_BUS_H
-#define GZ_BUS_H
+#pragma once
 
-#include "device/gz_device.hpp"
-#include "device/gz_imu.h"
-#include "device/gz_joint.h"
-#include "device/gz_robot.h"
-#include "device/gz_battery.h"
-#include "device/gz_gamepad.h"
+#include "device/unitree_device.hpp"
+#include "device/unitree_imu.h"
+#include "device/unitree_joint.h"
+#include "device/unitree_robot.h"
+#include "device/unitree_battery.h"
+#include "device/unitree_gamepad.h"
 #include "bitbot_kernel/bus/bus_manager.hpp"
 
 #include "unitree/robot/channel/channel_publisher.hpp"
@@ -20,10 +19,10 @@
 
 namespace bitbot {
   class KernelInterface;
-  class GzBus : public BusManagerTpl<GzBus, GzDevice> {
+  class UnitreeBus : public BusManagerTpl<UnitreeBus, UnitreeDevice> {
   public:
-    GzBus();
-    ~GzBus();
+    UnitreeBus();
+    ~UnitreeBus();
 
     void WriteBus();
     void ReadBus();
@@ -77,11 +76,11 @@ namespace bitbot {
     std::atomic<bool> received = false;
 
     //device list
-    std::vector<GzDevice*> joint_devices_;
-    std::vector<GzDevice*> imu_devices_;
-    GzDevice* motherboard_device_ = nullptr;
-    GzDevice* battery_device_ = nullptr;
-    GzDevice* gamepad_device_ = nullptr;
+    std::vector<UnitreeDevice*> joint_devices_;
+    std::vector<UnitreeDevice*> imu_devices_;
+    UnitreeDevice* motherboard_device_ = nullptr;
+    UnitreeDevice* battery_device_ = nullptr;
+    UnitreeDevice* gamepad_device_ = nullptr;
 
   private: //LowCmd config
     uint8_t mode_pr_;
@@ -90,4 +89,3 @@ namespace bitbot {
   };
 }  // namespace bitbot
 
-#endif  // !GZ_BUS_H

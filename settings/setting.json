@@ -9,6 +9,10 @@
       "kb_key": "GAMEPAD_BUTTON_Y"
     },
     {
+      "event": "system_test",
+      "kb_key": "t"
+    },
+    {
       "event": "start",
       "kb_key": "8"
     },
@@ -58,59 +62,75 @@
     },
     {
       "event": "velo_y_increase",
-      "kb_key": "j"
+      "kb_key": "u"
     },
     {
       "event": "velo_y_decrease",
-      "kb_key": "l"
-    },
-    {
-      "event": "offset_y_increase",
-      "kb_key": ","
-    },
-    {
-      "event": "offset_y_decrease",
-      "kb_key": "."
-    },
-    {
-      "event": "offset_yaw_increase",
-      "kb_key": "<"
-    },
-    {
-      "event": "offset_yaw_decrease",
-      "kb_key": ">"
-    },
-    {
-      "event": "gamepad_init_pos",
-      "kb_key": "GAMEPAD_BUTTON_Y"
-    },
-    {
-      "event": "gamepad_switch_CST",
-      "kb_key": "GAMEPAD_BUTTON_X"
-    },
-    {
-      "event": "gamepad_run",
-      "kb_key": "GAMEPAD_BUTTON_A"
-    },
-    {
-      "event": "gamepad_velo_x_increase",
-      "kb_key": "GAMEPAD_HAT_UP"
-    },
-    {
-      "event": "gamepad_velo_x_decrease",
-      "kb_key": "GAMEPAD_HAT_DOWN"
-    },
-    {
-      "event": "gamepad_velo_y_decrease",
       "kb_key": "GAMEPAD_HAT_RIGHT"
     },
     {
-      "event": "gamepad_velo_y_increase",
+      "event": "velo_y_decrease",
+      "kb_key": "o"
+    },
+    {
+      "event": "velo_y_increase",
       "kb_key": "GAMEPAD_HAT_LEFT"
     },
     {
-      "event": "system_test",
-      "kb_key": "t"
+      "event": "velo_yaw_increase",
+      "kb_key": "j"
+    },
+    {
+      "event": "velo_yaw_decrease",
+      "kb_key": "l"
+    },
+    {
+      "event": "pos_z_increase",
+      "kb_key": "q"
+    },
+    {
+      "event": "pos_z_increase",
+      "kb_key": "GAMEPAD_HAT_UP"
+    },
+    {
+      "event": "pos_z_decrease",
+      "kb_key": "e"
+    },
+    {
+      "event": "pos_z_decrease",
+      "kb_key": "GAMEPAD_HAT_DOWN"
+    },
+    {
+      "event": "pos_pitch_increase",
+      "kb_key": "w"
+    },
+    {
+      "event": "pos_pitch_decrease",
+      "kb_key": "s"
+    },
+    {
+      "event": "pos_roll_increase",
+      "kb_key": "d"
+    },
+    {
+      "event": "pos_roll_decrease",
+      "kb_key": "a"
+    },
+    {
+      "event": "gamepad_x_move",
+      "kb_key": "GAMEPAD_JOYSTICK_RY"
+    },
+    {
+      "event": "gamepad_yaw_move",
+      "kb_key": "GAMEPAD_JOYSTICK_RX"
+    },
+    {
+      "event": "gamepad_pitch_move",
+      "kb_key": "GAMEPAD_JOYSTICK_LY"
+    },
+    {
+      "event": "gamepad_roll_move",
+      "kb_key": "GAMEPAD_JOYSTICK_LX"
     }
   ]
 }

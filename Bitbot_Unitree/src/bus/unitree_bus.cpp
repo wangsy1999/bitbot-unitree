@@ -1,58 +1,58 @@
-#include "bus/gz_bus.h"
+#include "bus/unitree_bus.h"
 #include "bus/motor_crc_hg.h"
 #include <unitree/robot/b2/motion_switcher/motion_switcher_client.hpp>
 #include <memory>
 
 namespace bitbot {
-	GzBus::GzBus() {
+	UnitreeBus::UnitreeBus() {
 	}
 
-	GzBus::~GzBus() {
+	UnitreeBus::~UnitreeBus() {
 		this->PowerOff();
 		this->WriteBus();
-		this->logger_->info("GzBus shutdown.");
+		this->logger_->info("UnitreeBus shutdown.");
 	}
 
-	void GzBus::PowerOn()
+	void UnitreeBus::PowerOn()
 	{
 		for (auto dev : this->joint_devices_)
 		{
-			auto dev_ = dynamic_cast<GzJoint*>(dev);
+			auto dev_ = dynamic_cast<UnitreeJoint*>(dev);
 			dev_->PowerOn();
 		}
 	}
 
-	void GzBus::PowerOff()
+	void UnitreeBus::PowerOff()
 	{
 		for (auto dev : this->joint_devices_)
 		{
-			auto dev_ = dynamic_cast<GzJoint*>(dev);
+			auto dev_ = dynamic_cast<UnitreeJoint*>(dev);
 			dev_->PowerOff();
 		}
 	}
 
-	void GzBus::InitPublishersAndSubscribers()
+	void UnitreeBus::InitPublishersAndSubscribers()
 	{
 		using namespace unitree::robot;
 		using namespace unitree_hg::msg::dds_;
-		//TODO: 研究一下msc是什么
+
 		this->low_state_subscriber_.reset(new ChannelSubscriber<LowState_>(LOW_STATE_TOPIC));
-		this->low_state_subscriber_->InitChannel(std::bind(&GzBus::LowStateCallback, this, std::placeholders::_1), 1);
+		this->low_state_subscriber_->InitChannel(std::bind(&UnitreeBus::LowStateCallback, this, std::placeholders::_1), 1);
 
 		this->alter_imu_subscriber_.reset(new ChannelSubscriber<IMUState_>(ALTER_IMU_STATE_TOPIC));
-		this->alter_imu_subscriber_->InitChannel(std::bind(&GzBus::AlterImuCallback, this, std::placeholders::_1), 1);
+		this->alter_imu_subscriber_->InitChannel(std::bind(&UnitreeBus::AlterImuCallback, this, std::placeholders::_1), 1);
 
 		this->main_board_state_subscriber_.reset(new ChannelSubscriber<MainBoardState_>(MAINBOARD_STATE_TOPIC));
-		this->main_board_state_subscriber_->InitChannel(std::bind(&GzBus::MainBoardStateCallback, this, std::placeholders::_1), 1);
+		this->main_board_state_subscriber_->InitChannel(std::bind(&UnitreeBus::MainBoardStateCallback, this, std::placeholders::_1), 1);
 
 		this->bms_state_subscriber_.reset(new ChannelSubscriber<BmsState_>(BMS_STATE_TOPIC));
-		this->bms_state_subscriber_->InitChannel(std::bind(&GzBus::BmsStateCallback, this, std::placeholders::_1), 1);
+		this->bms_state_subscriber_->InitChannel(std::bind(&UnitreeBus::BmsStateCallback, this, std::placeholders::_1), 1);
 
 		this->low_command_publisher_.reset(new ChannelPublisher<LowCmd_>(LOW_CMD_TOPIC));
 		this->low_command_publisher_->InitChannel();
 	}
 
-	void GzBus::UpdateEvnentIDMap(const std::unordered_map<std::string, EventId>& map)
+	void UnitreeBus::UpdateEvnentIDMap(const std::unordered_map<std::string, EventId>& map)
 	{
 		UnitreeGamepad* ptr = dynamic_cast<UnitreeGamepad*>(this->gamepad_device_);
 		if (ptr != nullptr)
@@ -61,7 +61,7 @@ namespace bitbot {
 		}
 	}
 
-	void GzBus::Init(pugi::xml_node& bus_node, KernelInterface* interface, const std::unordered_map<std::string, std::string>& KeyEventMap)
+	void UnitreeBus::Init(pugi::xml_node& bus_node, KernelInterface* interface, const std::unordered_map<std::string, std::string>& KeyEventMap)
 	{
 		std::string mode_pr_str;
 		ConfigParser::ParseAttribute2s(mode_pr_str, bus_node.attribute("mode_pr"));
@@ -75,8 +75,8 @@ namespace bitbot {
 		}
 		else
 		{
-			this->logger_->error("GzBus Init error: mode_pr attribute invalid: {}", mode_pr_str);
-			throw std::runtime_error("GzBus Init error: mode_pr attribute invalid");
+			this->logger_->error("UnitreeBus Init error: mode_pr attribute invalid: {}", mode_pr_str);
+			throw std::runtime_error("UnitreeBus Init error: mode_pr attribute invalid");
 		}
 
 		std::string mode_machine_str;
@@ -95,22 +95,22 @@ namespace bitbot {
 		}
 		else
 		{
-			this->logger_->error("GzBus Init error: mode_machine attribute invalid: {}", mode_machine_str);
-			throw std::runtime_error("GzBus Init error: mode_machine attribute invalid");
+			this->logger_->error("UnitreeBus Init error: mode_machine attribute invalid: {}", mode_machine_str);
+			throw std::runtime_error("UnitreeBus Init error: mode_machine attribute invalid");
 		}
 
 
 		for (auto dev : this->devices_)
 		{
-			if (dev->Type() == (uint32_t)GzDeviceType::GZ_JOINT)
+			if (dev->Type() == (uint32_t)UnitreeDeviceType::UNITREE_JOINT)
 			{
 				this->joint_devices_.push_back(dev);
 			}
-			else if (dev->Type() == (uint32_t)GzDeviceType::GZ_IMU)
+			else if (dev->Type() == (uint32_t)UnitreeDeviceType::UNITREE_IMU)
 			{
 				this->imu_devices_.push_back(dev);
 			}
-			else if (dev->Type() == (uint32_t)GzDeviceType::GZ_MOTHERBOARD)
+			else if (dev->Type() == (uint32_t)UnitreeDeviceType::UNITREE_MOTHERBOARD)
 			{
 				if (this->motherboard_device_ == nullptr)
 				{
@@ -118,11 +118,11 @@ namespace bitbot {
 				}
 				else
 				{
-					this->logger_->error("GzBus Init error: duplicate motherboard device in configuration.");
-					throw std::runtime_error("GzBus Init error: duplicate motherboard device in configuration.");
+					this->logger_->error("UnitreeBus Init error: duplicate motherboard device in configuration.");
+					throw std::runtime_error("UnitreeBus Init error: duplicate motherboard device in configuration.");
 				}
 			}
-			else if (dev->Type() == (uint32_t)GzDeviceType::GZ_BATTERY)
+			else if (dev->Type() == (uint32_t)UnitreeDeviceType::UNITREE_BATTERY)
 			{
 				if (this->battery_device_ == nullptr)
 				{
@@ -130,22 +130,22 @@ namespace bitbot {
 				}
 				else
 				{
-					this->logger_->error("GzBus Init error: duplicate battery device in configuration.");
-					throw std::runtime_error("GzBus Init error: duplicate battery device in configuration.");
+					this->logger_->error("UnitreeBus Init error: duplicate battery device in configuration.");
+					throw std::runtime_error("UnitreeBus Init error: duplicate battery device in configuration.");
 				}
 			}
-			else if (dev->Type() == (uint32_t)GzDeviceType::GZ_GAMEPAD)
+			else if (dev->Type() == (uint32_t)UnitreeDeviceType::UNITREE_GAMEPAD)
 			{
 				if (this->gamepad_device_ == nullptr)
 				{
 					UnitreeGamepad* ptr = dynamic_cast<UnitreeGamepad*>(dev);
 					ptr->init(interface, KeyEventMap);
-					this->gamepad_device_ = static_cast<GzDevice*>(ptr);
+					this->gamepad_device_ = static_cast<UnitreeDevice*>(ptr);
 				}
 				else
 				{
-					this->logger_->error("GzBus Init error: duplicate gamepad device in configuration.");
-					throw std::runtime_error("GzBus Init error: duplicate gamepad device in configuration.");
+					this->logger_->error("UnitreeBus Init error: duplicate gamepad device in configuration.");
+					throw std::runtime_error("UnitreeBus Init error: duplicate gamepad device in configuration.");
 				}
 			}
 			else
@@ -157,13 +157,13 @@ namespace bitbot {
 
 		if (this->joint_devices_.size() < 29)
 		{
-			this->logger_->error("GzBus Init error: joint devices size is not 35, actual size is {}", this->joint_devices_.size());
-			throw std::runtime_error("GzBus Init error: joint devices size is not 35");
+			this->logger_->error("UnitreeBus Init error: joint devices size is not 35, actual size is {}", this->joint_devices_.size());
+			throw std::runtime_error("UnitreeBus Init error: joint devices size is not 35");
 		}
 		if (this->imu_devices_.size() != 2)
 		{
-			this->logger_->error("GzBus Init error: imu devices size is not 2, actual size is {}", this->imu_devices_.size());
-			throw std::runtime_error("GzBus Init error: imu devices size is not 2");
+			this->logger_->error("UnitreeBus Init error: imu devices size is not 2, actual size is {}", this->imu_devices_.size());
+			throw std::runtime_error("UnitreeBus Init error: imu devices size is not 2");
 		}
 
 		std::string NetWorkCardName;
@@ -186,15 +186,15 @@ namespace bitbot {
 		this->InitPublishersAndSubscribers();
 	}
 
-	void GzBus::RegisterDevices() {
-		static DeviceRegistrar<GzDevice, GzJoint> gz_joint((uint32_t)GzDeviceType::GZ_JOINT, "GzJoint");
-		static DeviceRegistrar<GzDevice, GzImu> gz_imu((uint32_t)GzDeviceType::GZ_IMU, "GzImu");
-		static DeviceRegistrar<GzDevice, UnitreeMotherboard> UnitreeMotherboard((uint32_t)GzDeviceType::GZ_MOTHERBOARD, "GzMotherboard");
-		static DeviceRegistrar<GzDevice, UnitreeBattery> UnitreeBattery((uint32_t)GzDeviceType::GZ_BATTERY, "GzBattery");
-		static DeviceRegistrar<GzDevice, UnitreeGamepad> UnitreeGamepad((uint32_t)GzDeviceType::GZ_GAMEPAD, "GzGamepad");
+	void UnitreeBus::RegisterDevices() {
+		static DeviceRegistrar<UnitreeDevice, UnitreeJoint> UNITREE_JOINT((uint32_t)UnitreeDeviceType::UNITREE_JOINT, "UnitreeJoint");
+		static DeviceRegistrar<UnitreeDevice, UnitreeImu> UNITREE_IMU((uint32_t)UnitreeDeviceType::UNITREE_IMU, "UnitreeImu");
+		static DeviceRegistrar<UnitreeDevice, UnitreeMotherboard> UnitreeMotherboard((uint32_t)UnitreeDeviceType::UNITREE_MOTHERBOARD, "UnitreeMotherboard");
+		static DeviceRegistrar<UnitreeDevice, UnitreeBattery> UnitreeBattery((uint32_t)UnitreeDeviceType::UNITREE_BATTERY, "UnitreeBattery");
+		static DeviceRegistrar<UnitreeDevice, UnitreeGamepad> UnitreeGamepad((uint32_t)UnitreeDeviceType::UNITREE_GAMEPAD, "UnitreeGamepad");
 	}
 
-	void GzBus::WriteBus() {
+	void UnitreeBus::WriteBus() {
 		this->motor_cmd_lock_.lock();
 		unitree_hg::msg::dds_::LowCmd_ low_cmd_msg;
 		for (size_t i = 0; i < this->joint_devices_.size(); ++i) {
@@ -209,7 +209,7 @@ namespace bitbot {
 		this->low_command_publisher_->Write(low_cmd_msg);
 	}
 
-	void GzBus::ReadBus() {
+	void UnitreeBus::ReadBus() {
 		this->motor_state_lock_.lock();
 		for (size_t i = 0; i < this->joint_devices_.size(); ++i) {
 			this->joint_devices_[i]->Input(this->motor_states_[i]);
@@ -234,7 +234,7 @@ namespace bitbot {
 		this->gamepad_lock_.unlock();
 	}
 
-	void GzBus::LowStateCallback(const void* msg_)
+	void UnitreeBus::LowStateCallback(const void* msg_)
 	{
 		auto msg = static_cast<const unitree_hg::msg::dds_::LowState_*>(msg_);
 		this->motor_state_lock_.lock();
@@ -257,7 +257,7 @@ namespace bitbot {
 		this->received.store(true);
 	}
 
-	void GzBus::AlterImuCallback(const void* msg_)
+	void UnitreeBus::AlterImuCallback(const void* msg_)
 	{
 		auto msg = static_cast<const unitree_hg::msg::dds_::IMUState_*>(msg_);
 		this->imu_state_lock_.lock();
@@ -266,7 +266,7 @@ namespace bitbot {
 
 	}
 
-	void GzBus::MainBoardStateCallback(const void* msg_)
+	void UnitreeBus::MainBoardStateCallback(const void* msg_)
 	{
 		auto msg = static_cast<const unitree_hg::msg::dds_::MainBoardState_*>(msg_);
 		this->main_board_state_lock_.lock();
@@ -274,7 +274,7 @@ namespace bitbot {
 		this->main_board_state_lock_.unlock();
 	}
 
-	void GzBus::BmsStateCallback(const void* msg_)
+	void UnitreeBus::BmsStateCallback(const void* msg_)
 	{
 		auto msg = static_cast<const unitree_hg::msg::dds_::BmsState_*>(msg_);
 		this->bms_state_lock_.lock();

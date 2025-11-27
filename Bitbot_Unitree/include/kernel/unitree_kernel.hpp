@@ -1,9 +1,8 @@
-#ifndef GZ_KERNEL_HPP
-#define GZ_KERNEL_HPP
+#pragma once
 
 #include <thread>
 
-#include "bus/gz_bus.h"
+#include "bus/unitree_bus.h"
 #include "bitbot_kernel/kernel/kernel.hpp"
 #include "JsonParser.hpp"
 
@@ -22,11 +21,11 @@ namespace bitbot {
 
 
     template <typename UserData>
-    class GzKernel
-        : public KernelTpl<GzKernel<UserData>, GzBus, UserData> {
+    class UnitreeKernel
+        : public KernelTpl<UnitreeKernel<UserData>, UnitreeBus, UserData> {
     public:
-        GzKernel(std::string config_file)
-            : KernelTpl<GzKernel<UserData>, GzBus, UserData>(
+        UnitreeKernel(std::string config_file)
+            : KernelTpl<UnitreeKernel<UserData>, UnitreeBus, UserData>(
                 config_file) {
             pugi::xml_node UnitreeKernel_node = this->parser_->GetBitbotNode();
             pugi::xml_node Unitree_node = UnitreeKernel_node.child("Unitree");
@@ -53,7 +52,7 @@ namespace bitbot {
             this->PrintWelcomeMessage(); // MUST PRIENT WELCOME MESSAGE!!!!!!
         }
 
-        ~GzKernel() = default;
+        ~UnitreeKernel() = default;
 
     public:
         void doStart() {
@@ -131,5 +130,3 @@ namespace bitbot {
         int run_period; // run period in micro second
     };
 }  // namespace bitbot
-
-#endif  // !GZ_KERNEL_HPP

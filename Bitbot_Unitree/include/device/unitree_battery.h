@@ -1,11 +1,10 @@
-#ifndef GZ_BATTERY_H
-#define GZ_BATTERY_H
+#pragma once
 
-#include "device/gz_device.hpp"
+#include "device/unitree_device.hpp"
 
 namespace bitbot {
 
-    class UnitreeBattery final : public GzDevice {
+    class UnitreeBattery final : public UnitreeDevice {
     public:
         UnitreeBattery(pugi::xml_node const& device_node);
         ~UnitreeBattery();
@@ -20,4 +19,3 @@ namespace bitbot {
 
 }  // namespace bitbot
 
-#endif  // !GZ_BATTERY_H

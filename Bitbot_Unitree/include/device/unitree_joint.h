@@ -1,14 +1,13 @@
-#ifndef GZ_JOINT_H
-#define GZ_JOINT_H
+#pragma once
 
-#include "device/gz_device.hpp"
+#include "device/unitree_device.hpp"
 
 namespace bitbot {
 
-  class GzJoint final : public GzDevice {
+  class UnitreeJoint final : public UnitreeDevice {
   public:
-    GzJoint(const pugi::xml_node& device_node);
-    ~GzJoint();
+    UnitreeJoint(const pugi::xml_node& device_node);
+    ~UnitreeJoint();
 
     inline float GetActualPosition() { return actual_position_; }
     inline float GetActualVelocity() { return actual_velocity_; }
@@ -44,4 +43,3 @@ namespace bitbot {
 
 }  // namespace bitbot
 
-#endif  // !GZ_JOINT_H

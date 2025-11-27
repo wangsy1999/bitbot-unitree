@@ -40,7 +40,7 @@ message("+-----------------------------------------+
 
 
 add_library(bitbotUnitree STATIC
-            ./include/kernel/gz_kernel.hpp
+            ./include/kernel/unitree_kernel.hpp
             ${SRC_BUS}
             ${SRC_KERNEL}
             ${SRC_DEVICE}

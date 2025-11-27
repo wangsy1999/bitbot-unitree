@@ -2,15 +2,15 @@
 #ifdef BUILD_SIMULATION
 #include "bitbot_mujoco/kernel/mujoco_kernel.hpp"
 #else
-#include "Bitbot_Unitree/include/kernel/gz_kernel.hpp"
+#include "Bitbot_Unitree/include/kernel/unitree_kernel.hpp"
 #endif // BUILD_SIMULATION
 
 #ifdef BUILD_SIMULATION
 #include "bitbot_mujoco/device/mujoco_imu.h"
 #include "bitbot_mujoco/device/mujoco_joint.h"
 #else
-#include "Bitbot_Unitree/include/device/gz_joint.h"
-#include "Bitbot_Unitree/include/device/gz_imu.h"
+#include "Bitbot_Unitree/include/device/unitree_joint.h"
+#include "Bitbot_Unitree/include/device/unitree_imu.h"
 #endif //BUILD_SIMULATION
 
 constexpr size_t JOINT_NUMBER = 6;
@@ -20,8 +20,8 @@ using DeviceJoint = bitbot::MujocoJoint;
 constexpr std::array<size_t, JOINT_NUMBER> JOINT_ID_MAP = { 0,1,2,3,4,5 };
 constexpr size_t IMU_ID_MAP = 6;
 #else
-using DeviceImu = bitbot::GzImu;
-using DeviceJoint = bitbot::GzJoint;
+using DeviceImu = bitbot::UnitreeImu;
+using DeviceJoint = bitbot::UnitreeJoint;
 constexpr std::array<size_t, JOINT_NUMBER> JOINT_ID_MAP = { 0,1,2,3,4,5 };
 constexpr size_t IMU_ID_MAP = 30;
 #endif //BUILD_SIMULATION
@@ -66,8 +66,8 @@ struct UserData
 using KernelType = bitbot::MujocoKernel<UserData>;
 using KernelBus = bitbot::MujocoBus;
 #else
-using KernelType = bitbot::GzKernel<UserData>;
-using KernelBus = bitbot::GzBus;
+using KernelType = bitbot::UnitreeKernel<UserData>;
+using KernelBus = bitbot::UnitreeBus;
 #endif //BUILD_SIMULATION
 
 

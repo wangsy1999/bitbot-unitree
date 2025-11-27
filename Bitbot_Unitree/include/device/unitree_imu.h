@@ -1,14 +1,13 @@
-#ifndef GZ_IMU_H
-#define GZ_IMU_H
+#pragma once
 
-#include "device/gz_device.hpp"
+#include "device/unitree_device.hpp"
 
 namespace bitbot {
 
-  class GzImu final : public GzDevice {
+  class UnitreeImu final : public UnitreeDevice {
   public:
-    GzImu(pugi::xml_node const& device_node);
-    ~GzImu();
+    UnitreeImu(pugi::xml_node const& device_node);
+    ~UnitreeImu();
 
     inline float GetRoll() { return roll_; }
     inline float GetPitch() { return pitch_; }
@@ -37,5 +36,3 @@ namespace bitbot {
   };
 
 }  // namespace bitbot
-
-#endif  // !GZ_IMU_H

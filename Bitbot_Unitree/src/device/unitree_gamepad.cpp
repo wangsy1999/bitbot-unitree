@@ -1,13 +1,13 @@
-#include "device/gz_gamepad.h"
+#include "device/unitree_gamepad.h"
 #include "bitbot_kernel/kernel/kernel_interface.hpp"
 
 namespace bitbot
 {
     UnitreeGamepad::UnitreeGamepad(pugi::xml_node const& device_node)
-        :GzDevice(device_node)
+        :UnitreeDevice(device_node)
     {
         this->basic_type_ = (uint32_t)BasicDeviceType::SENSOR;
-        this->type_ = (uint32_t)GzDeviceType::GZ_GAMEPAD;
+        this->type_ = (uint32_t)UnitreeDeviceType::UNITREE_GAMEPAD;
 
         this->monitor_header_.headers = {
             "R1",

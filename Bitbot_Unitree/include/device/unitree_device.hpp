@@ -1,5 +1,4 @@
-#ifndef GZ_DEVICE_HPP
-#define GZ_DEVICE_HPP
+#pragma once
 
 #include "variant"
 #include "bitbot_kernel/device/device.hpp"
@@ -11,19 +10,19 @@
 #include "unitree/idl/hg/BmsState_.hpp"
 #include "unitree/idl/hg/MotorCmd_.hpp"
 #include "unitree/idl/hg/LowCmd_.hpp"
-#include "device/gz_gamepadheader.h"
+#include "device/unitree_gamepadheader.h"
 
 
 
 namespace bitbot {
 
-  enum class GzDeviceType : uint32_t {
-    GZ_DEVICE = 1000,
-    GZ_JOINT,
-    GZ_IMU,
-    GZ_GAMEPAD,
-    GZ_BATTERY,
-    GZ_MOTHERBOARD
+  enum class UnitreeDeviceType : uint32_t {
+    UNITREE_DEVICE = 1000,
+    UNITREE_JOINT,
+    UNITREE_IMU,
+    UNITREE_GAMEPAD,
+    UNITREE_BATTERY,
+    UNITREE_MOTHERBOARD
   };
 
 
@@ -34,12 +33,12 @@ namespace bitbot {
     unitree_hg::msg::dds_::MotorCmd_,
     REMOTE_DATA_RX>;
 
-  class GzDevice : public Device {
+  class UnitreeDevice : public Device {
   public:
-    GzDevice(const pugi::xml_node& device_node) : Device(device_node) {}
-    ~GzDevice() = default;
+    UnitreeDevice(const pugi::xml_node& device_node) : Device(device_node) {}
+    ~UnitreeDevice() = default;
 
-    // Method to w/r gz simulation
+    // Method to w/r unitree robot
     virtual void Input(const IOType& IO) = 0;
     virtual IOType Output() = 0;
 
@@ -47,8 +46,6 @@ namespace bitbot {
     // Inherited from Device base calss
     virtual void UpdateRuntimeData() = 0;
 
-  private:
   };
 }  // namespace bitbot
 
-#endif  // !GZ_DEVICE_HPP

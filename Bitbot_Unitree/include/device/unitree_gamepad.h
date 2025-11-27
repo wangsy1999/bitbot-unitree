@@ -1,13 +1,12 @@
-#ifndef GZ_GAMEPAD_H
-#define GZ_GAMEPAD_H
+#pragma once
 
-#include "device/gz_device.hpp"
-#include "device/gz_gamepadheader.h"
+#include "device/unitree_device.hpp"
+#include "device/unitree_gamepadheader.h"
 #include "unordered_map"
 
 namespace bitbot {
     class KernelInterface;
-    class UnitreeGamepad final : public GzDevice {
+    class UnitreeGamepad final : public UnitreeDevice {
     public:
         UnitreeGamepad(pugi::xml_node const& device_node);
         ~UnitreeGamepad();
@@ -40,4 +39,3 @@ namespace bitbot {
 
 }  // namespace bitbot
 
-#endif  // !GZ_GAMEPAD_H

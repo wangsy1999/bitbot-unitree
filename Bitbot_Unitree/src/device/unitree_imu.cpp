@@ -1,17 +1,17 @@
-#include "device/gz_imu.h"
+#include "device/unitree_imu.h"
 
 namespace bitbot {
 
-  GzImu::GzImu(pugi::xml_node const& device_node) : GzDevice(device_node) {
+  UnitreeImu::UnitreeImu(pugi::xml_node const& device_node) : UnitreeDevice(device_node) {
     basic_type_ = (uint32_t)BasicDeviceType::IMU;
-    type_ = (uint32_t)GzDeviceType::GZ_IMU;
+    type_ = (uint32_t)UnitreeDeviceType::UNITREE_IMU;
     monitor_header_.headers = { "roll",  "pitch",  "yaw", "acc_x", "acc_y", "acc_z", "gyro_x", "gyro_y", "gyro_z" };
     monitor_data_.resize(monitor_header_.headers.size());
   }
 
-  GzImu::~GzImu() {}
+  UnitreeImu::~UnitreeImu() {}
 
-  void GzImu::Input(const IOType& IO) {
+  void UnitreeImu::Input(const IOType& IO) {
     auto imu_state = std::get<unitree_hg::msg::dds_::IMUState_>(IO);
     this->roll_ = imu_state.rpy()[0];
     this->pitch_ = imu_state.rpy()[1];
@@ -24,11 +24,11 @@ namespace bitbot {
     this->acc_z_ = imu_state.accelerometer()[2];
   }
 
-  IOType GzImu::Output() {
+  IOType UnitreeImu::Output() {
     return IOType();
   }
 
-  void GzImu::UpdateRuntimeData() {
+  void UnitreeImu::UpdateRuntimeData() {
     constexpr double rad2deg = 180.0 / M_PI;
 
     monitor_data_[0] = rad2deg * roll_;

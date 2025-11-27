@@ -1,12 +1,12 @@
-#include "device/gz_battery.h"
+#include "device/unitree_battery.h"
 
 namespace bitbot
 {
     UnitreeBattery::UnitreeBattery(pugi::xml_node const& device_node)
-        :GzDevice(device_node)
+        :UnitreeDevice(device_node)
     {
         basic_type_ = (uint32_t)BasicDeviceType::SENSOR;
-        type_ = (uint32_t)GzDeviceType::GZ_BATTERY;
+        type_ = (uint32_t)UnitreeDeviceType::UNITREE_BATTERY;
         monitor_header_.headers = { "current","voltage","battery_life","temperature","cycle" };
         monitor_data_.resize(monitor_header_.headers.size());
     }

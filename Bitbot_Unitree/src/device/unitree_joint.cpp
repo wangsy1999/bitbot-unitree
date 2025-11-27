@@ -1,10 +1,10 @@
-#include "device/gz_joint.h"
+#include "device/unitree_joint.h"
 
 namespace bitbot {
 
-  GzJoint::GzJoint(const pugi::xml_node& device_node) : GzDevice(device_node) {
+  UnitreeJoint::UnitreeJoint(const pugi::xml_node& device_node) : UnitreeDevice(device_node) {
     basic_type_ = (uint32_t)BasicDeviceType::MOTOR;
-    type_ = (uint32_t)GzDeviceType::GZ_JOINT;
+    type_ = (uint32_t)UnitreeDeviceType::UNITREE_JOINT;
 
     monitor_header_.headers = { "mode",
                                "actual_position",
@@ -25,9 +25,9 @@ namespace bitbot {
     this->d_gain_ = static_cast<float>(d_gain);
   }
 
-  GzJoint::~GzJoint() {}
+  UnitreeJoint::~UnitreeJoint() {}
 
-  void GzJoint::Input(const IOType& IO) {
+  void UnitreeJoint::Input(const IOType& IO) {
     auto motor_state = std::get<unitree_hg::msg::dds_::MotorState_>(IO);
     this->actual_position_ = motor_state.q();
     this->actual_velocity_ = motor_state.dq();
@@ -37,7 +37,7 @@ namespace bitbot {
     this->temp[1] = motor_state.temperature()[1];
   }
 
-  void GzJoint::PowerOn()
+  void UnitreeJoint::PowerOn()
   {
     this->target_position_ = this->actual_position_;
     this->target_velocity_ = 0;
@@ -45,7 +45,7 @@ namespace bitbot {
     this->power_on_ = true;
   }
 
-  void GzJoint::PowerOff()
+  void UnitreeJoint::PowerOff()
   {
     power_on_ = false;
     this->target_position_ = this->actual_position_;
@@ -53,7 +53,7 @@ namespace bitbot {
     this->target_torque_ = 0;
   }
 
-  IOType GzJoint::Output() {
+  IOType UnitreeJoint::Output() {
     unitree_hg::msg::dds_::MotorCmd_ motor_cmd;
     if (power_on_ && enable_) { //必须上电且使能才能控制
       motor_cmd.mode() = 1;
@@ -74,7 +74,7 @@ namespace bitbot {
     return motor_cmd;
   }
 
-  void GzJoint::UpdateRuntimeData() {
+  void UnitreeJoint::UpdateRuntimeData() {
     constexpr double rad2deg = 180.0 / M_PI;
 
     monitor_data_[0] = mode_;
