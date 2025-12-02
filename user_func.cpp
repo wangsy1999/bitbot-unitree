@@ -146,6 +146,8 @@ std::optional<bitbot::StateId> EventDanceFunc(bitbot::EventValue value, UserData
 void StateWaitingFunc(const bitbot::KernelInterface& kernel,
     bitbot::ExtraData& extra_data, UserData& d)
 {
+    d.MotorWorker->SetCurrentPositionAsTargetPosition();
+    d.TaskScheduler->SpinOnce();
 }
 
 void StateSystemTestFunc(const bitbot::KernelInterface& kernel,
