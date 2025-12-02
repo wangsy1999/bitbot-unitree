@@ -25,7 +25,7 @@
         <device id="18" type="UnitreeJoint" name="L_ELBOW"           enable="1" kp="14.3" kd="0.907"/>
         <device id="19" type="UnitreeJoint" name="L_WRIST_ROLL"      enable="1" kp="14.3" kd="0.907"/>
         <device id="20" type="UnitreeJoint" name="L_WRIST_PITCH"     enable="1" kp="16.8" kd="1.07" />
-        <device id="21" type="UnitreeJoint" name="L_WRIST_YAW"       enable="0" kp="16.8" kd="1.07" />
+        <device id="21" type="UnitreeJoint" name="L_WRIST_YAW"       enable="1" kp="16.8" kd="1.07" />
         <device id="22" type="UnitreeJoint" name="R_SHOULDER_PITCH"  enable="1" kp="14.3" kd="0.907"/>
         <device id="23" type="UnitreeJoint" name="R_SHOULDER_ROLL"   enable="1" kp="14.3" kd="0.907"/>
         <device id="24" type="UnitreeJoint" name="R_SHOULDER_YAW"    enable="1" kp="14.3" kd="0.907"/>
