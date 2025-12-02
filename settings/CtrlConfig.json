@@ -1,42 +1,20 @@
 {
   "Scheduler": {
-    "dt": 0.0005,
+    "dt": 0.002,
+    "CheckFrequency": true,
     "InferTask": {
-      "PolicyFrequency": 20
+      "PolicyFrequency": 10
     }
   },
   "Workers": {
     "ResetPosition": {
       "Duration": 3
     },
-    "MotorPDLoop": {
-      "Kp": [
-        40,
-        40,
-        40,
-        40,
-        40,
-        40
-      ],
-      "Kd": [
-        1.5,
-        1.5,
-        1.5,
-        1.5,
-        1.5,
-        1.5
-      ]
+    "ActionManager": {
+      "SwitchIntervalTime": 1.0
     },
     "MotorControl": {
       "ControlMode": "Position",
-      "TorqueLimit": [
-        60,
-        60,
-        60,
-        60,
-        60,
-        60
-      ],
       "PosFilterWeight": [
         1
       ],
@@ -44,12 +22,35 @@
         1
       ],
       "DefaultPosition": [
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0
+        -0.302,
+        -0.319,
+        0.00124,
+        0.000442,
+        0.00489,
+        0.00191,
+        0.00929,
+        0.00796,
+        0.00546,
+        0.672,
+        0.67,
+        0.2,
+        0.202,
+        -0.368,
+        -0.355,
+        0.194,
+        -0.196,
+        -0.00644,
+        0.00976,
+        0.00258,
+        -0.00029,
+        0.605,
+        0.596,
+        0.00818,
+        0.00322,
+        0.00293,
+        -0.00339,
+        -0.00955,
+        -0.00715
       ]
     },
     "ImuProcess": {
@@ -64,7 +65,7 @@
       ]
     },
     "AsyncLogger": {
-      "LogPath": "./logs/extra_data/",
+      "LogPath": "./log/extra_data/",
       "WriteBackFrequency": 100
     },
     "NN": {
@@ -73,52 +74,50 @@
         "IntraNumberThreads": 1
       },
       "Network": {
-        "ModelPath": "C:/Users/ZhouZishun/Documents/Workspace/BitbotLimx/CheckPoints/policy_1.onnx",
-        //"ModelPath": "/home/owheel/Documents/BITWheelFoot/CheckPoints/policy_1.onnx",
+        "ModelPath": "../../CheckPoints/policy_102.onnx",
         "InputNodeNames": [
-          "observation"
+          "obs"
         ],
         "OutputNodeNames": [
-          "action"
+          "actions"
         ],
-        "Cycle_time": 0.5,
-        "SwitchTime": 1.0
+        "Cycle_time": 0.01667
       },
       "Preprocess": {
-        "ObservationScales": {
-          "lin_vel": 2.0,
-          "ang_vel": 0.25,
-          "project_gravity": 1,
-          "dof_pos": 1,
-          "dof_vel": 0.05
-        },
-        "ClipObservations": 100
+        "trajectory_path": "../../CheckPoints/G1_Take_102.bvh_60hz.csv",
+        "include_velocity": false
       },
       "Postprocess": {
-        "clip_actions": 100,
         "action_scale": [
-          0.5,
-          0.5,
-          0.5,
-          0.5,
-          0.5,
-          0.5
-        ],
-        "joint_clip_upper": [
-          100,
-          100,
-          100,
-          100,
-          100,
-          100
-        ],
-        "joint_clip_lower": [
-          -100,
-          -100,
-          -100,
-          -100,
-          -100,
-          -100
+          0.548,
+          0.548,
+          0.548,
+          0.351,
+          0.351,
+          0.439,
+          0.548,
+          0.548,
+          0.439,
+          0.351,
+          0.351,
+          0.439,
+          0.439,
+          0.439,
+          0.439,
+          0.439,
+          0.439,
+          0.439,
+          0.439,
+          0.439,
+          0.439,
+          0.439,
+          0.439,
+          0.439,
+          0.439,
+          0.0745,
+          0.0745,
+          0.0745,
+          0.0745
         ]
       }
     }

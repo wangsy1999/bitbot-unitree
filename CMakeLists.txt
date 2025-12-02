@@ -11,9 +11,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 add_subdirectory(Bitbot_Unitree)
+add_subdirectory(CtrlZ)
 include(bitbot.cmake)
 
-option(BUILD_SIMULATION "Build simulation" OFF)
+option(BUILD_SIMULATION "Build simulation" ON)
 
 if(BUILD_SIMULATION)
     add_definitions(-DBUILD_SIMULATION)
@@ -35,14 +36,13 @@ endif()
 
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
 
-find_package(Eigen3 REQUIRED)
-message(STATUS "Eigen version=${Eigen3_VERSION}")
 set(PROJECT_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 add_definitions(-DPROJECT_ROOT_DIR="${PROJECT_ROOT_DIR}")
 message("PROJECT_ROOT_DIR: ${PROJECT_ROOT_DIR}")
 
 add_executable(main_app 
     main.cpp
+    types.hpp
     user_func.h
     user_func.cpp
     )
@@ -55,6 +55,7 @@ endif()
 
 target_link_libraries(main_app
     BitbotKernel
+    CtrlZ
 )
 
 target_compile_options(main_app PUBLIC)

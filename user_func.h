@@ -1,63 +1,48 @@
+/**
+ * @file user_func.h
+ * @author Zishun Zhou
+ * @brief
+ *
+ * @copyright Copyright (c) 2025
+ *
+ */
 #pragma once
+
 #ifdef BUILD_SIMULATION
 #include "bitbot_mujoco/kernel/mujoco_kernel.hpp"
 #else
 #include "Bitbot_Unitree/include/kernel/unitree_kernel.hpp"
-#endif // BUILD_SIMULATION
+#endif
 
-#ifdef BUILD_SIMULATION
-#include "bitbot_mujoco/device/mujoco_imu.h"
-#include "bitbot_mujoco/device/mujoco_joint.h"
-#else
-#include "Bitbot_Unitree/include/device/unitree_joint.h"
-#include "Bitbot_Unitree/include/device/unitree_imu.h"
-#endif //BUILD_SIMULATION
-
-constexpr size_t JOINT_NUMBER = 6;
-#ifdef BUILD_SIMULATION
-using DeviceImu = bitbot::MujocoImu;
-using DeviceJoint = bitbot::MujocoJoint;
-constexpr std::array<size_t, JOINT_NUMBER> JOINT_ID_MAP = { 0,1,2,3,4,5 };
-constexpr size_t IMU_ID_MAP = 6;
-#else
-using DeviceImu = bitbot::UnitreeImu;
-using DeviceJoint = bitbot::UnitreeJoint;
-constexpr std::array<size_t, JOINT_NUMBER> JOINT_ID_MAP = { 0,1,2,3,4,5 };
-constexpr size_t IMU_ID_MAP = 30;
-#endif //BUILD_SIMULATION
-
+#include "types.hpp"
 
 enum Events
 {
-    InitPose = 1001,
-    PolicyRun,
-    SystemTest,
-
-    VeloxIncrease = 2001,
-    VeloxDecrease = 2002,
-    VeloyIncrease = 2003,
-    VeloyDecrease = 2004,
-
-    GamepadInitPose = 3002,
-    GamepadPolicyRun = 3003,
-    GamepadVeloxIncreaseDisc = 3101,
-    GamepadVeloxDecreaseDisc = 3102,
-    GamepadVeloyIncreaseDisc = 3103,
-    GamepadVeloyDecreaseDisc = 3104
+    EventInitPose = 1001,
+    EventPolicyRun,
+    EventSystemTest,
+    EventDance,
 };
 
 enum class States : bitbot::StateId
 {
-    Waiting = 1001,
-    PF2InitPose,
-    PF2PolicyRun,
-    PF2SystemTest,
+    StateWaiting = 1001,
+    StateInitPose,
+    StatePolicyRun,
+    StateSystemTest,
 };
-
-
 
 struct UserData
 {
+    SchedulerType::Ptr TaskScheduler;
+    ImuWorkerType* ImuWorker;
+    MotorWorkerType* MotorWorker;
+    LoggerWorkerType* Logger;
+    BeyondMimicUnitreeInferWorkerType* NetInferWorker;
+    MotorResetWorkerType* MotorResetWorker;
+    ActionManagementWorkerType* ActionManagementWorker;
+    //NOTE: you don't need to delete these workers, they will be deleted by the scheduler automaticlly when the scheduler is destroyed
+
     std::array<DeviceJoint*, JOINT_NUMBER> JointsPtr;
     DeviceImu* ImuPtr;
 };
@@ -68,36 +53,18 @@ using KernelBus = bitbot::MujocoBus;
 #else
 using KernelType = bitbot::UnitreeKernel<UserData>;
 using KernelBus = bitbot::UnitreeBus;
-#endif //BUILD_SIMULATION
+#endif
 
 
-std::optional<bitbot::StateId> EventInitPose(bitbot::EventValue value,
-    UserData& user_data);
-std::optional<bitbot::StateId> EventPolicyRun(bitbot::EventValue value,
-    UserData& user_data);
-std::optional<bitbot::StateId> EventFakePowerOn(bitbot::EventValue value,
-    UserData& user_data);
-std::optional<bitbot::StateId> EventSystemTest(bitbot::EventValue value,
-    UserData& user_data);
-
-std::optional<bitbot::StateId> EventVeloXIncrease(bitbot::EventValue keyState, UserData& d);
-std::optional<bitbot::StateId> EventVeloXDecrease(bitbot::EventValue keyState, UserData& d);
-std::optional<bitbot::StateId> EventVeloYIncrease(bitbot::EventValue keyState, UserData& d);
-std::optional<bitbot::StateId> EventVeloYDecrease(bitbot::EventValue keyState, UserData& d);
-
+std::optional<bitbot::StateId> EventInitPoseFunc(bitbot::EventValue value, UserData& user_data);
+std::optional<bitbot::StateId> EventPolicyRunFunc(bitbot::EventValue value, UserData& user_data);
+std::optional<bitbot::StateId> EventSystemTestFunc(bitbot::EventValue value, UserData& user_data);
+std::optional<bitbot::StateId> EventDanceFunc(bitbot::EventValue value, UserData& user_data);
 
 void ConfigFunc(const KernelBus& bus, UserData& d);
 void FinishFunc(UserData& d);
 
-void StateWaiting(const bitbot::KernelInterface& kernel,
-    bitbot::ExtraData& extra_data, UserData& user_data);
-
-void StateJointInitPose(const bitbot::KernelInterface& kernel,
-    bitbot::ExtraData& extra_data, UserData& user_data);
-
-void StatePolicyRun(const bitbot::KernelInterface& kernel,
-    bitbot::ExtraData& extra_data, UserData& user_data);
-
-
-void StateSystemTest(const bitbot::KernelInterface& kernel,
-    bitbot::ExtraData& extra_data, UserData& user_data);
+void StateWaitingFunc(const bitbot::KernelInterface& kernel, bitbot::ExtraData& extra_data, UserData& user_data);
+void StateInitPoseFunc(const bitbot::KernelInterface& kernel, bitbot::ExtraData& extra_data, UserData& user_data);
+void StatePolicyRunFunc(const bitbot::KernelInterface& kernel, bitbot::ExtraData& extra_data, UserData& user_data);
+void StateSystemTestFunc(const bitbot::KernelInterface& kernel, bitbot::ExtraData& extra_data, UserData& user_data);
