@@ -48,7 +48,11 @@ namespace bitbot
     {
         if (button.on_toggle && this->KeyEventMap.count(key) != 0 && this->EventMap.count(this->KeyEventMap[key]) != 0)
         {
-            this->kernel_interface->EmitEvent(this->EventMap[this->KeyEventMap[key]], button.pressed);
+            bitbot::EventValue value = button.pressed ? static_cast<bitbot::EventValue>(bitbot::KeyboardEvent::Down) : static_cast<bitbot::EventValue>(bitbot::KeyboardEvent::Up);
+            this->kernel_interface->EmitEvent(this->EventMap[this->KeyEventMap[key]], value);
+            std::string pressed_str = button.pressed ? "Pressed" : "Released";
+            this->logger_->info("Unitree Gamepad Emit Event: {} Value: {}", this->KeyEventMap[key], pressed_str);
+            fflush(0);
         }
     }
 

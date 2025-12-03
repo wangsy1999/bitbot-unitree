@@ -54,7 +54,7 @@
     },
     {
       "event": "dance",
-      "kb_key": "GAMEPAD_BUTTON_SWITCH"
+      "kb_key": "GAMEPAD_BUTTON_MENU"
     }
   ]
 }

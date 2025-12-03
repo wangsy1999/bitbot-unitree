@@ -43,7 +43,8 @@ using RealNumber = float;
 constexpr size_t JOINT_NUMBER = 29;
 using Vec3 = z::math::Vector<RealNumber, 3>;
 using MotorVec = z::math::Vector<RealNumber, JOINT_NUMBER>;
-constexpr size_t DANCE_TRAJECTORY_LENGTH = 1749; //NOTE: remember to change this when changing dancing trajectories
+//constexpr size_t DANCE_TRAJECTORY_LENGTH = 1749; //NOTE: remember to change this when changing dancing trajectories
+constexpr size_t DANCE_TRAJECTORY_LENGTH = 1942; //NOTE: remember to change this when changing dancing trajectories
 
 #ifdef BUILD_SIMULATION
 constexpr std::array<size_t, JOINT_NUMBER> JOINT_ID_MAP = {

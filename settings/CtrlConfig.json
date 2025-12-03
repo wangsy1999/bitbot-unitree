@@ -74,7 +74,8 @@
         "IntraNumberThreads": 1
       },
       "Network": {
-        "ModelPath": "../../CheckPoints/policy_102.onnx",
+        //"ModelPath": "../../CheckPoints/policy_102.onnx",
+        "ModelPath": "../../CheckPoints/policy_gangnam.onnx",
         "InputNodeNames": [
           "obs"
         ],
@@ -84,7 +85,8 @@
         "Cycle_time": 0.01667
       },
       "Preprocess": {
-        "trajectory_path": "../../CheckPoints/G1_Take_102.bvh_60hz.csv",
+        //"trajectory_path": "../../CheckPoints/G1_Take_102.bvh_60hz.csv",
+        "trajectory_path": "../../CheckPoints/G1_gangnam_style_V01.bvh_60hz.csv",
         "include_velocity": false
       },
       "Postprocess": {
