@@ -10,25 +10,26 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-add_subdirectory(Bitbot_Unitree)
+
 add_subdirectory(CtrlZ)
 include(bitbot.cmake)
 
 option(BUILD_SIMULATION "Build simulation" ON)
 
 if(BUILD_SIMULATION)
-    add_definitions(-DBUILD_SIMULATION)
-    BitbotAddDependency(
-      NAME           bitbot_mujoco
-      FILE_NAME      "bitbot_mujoco-main.zip"
-      FILE_PATH      ${BITBOT_DEPENDENCY_LOCAL_FILE_PATH}
-      USE_LOCAL_FILE TRUE
-    )
-else()
+  add_definitions(-DBUILD_SIMULATION)
   BitbotAddDependency(
-    NAME           bitbot_kernel
-    FILE_NAME      "bitbot_kernel-main.zip"
-    FILE_PATH      ${BITBOT_DEPENDENCY_LOCAL_FILE_PATH}
+    NAME bitbot_mujoco
+    FILE_NAME "bitbot_mujoco-main.zip"
+    FILE_PATH ${BITBOT_DEPENDENCY_LOCAL_FILE_PATH}
+    USE_LOCAL_FILE TRUE
+  )
+else()
+  add_subdirectory(Bitbot_Unitree)
+  BitbotAddDependency(
+    NAME bitbot_kernel
+    FILE_NAME "bitbot_kernel-main.zip"
+    FILE_PATH ${BITBOT_DEPENDENCY_LOCAL_FILE_PATH}
     USE_LOCAL_FILE TRUE
   )
 endif()
@@ -40,22 +41,22 @@ set(PROJECT_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 add_definitions(-DPROJECT_ROOT_DIR="${PROJECT_ROOT_DIR}")
 message("PROJECT_ROOT_DIR: ${PROJECT_ROOT_DIR}")
 
-add_executable(main_app 
-    main.cpp
-    types.hpp
-    user_func.h
-    user_func.cpp
-    )
+add_executable(main_app
+  main.cpp
+  types.hpp
+  user_func.h
+  user_func.cpp
+)
 
 if(BUILD_SIMULATION)
-    target_link_libraries(main_app BitbotMujoco )
+  target_link_libraries(main_app BitbotMujoco)
 else()
-    target_link_libraries(main_app bitbotUnitree)
+  target_link_libraries(main_app bitbotUnitree)
 endif()
 
 target_link_libraries(main_app
-    BitbotKernel
-    CtrlZ
+  BitbotKernel
+  CtrlZ
 )
 
 target_compile_options(main_app PUBLIC)
