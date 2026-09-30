@@ -10,6 +10,9 @@ Bitbot Unitree是Bitbot机器人控制框架的一个实例。该实例提供[Un
 
 # 软件配置
 
+MuJoCo 仿真分支现使用仓库内的 `Bitbot_Mujoco` 源码，并固定到 MuJoCo 3.14.0。
+构建、无窗口兼容性测试及版本迁移说明见 [Bitbot_Mujoco/README.md](Bitbot_Mujoco/README.md)。
+
 ## 安装Bitbot Unitree程序
 
 Bitbot Unitree需要在具备实时内核的linux操作系统上运行，已经在unitree g1内部电脑上测试。Bitbot Unitree仓库包含电机驱动，状态机，数据记录和**强化学习部署推理**等功能，其中**强化学习部署推理**功能由子仓库[CtrlZ](https://github.com/ZzzzzzS/CtrlZ)提供。Bitbot Unitree仅需依赖ONNXRuntime，用户可参阅[ONNXRuntime官方文档](https://github.com/microsoft/onnxruntime)来安装**c++版本**的依赖。

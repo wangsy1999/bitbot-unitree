@@ -11,7 +11,7 @@
       "Duration": 3
     },
     "ActionManager": {
-      "SwitchIntervalTime": 1.0,
+      "SwitchIntervalTime": 0.5,
       "MotorProperties": [
         {
           "PolicyNetName": "WalkNet1",
@@ -288,18 +288,23 @@
         "IntraNumberThreads": 1
       },
       "Network": {
-        "ModelPath": "../../CheckPoints/policy_walk.onnx",
+        "ModelPath": "../../policy2.onnx",
         "InputNodeNames": [
           "obs"
         ],
         "OutputNodeNames": [
           "actions"
-        ]
+        ],
+        "Cycle_time": 0.85,
+        "GaitPhaseOffsetL": 0.38,
+        "GaitPhaseOffsetR": 0.88,
+        "GaitAirRatioL": 0.38,
+        "GaitAirRatioR": 0.38
       },
       "Preprocess": {
         "ObservationScales": {
           "lin_vel": 0.0,
-          "ang_vel": 0.2,
+          "ang_vel": 1,
           "project_gravity": 1,
           "dof_pos": 1,
           "dof_vel": 0.05
@@ -406,14 +411,14 @@
     "WalkCmd": {
       "EchoCmd": true,
       "UpperLimit": [
-        1.0,
+        2.0,
         0.3,
-        0.2
+        0.5
       ],
       "LowerLimit": [
         -0.5,
         -0.3,
-        -0.2
+        -0.5
       ],
       "DiscreteCmdStep": [
         0.1,

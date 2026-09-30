@@ -520,8 +520,8 @@
     <framelinvel name="frame_vel" objtype="site" objname="imu" />
 
     <framequat name="secondary_imu_quat" objtype="site" objname="secondary_imu" />
-    <gyro name="secondary_imu_gyro" site="secondary_imu" noise="5e-4" cutoff="34.9"/>
-    <accelerometer name="secondary_imu_acc" site="secondary_imu" noise="1e-2" cutoff="157"/>
+    <gyro name="secondary_imu_gyro" site="secondary_imu" cutoff="34.9"/>
+    <accelerometer name="secondary_imu_acc" site="secondary_imu" cutoff="157"/>
   </sensor>
 
 </mujoco>

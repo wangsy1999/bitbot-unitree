@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.24)
 
 project(bitbot)
 
@@ -18,12 +18,11 @@ option(BUILD_SIMULATION "Build simulation" ON)
 
 if(BUILD_SIMULATION)
   add_definitions(-DBUILD_SIMULATION)
-  BitbotAddDependency(
-    NAME bitbot_mujoco
-    FILE_NAME "bitbot_mujoco-main.zip"
-    FILE_PATH ${BITBOT_DEPENDENCY_LOCAL_FILE_PATH}
-    USE_LOCAL_FILE TRUE
-  )
+  option(BITBOT_MUJOCO_BUILD_TESTS "Build headless MuJoCo compatibility checks" OFF)
+  if(BITBOT_MUJOCO_BUILD_TESTS)
+    enable_testing()
+  endif()
+  add_subdirectory(Bitbot_Mujoco)
 else()
   add_subdirectory(Bitbot_Unitree)
   BitbotAddDependency(

@@ -8,3 +8,6 @@
 /build
 /builds
 /vcpkg_installed
+/dependencies/onnxruntime-*/
+
+/dependencies/mujoco-*.tar.gz

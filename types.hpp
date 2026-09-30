@@ -13,7 +13,7 @@
 
 #include "Utils/StaticStringUtils.hpp"
 #include "Utils/MathTypes.hpp"
-
+#include "DWAQInferenceWorker.hpp"
 #include "Workers/AbstractWorker.hpp"
 #include "Workers/AsyncLoggerWorker.hpp"
 #include "Workers/ImuProcessWorker.hpp"
@@ -23,7 +23,6 @@
 #include "Workers/NN/BeyondMimicWorker.hpp"
 #include "Workers/NN/UnitreeRlLabVelocityInferenceWorker.hpp"
 #include "Workers/MITMotorControlWorker.hpp"
-
 #ifdef BUILD_SIMULATION
 #include "bitbot_mujoco/device/mujoco_imu.h"
 #include "bitbot_mujoco/device/mujoco_joint.h"
@@ -43,6 +42,7 @@ using DeviceJoint = bitbot::UnitreeJoint;
 using RealNumber = float;
 constexpr size_t JOINT_NUMBER = 29;
 using Vec3 = z::math::Vector<RealNumber, 3>;
+using Vec4 = z::math::Vector<RealNumber, 4>;
 using MotorVec = z::math::Vector<RealNumber, JOINT_NUMBER>;
 //constexpr size_t DANCE_TRAJECTORY_LENGTH = 1749; //NOTE: remember to change this when changing dancing trajectories dance 102
 constexpr size_t DANCE_TRAJECTORY_LENGTH = 1942; //NOTE: remember to change this when changing dancing trajectories gannam style
@@ -98,6 +98,7 @@ constexpr z::CTSPair<z::concat(WalkNetName, "Action"), MotorVec> WalkNet1OutPair
 constexpr z::CTSPair<z::concat(WalkNetName, "InferenceTime"), RealNumber> WalkInferenceTimePair;
 constexpr z::CTSPair<z::concat(WalkNetName, "NetProjectedGravity"), Vec3> WalkNetProjectedGravityPair;
 constexpr z::CTSPair<z::concat(WalkNetName, "NetUserCommand3"), Vec3> WalkNetUserCommand3Pair;
+constexpr z::CTSPair<z::concat(WalkNetName, "NetClockVector"), Vec4> ClockPair;
 
 // define scheduler
 using SchedulerType = z::AbstractScheduler<ImuAccRawPair, ImuGyroRawPair, ImuMagRawPair,
@@ -105,7 +106,7 @@ using SchedulerType = z::AbstractScheduler<ImuAccRawPair, ImuGyroRawPair, ImuMag
     TargetMotorPosPair, TargetMotorVelPair, CurrentMotorPosPair, CurrentMotorVelPair, CurrentMotorTorquePair,
     TargetMotorTorquePair, TargetMotorDampingPair, TargetMotorStiffnessPair,
     NetLastActionPair, InferenceTimePair, DanceNet1OutPair, Net1RefTrajPair, Net1RefVelPair, ImuAlterAngleFilteredPair,
-    WalkNetLastActionPair, WalkNet1OutPair, WalkInferenceTimePair, WalkNetProjectedGravityPair, WalkNetUserCommand3Pair>;
+    WalkNetLastActionPair, WalkNet1OutPair, WalkInferenceTimePair, WalkNetProjectedGravityPair, WalkNetUserCommand3Pair,ClockPair>;
 
 
 //define workers
@@ -118,12 +119,13 @@ using LoggerWorkerType = z::AsyncLoggerWorker<SchedulerType, RealNumber, ImuAccR
     TargetMotorPosPair, TargetMotorVelPair, CurrentMotorPosPair, CurrentMotorVelPair, CurrentMotorTorquePair,
     TargetMotorTorquePair, TargetMotorDampingPair, TargetMotorStiffnessPair,
     NetLastActionPair, InferenceTimePair, DanceNet1OutPair, Net1RefTrajPair, Net1RefVelPair, ImuAlterAngleFilteredPair,
-    WalkNetLastActionPair, WalkNet1OutPair, WalkInferenceTimePair, WalkNetProjectedGravityPair, WalkNetUserCommand3Pair>;
+    WalkNetLastActionPair, WalkNet1OutPair, WalkInferenceTimePair, WalkNetProjectedGravityPair, WalkNetUserCommand3Pair,ClockPair>;
 
 using CmdWorkerType = z::NetCmdWorker<SchedulerType, RealNumber, WalkNetUserCommand3Pair>;
 using ActionManagementWorkerType = z::ActionAndMotorPropertiesManagementWorker<SchedulerType, RealNumber, DanceNet1OutPair, WalkNet1OutPair>;
 
 /******define actor net************/
 using BeyondMimicUnitreeInferWorkerType = z::BeyondMimicUnitreeInferenceWorker<SchedulerType, Net1Name, RealNumber, JOINT_NUMBER, DANCE_TRAJECTORY_LENGTH>;
-using UnitreeRlLabVelocityInferWorkerType = z::UnitreeRlLabVelocityInferenceWorker<SchedulerType, WalkNetName, RealNumber, 5, JOINT_NUMBER>; // stack 5 frames of history
+using UnitreeRlLabVelocityInferWorkerType = z::DWAQInferenceWorker<SchedulerType, WalkNetName, RealNumber, 5, JOINT_NUMBER>; // stack 5 frames of history
 
+// using UnitreeRlLabVelocityInferWorkerType = z::DWAQInferenceWorker<SchedulerType, WalkNetName, RealNumber, 5, JOINT_NUMBER>; // stack 5 frames of history

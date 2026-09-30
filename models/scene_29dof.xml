@@ -3,9 +3,7 @@
 
   <statistic center="0 0 0.5" extent="2.0"/>
 
-  <option timestep="0.002" integrator="Euler">
-    <flag sensornoise="enable" />
-  </option>
+  <option timestep="0.002" integrator="Euler"/>
 
   <visual>
     <headlight diffuse="0.6 0.6 0.6" ambient="0.3 0.3 0.3" specular="0 0 0"/>
