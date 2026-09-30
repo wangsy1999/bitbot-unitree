@@ -48,8 +48,8 @@ cd build/bin
 - 使用 `mujoco::libmujoco_simulate` 和新版 `Simulate(..., is_passive=false)`。
   窗口创建及渲染保留在主线程，物理循环在后台线程。
 - 执行器命令通过 `actuator_ctrladr` 写入控制向量；Bitbot 的 `MujocoJoint`
-  只接受单输入执行器。其他多输入执行器可以存在于模型中，但不能映射为
-  `MujocoJoint`。
+  在 `mit` 模式接受 `input="pos vel ff"` 的无状态内置 PID；其余模式的模型映射
+  只接受单输入执行器。反馈力矩通过 `actuator_outadr` 读取。
 - 使用新版窗口库的 `InjectNoise`、加载提示及历史状态接口。重载模型后重新绑定
   设备，控制计时在仿真时间倒退时重新建立基准。
 - 移除模型中的 `sensornoise` 标志及传感器 `noise` 属性。新版引擎不提供旧版的
@@ -57,6 +57,34 @@ cd build/bin
 - `CtrlZ` 保持为独立子模块。本仓库提交不包含其 ONNX Runtime 平台链接改动；
   macOS 还需单独适配 `CtrlZ` 中写死的 Linux `.so` 链接路径。
 
-兼容性测试无窗口运行：检查多输入执行器前后的控制索引、拒绝错误设备映射，
+## MIT 控制
+
+当前 G1 模型使用 MuJoCo 内置 `<pid input="pos vel ff" ki="0">`，设备配置使用
+`mode="mit"`。每个执行器在 `mjData.ctrl` 中占用三个输入，按顺序写入目标位置、
+目标速度、前馈力矩。29 个执行器对应 87 个控制输入和 29 个力矩输出。
+
+`MujocoJoint` 只写入这些目标值，不在 C++ 中计算 MIT 力矩；MuJoCo 在
+`mj_forward` / `mj_step` 中根据当前物理状态计算：
+
+```text
+torque = Kp * (q_target - q) + Kd * (dq_target - dq) + tau_feedforward
+```
+
+`pos_kp` / `pos_kd` 提供初始增益。`MITMotorControlWorker` 可以在运行时更新两个
+增益及三个目标值；适配层在物理线程写入 MuJoCo 3.14 的 `actuator_biasprm`
+（`-Kp` 和 `-Kd`），由原生 PID 使用。MIT 模式不启用积分项或目标限速状态，
+也不使用 `pos_ki`。XML 中的 PID 初始增益与现有设备配置一致。
+
+原模型的力矩 `ctrlrange` 已转换为 PID 的 `forcerange`，限制最终输出力矩，
+不会将角度或速度误当作力矩限幅。目标速度和前馈力矩均为零时，控制律等价于
+原先 `pos_ki=0` 的 position 模式。旧 position / velocity / torque 模式的单输入
+模型映射仍可使用；绑定后的原生 PID 允许切换为 torque（仅前馈）或 none。
+禁用设备或切换到 none 时，同时清零目标输入及引擎中的反馈增益。
+
+这是内置 PID 对理想 MIT 控制律的实现，没有电机电流环、通信延迟或热模型。
+增益数值仍沿用现有仿真配置，不代表已与真机参数和运动表现一致。
+
+兼容性测试无窗口运行：检查原生 PID 的三个输入、当前物理状态反馈、动态增益、零增益、力矩限幅及禁用行为，
+检查多输入执行器前后的控制索引、拒绝错误设备映射，
 并使用实际 G1 模型和 Bitbot 设备配置进行 500 步物理/传感器读写检查。
 它不证明已训练策略在新物理引擎下的步态、稳定性或性能与旧版相同。

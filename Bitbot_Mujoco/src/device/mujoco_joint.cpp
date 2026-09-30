@@ -57,11 +57,29 @@ namespace bitbot{
     if(id = mj_name2id(m, mjtObj::mjOBJ_ACTUATOR, name_.c_str()); id != -1)
     {
       mj_actuator_id_ = id;
-      if (m->actuator_ctrlnum[id] != 1)
-      {
-        throw std::runtime_error("MujocoJoint requires a single-input actuator: " + name_);
-      }
       mj_control_adr_ = m->actuator_ctrladr[id];
+      mj_actuatorforce_adr_ = m->actuator_outadr[id];
+      native_pid_ = m->actuator_gaintype[id] == mjGAIN_PID;
+      if (mode_ == MujocoJointMode::MIT)
+      {
+        if (!native_pid_ || m->actuator_ctrlnum[id] != 3 ||
+            m->actuator_ctrlspec[id] != (mjINPUT_POS | mjINPUT_VEL | mjINPUT_FF) ||
+            m->actuator_dyntype[id] != mjDYN_NONE ||
+            m->actuator_biastype[id] != mjBIAS_AFFINE ||
+            m->actuator_outnum[id] != 1 ||
+            m->actuator_trntype[id] != mjTRN_JOINT ||
+            m->actuator_trnid[2 * id] != mj_joint_id_ ||
+            m->actuator_gear[6 * mj_actuatorforce_adr_] != 1)
+        {
+          throw std::runtime_error(
+              "MIT mode requires a stateless joint PID with input='pos vel ff' and gear=1: " + name_);
+        }
+        Output(m, mj_d);
+      }
+      else if (native_pid_ || m->actuator_ctrlnum[id] != 1 || m->actuator_outnum[id] != 1)
+      {
+        throw std::runtime_error("Non-MIT MujocoJoint requires a single-input/output actuator: " + name_);
+      }
       logger_->debug("joint {} act_id:{}", name_, mj_actuator_id_);
     }
     else
@@ -72,15 +90,38 @@ namespace bitbot{
   {
     actual_position_ = mj_d->qpos[mj_jointqpos_adr_];
     actual_velocity_ = mj_d->qvel[mj_jointqvel_adr_];
-    actual_torque_ = mj_d->actuator_force[mj_actuator_id_];
+    actual_torque_ = mj_d->actuator_force[mj_actuatorforce_adr_];
   }
 
   void MujocoJoint::Output(const mjModel*m, mjData* mj_d)
   {
     static double last_velocity = 0;
 
-    if(!enable_)
+    if (native_pid_)
+    {
+      if (mode_ != MujocoJointMode::MIT && mode_ != MujocoJointMode::NONE &&
+          mode_ != MujocoJointMode::TORQUE)
+      {
+        throw std::runtime_error("Native PID supports mit, torque or none mode: " + name_);
+      }
+      const bool active = enable_ && mode_ != MujocoJointMode::NONE;
+      const bool feedback = active && mode_ == MujocoJointMode::MIT;
+      // MuJoCo 3.14 PID stores Kp/Kd in the affine bias parameters. Update
+      // them on the physics thread together with the command, before mj_step
+      // computes actuation. MITMotorControlWorker can change these each cycle.
+      m->actuator_biasprm[mjNBIAS * mj_actuator_id_ + 1] = feedback ? -pos_kp_ : 0;
+      m->actuator_biasprm[mjNBIAS * mj_actuator_id_ + 2] = feedback ? -pos_kd_ : 0;
+      mj_d->ctrl[mj_control_adr_] = feedback ? target_position_ : 0;
+      mj_d->ctrl[mj_control_adr_ + 1] = feedback ? target_velocity_ : 0;
+      mj_d->ctrl[mj_control_adr_ + 2] = active ? target_torque_ : 0;
       return;
+    }
+
+    if(!enable_)
+    {
+      mj_d->ctrl[mj_control_adr_] = 0;
+      return;
+    }
 
     switch (mode_)
     {
@@ -95,7 +136,10 @@ namespace bitbot{
     case MujocoJointMode::TORQUE:
         mj_d->ctrl[mj_control_adr_] = target_torque_;
       break;
+    case MujocoJointMode::MIT:
+      throw std::runtime_error("MIT mode requires a native PID actuator: " + name_);
     default:
+      mj_d->ctrl[mj_control_adr_] = 0;
       break;
     }
   }
@@ -123,7 +167,7 @@ namespace bitbot{
 
   std::string MujocoJoint::ModeToStr(const MujocoJointMode& mode)
   {
-    static const std::array<std::string, 4> mode_str = {"none", "position", "velocity", "torque"};
+    static const std::array<std::string, 5> mode_str = {"none", "position", "velocity", "torque", "mit"};
 
     return mode_str[(int)mode];
   }
@@ -138,6 +182,7 @@ namespace bitbot{
       str_mode["position"] = MujocoJointMode::POSITION;
       str_mode["velocity"] = MujocoJointMode::VELOCITY;
       str_mode["torque"] = MujocoJointMode::TORQUE;
+      str_mode["mit"] = MujocoJointMode::MIT;
       init = false;
     }
 

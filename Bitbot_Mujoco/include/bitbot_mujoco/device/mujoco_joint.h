@@ -12,7 +12,8 @@ namespace bitbot
     NONE = 0,
     POSITION,
     VELOCITY,
-    TORQUE
+    TORQUE,
+    MIT
   };
 
   class MujocoJoint final : public MujocoDevice
@@ -164,6 +165,7 @@ namespace bitbot
     int mj_actuator_id_ = 0;
     int mj_control_adr_ = 0;
     int mj_actuatorforce_adr_ = 0;
+    bool native_pid_ = false;
 
     int mj_joint_type_ = mjJNT_HINGE;
     double initial_pos_ = 0;

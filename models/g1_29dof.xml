@@ -386,39 +386,39 @@
   </worldbody>
 
   <actuator>
-    <motor name="left_hip_pitch_joint" joint="left_hip_pitch_joint" ctrlrange="-88 88" />
-    <motor name="left_hip_roll_joint" joint="left_hip_roll_joint" ctrlrange="-88 88" />
-    <motor name="left_hip_yaw_joint" joint="left_hip_yaw_joint" ctrlrange="-88 88" />
-    <motor name="left_knee_joint" joint="left_knee_joint" ctrlrange="-139 139" />
-    <motor name="left_ankle_pitch_joint" joint="left_ankle_pitch_joint" ctrlrange="-50 50" />
-    <motor name="left_ankle_roll_joint" joint="left_ankle_roll_joint" ctrlrange="-50 50" />
+    <pid name="left_hip_pitch_joint" joint="left_hip_pitch_joint" input="pos vel ff" kp="100.0" kv="2.0" ki="0" forcerange="-88 88" />
+    <pid name="left_hip_roll_joint" joint="left_hip_roll_joint" input="pos vel ff" kp="100.0" kv="2.0" ki="0" forcerange="-88 88" />
+    <pid name="left_hip_yaw_joint" joint="left_hip_yaw_joint" input="pos vel ff" kp="100.0" kv="2.0" ki="0" forcerange="-88 88" />
+    <pid name="left_knee_joint" joint="left_knee_joint" input="pos vel ff" kp="150.0" kv="4.0" ki="0" forcerange="-139 139" />
+    <pid name="left_ankle_pitch_joint" joint="left_ankle_pitch_joint" input="pos vel ff" kp="40.0" kv="2.0" ki="0" forcerange="-50 50" />
+    <pid name="left_ankle_roll_joint" joint="left_ankle_roll_joint" input="pos vel ff" kp="40.0" kv="2.0" ki="0" forcerange="-50 50" />
 
-    <motor name="right_hip_pitch_joint" joint="right_hip_pitch_joint" ctrlrange="-88 88" />
-    <motor name="right_hip_roll_joint" joint="right_hip_roll_joint" ctrlrange="-88 88" />
-    <motor name="right_hip_yaw_joint" joint="right_hip_yaw_joint" ctrlrange="-88 88" />
-    <motor name="right_knee_joint" joint="right_knee_joint" ctrlrange="-139 139" />
-    <motor name="right_ankle_pitch_joint" joint="right_ankle_pitch_joint" ctrlrange="-50 50" />
-    <motor name="right_ankle_roll_joint" joint="right_ankle_roll_joint" ctrlrange="-50 50" />
+    <pid name="right_hip_pitch_joint" joint="right_hip_pitch_joint" input="pos vel ff" kp="100.0" kv="2.0" ki="0" forcerange="-88 88" />
+    <pid name="right_hip_roll_joint" joint="right_hip_roll_joint" input="pos vel ff" kp="100.0" kv="2.0" ki="0" forcerange="-88 88" />
+    <pid name="right_hip_yaw_joint" joint="right_hip_yaw_joint" input="pos vel ff" kp="100.0" kv="2.0" ki="0" forcerange="-88 88" />
+    <pid name="right_knee_joint" joint="right_knee_joint" input="pos vel ff" kp="150.0" kv="4.0" ki="0" forcerange="-139 139" />
+    <pid name="right_ankle_pitch_joint" joint="right_ankle_pitch_joint" input="pos vel ff" kp="40.0" kv="2.0" ki="0" forcerange="-50 50" />
+    <pid name="right_ankle_roll_joint" joint="right_ankle_roll_joint" input="pos vel ff" kp="40.0" kv="2.0" ki="0" forcerange="-50 50" />
 
-    <motor name="waist_yaw_joint" joint="waist_yaw_joint" ctrlrange="-88 88" />
-    <motor name="waist_roll_joint" joint="waist_roll_joint" ctrlrange="-50 50" />
-    <motor name="waist_pitch_joint" joint="waist_pitch_joint" ctrlrange="-50 50" />
+    <pid name="waist_yaw_joint" joint="waist_yaw_joint" input="pos vel ff" kp="200.0" kv="5.0" ki="0" forcerange="-88 88" />
+    <pid name="waist_roll_joint" joint="waist_roll_joint" input="pos vel ff" kp="40.0" kv="5.0" ki="0" forcerange="-50 50" />
+    <pid name="waist_pitch_joint" joint="waist_pitch_joint" input="pos vel ff" kp="40.0" kv="5.0" ki="0" forcerange="-50 50" />
 
-    <motor name="left_shoulder_pitch_joint" joint="left_shoulder_pitch_joint" ctrlrange="-25 25" />
-    <motor name="left_shoulder_roll_joint" joint="left_shoulder_roll_joint" ctrlrange="-25 25" />
-    <motor name="left_shoulder_yaw_joint" joint="left_shoulder_yaw_joint" ctrlrange="-25 25" />
-    <motor name="left_elbow_joint" joint="left_elbow_joint" ctrlrange="-25 25" />
-    <motor name="left_wrist_roll_joint" joint="left_wrist_roll_joint" ctrlrange="-25 25" />
-    <motor name="left_wrist_pitch_joint" joint="left_wrist_pitch_joint" ctrlrange="-5 5" />
-    <motor name="left_wrist_yaw_joint" joint="left_wrist_yaw_joint" ctrlrange="-5 5" />
+    <pid name="left_shoulder_pitch_joint" joint="left_shoulder_pitch_joint" input="pos vel ff" kp="40.0" kv="1.0" ki="0" forcerange="-25 25" />
+    <pid name="left_shoulder_roll_joint" joint="left_shoulder_roll_joint" input="pos vel ff" kp="40.0" kv="1.0" ki="0" forcerange="-25 25" />
+    <pid name="left_shoulder_yaw_joint" joint="left_shoulder_yaw_joint" input="pos vel ff" kp="40.0" kv="1.0" ki="0" forcerange="-25 25" />
+    <pid name="left_elbow_joint" joint="left_elbow_joint" input="pos vel ff" kp="40.0" kv="1.0" ki="0" forcerange="-25 25" />
+    <pid name="left_wrist_roll_joint" joint="left_wrist_roll_joint" input="pos vel ff" kp="40.0" kv="1.0" ki="0" forcerange="-25 25" />
+    <pid name="left_wrist_pitch_joint" joint="left_wrist_pitch_joint" input="pos vel ff" kp="40.0" kv="1.0" ki="0" forcerange="-5 5" />
+    <pid name="left_wrist_yaw_joint" joint="left_wrist_yaw_joint" input="pos vel ff" kp="40.0" kv="1.0" ki="0" forcerange="-5 5" />
 
-    <motor name="right_shoulder_pitch_joint" joint="right_shoulder_pitch_joint" ctrlrange="-25 25" />
-    <motor name="right_shoulder_roll_joint" joint="right_shoulder_roll_joint" ctrlrange="-25 25" />
-    <motor name="right_shoulder_yaw_joint" joint="right_shoulder_yaw_joint" ctrlrange="-25 25" />
-    <motor name="right_elbow_joint" joint="right_elbow_joint" ctrlrange="-25 25" />
-    <motor name="right_wrist_roll_joint" joint="right_wrist_roll_joint" ctrlrange="-25 25" />
-    <motor name="right_wrist_pitch_joint" joint="right_wrist_pitch_joint" ctrlrange="-5 5" />
-    <motor name="right_wrist_yaw_joint" joint="right_wrist_yaw_joint" ctrlrange="-5 5" />
+    <pid name="right_shoulder_pitch_joint" joint="right_shoulder_pitch_joint" input="pos vel ff" kp="40.0" kv="1.0" ki="0" forcerange="-25 25" />
+    <pid name="right_shoulder_roll_joint" joint="right_shoulder_roll_joint" input="pos vel ff" kp="40.0" kv="1.0" ki="0" forcerange="-25 25" />
+    <pid name="right_shoulder_yaw_joint" joint="right_shoulder_yaw_joint" input="pos vel ff" kp="40.0" kv="1.0" ki="0" forcerange="-25 25" />
+    <pid name="right_elbow_joint" joint="right_elbow_joint" input="pos vel ff" kp="40.0" kv="1.0" ki="0" forcerange="-25 25" />
+    <pid name="right_wrist_roll_joint" joint="right_wrist_roll_joint" input="pos vel ff" kp="40.0" kv="1.0" ki="0" forcerange="-25 25" />
+    <pid name="right_wrist_pitch_joint" joint="right_wrist_pitch_joint" input="pos vel ff" kp="40.0" kv="1.0" ki="0" forcerange="-5 5" />
+    <pid name="right_wrist_yaw_joint" joint="right_wrist_yaw_joint" input="pos vel ff" kp="40.0" kv="1.0" ki="0" forcerange="-5 5" />
   </actuator>
 
   <sensor>
