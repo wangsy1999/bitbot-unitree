@@ -442,7 +442,7 @@ namespace z
             template<typename... Indices>
             static constexpr size_t calculate_index(Indices... indices) {
                 static_assert(sizeof...(Indices) == Shape::num_dims, "Number of indices must match number of dimensions");
-                std::array<int64_t, Shape::num_dims> indices_array = { indices... };
+                std::array<int64_t, Shape::num_dims> indices_array = { static_cast<int64_t>(indices)... };
 
                 for (size_t i = 0;i < Shape::num_dims;i++)
                 {

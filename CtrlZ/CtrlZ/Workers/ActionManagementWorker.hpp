@@ -121,7 +121,7 @@ namespace z
         template<CTString CT>
         void SetActionRemapFunction(OutPutRemapFunction func)
         {
-            constexpr size_t idx = ActionPairs__.template index<CT>();
+            constexpr size_t idx = CTSMap<ActionPairs...>::template index<CT>();
             static_assert(idx != sizeof...(ActionPairs), "ActionPair not found in ActionManagementWorker");
             ActionRemapFunctions__[idx] = func;
         }
@@ -135,7 +135,7 @@ namespace z
         template<CTSPair CT>
         void SetActionRemapFunction(OutPutRemapFunction func)
         {
-            constexpr size_t idx = ActionPairs__.template index<CT.str>();
+            constexpr size_t idx = CTSMap<ActionPairs...>::template index<CT.str>();
             static_assert(CT.dim == ActionElementSize__, "ActionPair size not match, the size of ActionPair must be the same as ActionElementSize__");
             static_assert(idx != sizeof...(ActionPairs), "ActionPair not found in ActionManagementWorker");
             ActionRemapFunctions__[idx] = func;
@@ -177,7 +177,7 @@ namespace z
         {
             this->block__ = false;
             static_assert(ActionPair.dim == ActionElementSize__, "ActionPair size not match, the size of ActionPair must be the same as ActionElementSize__");
-            constexpr size_t idx = ActionPairs__.template index<ActionPair.str>();
+            constexpr size_t idx = CTSMap<ActionPairs...>::template index<ActionPair.str>();
             if (idx == sizeof...(ActionPairs))
             {
                 std::cerr << "ActionManagementWorker: Action not found in ActionManagementWorker" << std::endl;
@@ -207,7 +207,7 @@ namespace z
         template<CTString CT>
         void ProcessAction()
         {
-            constexpr size_t Idx = ActionPairs__.template index<CT>();
+            constexpr size_t Idx = CTSMap<ActionPairs...>::template index<CT>();
             if (Idx == this->ActionIndex__)
             {
                 z::math::Vector<InferencePrecision, ActionElementSize__> NetOut;
@@ -439,7 +439,7 @@ namespace z
         template<CTString CT>
         void ProcessAction()
         {
-            constexpr size_t Idx = ActionPairs__.template index<CT>();
+            constexpr size_t Idx = CTSMap<ActionPairs...>::template index<CT>();
             if (Idx == this->ActionIndex__)
             {
                 z::math::Vector<InferencePrecision, ActionElementSize__> NetOut;

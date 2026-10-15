@@ -51,7 +51,7 @@ namespace z
          *
          * @param scheduler 调度器指针
          */
-        void setScheduler(SchedulerType::Ptr scheduler) { this->scheduler = scheduler; }
+        void setScheduler(SchedulerType::Ptr scheduler) { this->Scheduler = scheduler; }
 
         /**
          * @brief 析构函数，虚函数，用于释放资源

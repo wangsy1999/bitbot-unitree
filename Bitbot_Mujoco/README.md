@@ -21,10 +21,16 @@ cmake --build build --parallel 6
 ctest --test-dir build --output-on-failure
 ```
 
-Apple Silicon 可增加 `-DCMAKE_OSX_ARCHITECTURES=arm64`。本次适配的编译和
-无窗口物理验证在 Linux 上执行；完整应用也完成了 10 秒窗口启动检查，现有两个
-ONNX 网络和舞蹈轨迹正常初始化。策略运动效果、macOS 原生编译及窗口运行
-仍需进一步验证。
+macOS 可直接使用根目录的 `./scripts/macos.sh run` 完成依赖准备、编译和启动。
+
+Apple Silicon 可增加 `-DCMAKE_OSX_ARCHITECTURES=arm64`。已在 macOS arm64
+（AppleClang 21）原生编译 `main_app`，通过无窗口兼容性测试，并完成实际应用
+启动检查：G1 模型、两个 ONNX 网络、舞蹈轨迹均正常加载，本机 12888 端口
+状态接口正常响应。策略运动效果仍需通过仿真控制流程验证。
+
+macOS 适配使用系统 zlib，补充内核休眠函数，并在配置阶段修正解压到构建目录的
+内核头文件中 Clang 不兼容的 JSON 转换调用；原始依赖 ZIP 保持不变。
+窗口需要可用的 macOS 图形会话，纯 SSH/无显示器会话可运行无窗口测试。
 
 本地源码包可通过 `-DBITBOT_MUJOCO_ARCHIVE=/path/to/mujoco-3.14.0.tar.gz`
 指定，或放在 `dependencies/mujoco-3.14.0.tar.gz`。包应来自：
@@ -54,8 +60,8 @@ cd build/bin
   设备，控制计时在仿真时间倒退时重新建立基准。
 - 移除模型中的 `sensornoise` 标志及传感器 `noise` 属性。新版引擎不提供旧版的
   自动传感器噪声注入；需要噪声时应在观测处理层另行实现。
-- `CtrlZ` 保持为独立子模块。本仓库提交不包含其 ONNX Runtime 平台链接改动；
-  macOS 还需单独适配 `CtrlZ` 中写死的 Linux `.so` 链接路径。
+- `CtrlZ` 已作为普通目录纳入主仓库，ONNX Runtime 按平台查找原生库；
+  macOS 使用 `.dylib`，CPU 发行包无需单独链接 Linux provider 库。
 
 ## MIT 控制
 

@@ -75,7 +75,15 @@ macro(BitbotAddDependency)
     set(${OPTION_KEY} "${OPTION_VALUE}")
   endforeach()
 
-  if(${BIT_ARGS_USE_LOCAL_FILE})
+  if(APPLE AND BIT_ARGS_NAME STREQUAL "zlib")
+    # The bundled zlib assumes classic Mac OS when TARGET_OS_MAC is defined.
+    # macOS already supplies a native zlib in the SDK.
+    find_package(ZLIB REQUIRED)
+    if(NOT TARGET zlibstatic)
+      add_library(zlibstatic INTERFACE)
+      target_link_libraries(zlibstatic INTERFACE ZLIB::ZLIB)
+    endif()
+  elseif(${BIT_ARGS_USE_LOCAL_FILE})
     string(PREPEND BIT_ARGS_FILE_NAME "${BIT_ARGS_FILE_PATH}/")
     message(STATUS "Bitbot dependency:${BIT_ARGS_NAME} local_file:${BIT_ARGS_FILE_NAME}")
     FetchContent_Declare(

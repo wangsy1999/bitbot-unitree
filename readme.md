@@ -13,14 +13,34 @@ Bitbot Unitree是Bitbot机器人控制框架的一个实例。该实例提供[Un
 MuJoCo 仿真分支现使用仓库内的 `Bitbot_Mujoco` 源码，并固定到 MuJoCo 3.14.0。
 构建、无窗口兼容性测试及版本迁移说明见 [Bitbot_Mujoco/README.md](Bitbot_Mujoco/README.md)。
 
-## 安装Bitbot Unitree程序
+## macOS 仿真
 
-Bitbot Unitree需要在具备实时内核的linux操作系统上运行，已经在unitree g1内部电脑上测试。Bitbot Unitree仓库包含电机驱动，状态机，数据记录和**强化学习部署推理**等功能，其中**强化学习部署推理**功能由子仓库[CtrlZ](https://github.com/ZzzzzzS/CtrlZ)提供。Bitbot Unitree仅需依赖ONNXRuntime，用户可参阅[ONNXRuntime官方文档](https://github.com/microsoft/onnxruntime)来安装**c++版本**的依赖。
-
-安装完成后使用git递归克隆来下载本仓库。
+macOS 仅支持 MuJoCo 仿真（`BUILD_SIMULATION=ON`），不构建实物机器人驱动。
+需要 Xcode Command Line Tools（`xcode-select --install`）和 Python 3；无需 Homebrew。
 
 ```bash
-git clone https://github.com/ZzzzzzS/bitbot-unitree.git --recursive
+./scripts/macos.sh build  # 下载依赖并编译 main_app
+./scripts/macos.sh test   # 编译并运行无窗口物理兼容性测试
+./scripts/macos.sh run    # 编译并打开 MuJoCo 仿真窗口
+```
+
+脚本默认使用本机架构（Apple Silicon 为 arm64），将 CMake 3.31.6（系统未安装时）
+及 ONNX Runtime 1.23.2 放在忽略的 `build/tools` 下，首次配置需要联网获取
+MuJoCo 3.14.0 及其依赖。可用 `ONNXRUNTIME_ROOT` 指定已安装的原生开发包，
+用 `JOBS=8` 设置编译并行数。产物为 `build/bin/main_app`；手动启动时先
+`cd build/bin`，以正确解析现有策略和轨迹的相对路径。
+
+`CtrlZ/` 源码已直接纳入本仓库，不再使用 submodule。关闭 MuJoCo 窗口即可退出。
+仿真初始为暂停状态；控制事件仍通过 Bitbot Copilot 发送。
+
+## 安装Bitbot Unitree程序
+
+Bitbot Unitree需要在具备实时内核的linux操作系统上运行，已经在unitree g1内部电脑上测试。Bitbot Unitree仓库包含电机驱动，状态机，数据记录和**强化学习部署推理**等功能，其中**强化学习部署推理**功能由仓库内的[CtrlZ](https://github.com/ZzzzzzS/CtrlZ)提供。Bitbot Unitree仅需依赖ONNXRuntime，用户可参阅[ONNXRuntime官方文档](https://github.com/microsoft/onnxruntime)来安装**c++版本**的依赖。
+
+安装完成后使用 git 克隆来下载本仓库（已包含 CtrlZ 源码）。
+
+```bash
+git clone https://github.com/ZzzzzzS/bitbot-unitree.git
 ```
 
 > [CtrlZ](https://github.com/ZzzzzzS/CtrlZ)是一个硬件无关的多线程强化学习部署框架，用于简化学习类机器人运动控制算法在实际机器人上的部署，提升部署的灵活性，通用性，简化部署流程，同时利用多线程推理加速来提升实时性。详细信息可参阅[CtrlZ文档](https://opensource.zzshub.cn/CtrlZ/index.html)。

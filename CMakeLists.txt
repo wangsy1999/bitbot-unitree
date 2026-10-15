@@ -15,6 +15,9 @@ add_subdirectory(CtrlZ)
 include(bitbot.cmake)
 
 option(BUILD_SIMULATION "Build simulation" ON)
+if(APPLE AND NOT BUILD_SIMULATION)
+  message(FATAL_ERROR "macOS supports MuJoCo simulation only; set BUILD_SIMULATION=ON")
+endif()
 
 if(BUILD_SIMULATION)
   add_definitions(-DBUILD_SIMULATION)
@@ -33,6 +36,14 @@ else()
   )
 endif()
 
+
+if(APPLE)
+  # fmt 10.1.1's consteval parser is incompatible with recent AppleClang.
+  target_compile_definitions(fmt PUBLIC FMT_CONSTEVAL=)
+  target_compile_definitions(fmt-header-only INTERFACE FMT_CONSTEVAL=)
+  include(cmake/macos_compat.cmake)
+  target_sources(BitbotKernel PRIVATE cmake/macos_time.c)
+endif()
 
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
 

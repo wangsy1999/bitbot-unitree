@@ -124,6 +124,15 @@ namespace bitbot
       static mjvPerturb pert;
       mjv_defaultPerturb(&pert);
 
+#ifdef __APPLE__
+      glfwSetErrorCallback([](int code, const char* description) {
+        std::fprintf(stderr, "GLFW error %d: %s\n", code, description);
+      });
+      if (!glfwInit() || !glfwGetPrimaryMonitor()) {
+        throw std::runtime_error("MuJoCo requires an active macOS graphical display");
+      }
+#endif
+
       // simulate object encapsulates the UI
       sim_ = std::make_unique<mj::Simulate>(
           std::make_unique<mj::GlfwAdapter>(),

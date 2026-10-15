@@ -279,7 +279,7 @@ namespace z
             auto lambda = [&DataFrame, this, &idx]<typename T>(T & t)
             {
                 std::remove_pointer_t<decltype(t.type)> v;
-                this->Scheduler->template GetData<t.str>(v);
+                this->Scheduler->template GetData<T::str>(v);
                 if constexpr (T::isArray)
                 {
                     for (size_t i = 0; i < T::dim;i++)

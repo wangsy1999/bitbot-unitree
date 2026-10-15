@@ -15,7 +15,6 @@
 #include "Utils/ZenBuffer.hpp"
 #include <chrono>
 #include <cmath>
-#include <png.h>
 #include <fstream>
 #include <memory>
 

@@ -46,23 +46,21 @@ add_subdirectory(Extensions)
 
 target_include_directories(CtrlZ PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
-if(WIN32)
-    message("Build on windows")
-    target_include_directories(CtrlZ PUBLIC ${ONNXRUNTIME_ROOT}/include)
-    message("${ONNXRUNTIME_ROOT}/include")
-    target_link_libraries(CtrlZ PUBLIC
-        ${ONNXRUNTIME_ROOT}/lib/onnxruntime_providers_shared.lib
-        ${ONNXRUNTIME_ROOT}/lib/onnxruntime.lib)
-elseif(UNIX)
-    message("Build on unix like system")
-    target_include_directories(CtrlZ PUBLIC ${ONNXRUNTIME_ROOT}/include)
-    message("${ONNXRUNTIME_ROOT}/include")
-    target_link_libraries(CtrlZ PUBLIC
-        ${ONNXRUNTIME_ROOT}/lib/libonnxruntime_providers_shared.so
-        ${ONNXRUNTIME_ROOT}/lib/libonnxruntime.so)
-else()
-    message(FATAL_ERROR "Unsupported platform")
-endif()
+# Resolve the native ONNX Runtime library (.dylib on macOS, .so on Linux,
+# import library on Windows). CPU distributions need no separate provider lib.
+find_path(ONNXRUNTIME_INCLUDE_DIR onnxruntime_cxx_api.h
+    HINTS "${ONNXRUNTIME_ROOT}"
+    PATH_SUFFIXES include include/onnxruntime include/onnxruntime/core/session
+    REQUIRED)
+find_library(ONNXRUNTIME_LIBRARY NAMES onnxruntime
+    HINTS "${ONNXRUNTIME_ROOT}"
+    PATH_SUFFIXES lib lib64
+    REQUIRED)
+add_library(CtrlZOnnxRuntime UNKNOWN IMPORTED)
+set_target_properties(CtrlZOnnxRuntime PROPERTIES
+    IMPORTED_LOCATION "${ONNXRUNTIME_LIBRARY}"
+    INTERFACE_INCLUDE_DIRECTORIES "${ONNXRUNTIME_INCLUDE_DIR}")
+target_link_libraries(CtrlZ PUBLIC CtrlZOnnxRuntime)
 
 #set(READERWRITERQUEUE_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty)
 #target_include_directories(CtrlZ PUBLIC ${READERWRITERQUEUE_INCLUDE_DIRS})
