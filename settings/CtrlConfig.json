@@ -11,7 +11,7 @@
       "Duration": 3
     },
     "ActionManager": {
-      "SwitchIntervalTime": 1.0,
+      "SwitchIntervalTime": 0.2,
       "MotorProperties": [
         {
           "PolicyNetName": "WalkNet1",
