@@ -18,6 +18,7 @@
 #include <iostream> // std::cout
 #include <nlohmann/json.hpp>
 #include <fstream>
+#include <filesystem>
 #include "types.hpp"
 
  // 辅助函数：对容器中的每个元素应用函数
@@ -42,6 +43,12 @@ void ConfigFunc(const KernelBus& bus, UserData& d)
         cfg_root = nlohmann::json::parse(cfg_file, nullptr, true, true);
         cfg_workers = cfg_root["Workers"];
     }
+
+    // Resolve the bundled DWAQ model independently of the launch directory.
+    auto& walk_path = cfg_workers["WalkNet1"]["Network"]["ModelPath"];
+    std::filesystem::path model_path(walk_path.get<std::string>());
+    if (model_path.is_relative())
+        walk_path = (std::filesystem::path(PROJECT_ROOT_DIR) / model_path).string();
 
     //获取设备指针
     d.ImuPtr = bus.GetDevice<DeviceImu>(IMU_ID_MAP).value();
@@ -85,7 +92,7 @@ void ConfigFunc(const KernelBus& bus, UserData& d)
         });
 
     //创建走路的推理任务列表，并添加worker，设置推理任务频率
-    d.WalkNetInferWorker = d.TaskScheduler->template CreateWorker<UnitreeRlLabVelocityInferWorkerType>(cfg_workers["WalkNet1"], cfg_workers["MotorControl"]);
+    d.WalkNetInferWorker = d.TaskScheduler->template CreateWorker<DreamWaQInferWorkerType>(cfg_workers["WalkNet1"], cfg_workers["MotorControl"]);
     d.WalkCmdWorker = d.TaskScheduler->template CreateWorker<CmdWorkerType>(cfg_workers["WalkCmd"]);
     d.TaskScheduler->CreateTaskList("InferWalkTask", cfg_root["Scheduler"]["InferTask"]["PolicyFrequency"]);
     d.TaskScheduler->AddWorkers("InferWalkTask",

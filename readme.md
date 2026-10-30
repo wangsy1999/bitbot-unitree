@@ -47,6 +47,20 @@ Bitbot Unitree支持一键切换mujoco仿真器和实物机器人部署，通过
 
 ## 运行阶段
 
+默认行走策略已适配 DreamWaQ（DWAQ），模型 `CheckPoints/policy_dwaq.onnx` 复制自
+`/home/wsy/rl/g1_deploy/models/policy.onnx`，参数对应该项目的 `config/g1_locomotion.yaml`。
+行走使用 `DreamWaQInferenceWorker`，自动识别 ONNX 输入名称及单/双输入接口；当前模型为
+`float32 [1,96] + [1,480] → [1,29]`。历史为 5 帧，按观测项排列，各项内部从旧到新，
+首帧重复填满历史；每次进入行走时清空上一动作并重新初始化历史。主 IMU 使用 pelvis
+机体系角速度和重力方向，角速度缩放为 1，关节速度缩放为 0.05，动作缩放为 0.25。
+控制周期 2ms，行走推理周期 20ms（50Hz）；PD 增益已从源配置的 DDS 顺序转换为策略关节顺序，
+速度范围为 x `[-0.6,1.0]`、y `[-0.5,0.5]` m/s、yaw `[-1.57,1.57]` rad/s。
+原始动作裁剪为 ±100，策略不额外裁剪关节目标，与源配置的 `actions.clip: null` 一致。
+行走模型路径相对项目根目录解析，修改模型可编辑 `settings/CtrlConfig.json` 的
+`Workers.WalkNet1.Network.ModelPath`。跳舞模型和切换操作保持原有设置。
+
+适配已通过编译及与 `g1_deploy` 的离线推理对照（含历史推进及复位），未进行仿真或实机验证。
+
 **机器人运行时请务必注意安全!**
 机器人程序运行后可以使用[Bitbot Copilot](https://github.com/ZzzzzzS/BitbotCopilot)进行控制。连接到机器人后依次点击键盘``9``，``8``，``p``按钮来完成机器人上电，运行，复位功能，在机器人复位完成后点击键盘``r``按钮启动机器人平衡控制，演示结束时点击键盘``空格键``退出程序。*该流程用户可自定义，这里展示的是默认的操作流程*。
 > Bitbot Copilot支持自动化启动，简化按键流程，详细信息请参阅其开源仓库。

@@ -23,5 +23,25 @@
   <worldbody>
     <light pos="0 0 1.5" dir="0 0 -1" directional="true"/>
     <geom name="floor" size="0 0 0.05" type="plane" material="groundplane"/>
+
+    <!-- Robot initially faces -X. First riser is 1.2 m ahead.
+         Four 12 cm rises, 25 cm treads, 2 m width, and a 1 m top landing.
+         Box sizes are half extents; each box extends down to the floor. -->
+    <body name="stairs">
+      <geom name="stairs_up_1" type="box" pos="-1.325 0 0.06" size="0.125 1 0.06"
+            friction="1 0.005 0.0001" rgba="0.55 0.60 0.65 1"/>
+      <geom name="stairs_up_2" type="box" pos="-1.575 0 0.12" size="0.125 1 0.12"
+            friction="1 0.005 0.0001" rgba="0.65 0.70 0.75 1"/>
+      <geom name="stairs_up_3" type="box" pos="-1.825 0 0.18" size="0.125 1 0.18"
+            friction="1 0.005 0.0001" rgba="0.55 0.60 0.65 1"/>
+      <geom name="stairs_landing" type="box" pos="-2.45 0 0.24" size="0.50 1 0.24"
+            friction="1 0.005 0.0001" rgba="0.65 0.70 0.75 1"/>
+      <geom name="stairs_down_1" type="box" pos="-3.075 0 0.18" size="0.125 1 0.18"
+            friction="1 0.005 0.0001" rgba="0.55 0.60 0.65 1"/>
+      <geom name="stairs_down_2" type="box" pos="-3.325 0 0.12" size="0.125 1 0.12"
+            friction="1 0.005 0.0001" rgba="0.65 0.70 0.75 1"/>
+      <geom name="stairs_down_3" type="box" pos="-3.575 0 0.06" size="0.125 1 0.06"
+            friction="1 0.005 0.0001" rgba="0.55 0.60 0.65 1"/>
+    </body>
   </worldbody>
 </mujoco>

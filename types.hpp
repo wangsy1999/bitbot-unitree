@@ -21,7 +21,7 @@
 #include "Workers/NetCmdWorker.hpp"
 #include "Workers/ActionManagementWorker.hpp"
 #include "Workers/NN/BeyondMimicWorker.hpp"
-#include "Workers/NN/UnitreeRlLabVelocityInferenceWorker.hpp"
+#include "Workers/NN/DreamWaQInferenceWorker.hpp"
 #include "Workers/MITMotorControlWorker.hpp"
 
 #ifdef BUILD_SIMULATION
@@ -125,5 +125,5 @@ using ActionManagementWorkerType = z::ActionAndMotorPropertiesManagementWorker<S
 
 /******define actor net************/
 using BeyondMimicUnitreeInferWorkerType = z::BeyondMimicUnitreeInferenceWorker<SchedulerType, Net1Name, RealNumber, JOINT_NUMBER, DANCE_TRAJECTORY_LENGTH>;
-using UnitreeRlLabVelocityInferWorkerType = z::UnitreeRlLabVelocityInferenceWorker<SchedulerType, WalkNetName, RealNumber, 5, JOINT_NUMBER>; // stack 5 frames of history
+using DreamWaQInferWorkerType = z::DreamWaQInferenceWorker<SchedulerType, WalkNetName, RealNumber, JOINT_NUMBER>; // stack 5 frames of history
 
