@@ -39,8 +39,8 @@ namespace bitbot
 
         std::unique_ptr<g1_parkour::DepthCamera> Camera__;
         std::string CameraName__;
-        unsigned Width__ = 64;
-        unsigned Height__ = 36;
+        unsigned Width__ = g1_parkour::MujocoDepthLayout::Width;
+        unsigned Height__ = g1_parkour::MujocoDepthLayout::Height;
         unsigned SubsampleSteps__ = 1;
         uint64_t InputTick__ = 0;
         uint64_t FrameSequence__ = 0;

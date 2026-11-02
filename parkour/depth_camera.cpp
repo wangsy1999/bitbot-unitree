@@ -46,7 +46,7 @@ namespace g1_parkour
         glfwSwapInterval(0);
         mjr_defaultContext(&this->RenderContext__);
         mjr_makeContext(model, &this->RenderContext__, mjFONTSCALE_100);
-        mjr_resizeOffscreen(64, 36, &this->RenderContext__);
+        mjr_resizeOffscreen(MujocoDepthLayout::Width, MujocoDepthLayout::Height, &this->RenderContext__);
         glGenTextures(1, &this->PreviewTexture__);
         glBindTexture(GL_TEXTURE_2D, this->PreviewTexture__);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -90,7 +90,7 @@ namespace g1_parkour
         camera.type = mjCAMERA_FIXED;
         camera.fixedcamid = this->CameraId__;
         mjv_updateScene(model, data, &this->RenderOption__, nullptr, &camera, mjCAT_ALL, &this->Scene__);
-        const mjrRect viewport{0, 0, 64, 36};
+        const mjrRect viewport{0, 0, MujocoDepthLayout::Width, MujocoDepthLayout::Height};
         mjr_render(viewport, &this->Scene__, &this->RenderContext__);
         mjr_readPixels(nullptr, this->DepthBuffer__.data(), viewport, &this->RenderContext__);
         mjr_finish();
@@ -102,12 +102,12 @@ namespace g1_parkour
         const double near_plane = model->vis.map.znear * model->stat.extent;
         const double far_plane = model->vis.map.zfar * model->stat.extent;
         RawDepthImage depth;
-        for (int y = 0; y < 36; ++y)
+        for (int y = 0; y < MujocoDepthLayout::Height; ++y)
         {
-            for (int x = 0; x < 64; ++x)
+            for (int x = 0; x < MujocoDepthLayout::Width; ++x)
             {
-                const float value = this->DepthBuffer__[(35 - y) * 64 + x];
-                depth[y * 64 + x] = value >= 1.f ? std::numeric_limits<float>::infinity()
+                const float value = this->DepthBuffer__[(MujocoDepthLayout::Height - 1 - y) * MujocoDepthLayout::Width + x];
+                depth[y * MujocoDepthLayout::Width + x] = value >= 1.f ? std::numeric_limits<float>::infinity()
                     : static_cast<float>(near_plane / (1.0 - value * (1.0 - near_plane / far_plane)));
             }
         }
@@ -122,7 +122,7 @@ namespace g1_parkour
     {
         // 复用网络输入的裁剪、滤波和归一化，近处亮、远处暗。
         const auto image = Policy::Preprocess(depth);
-        std::array<unsigned char, 18 * 32 * 3> rgb;
+        std::array<unsigned char, ModelLayout::DepthPixels * 3> rgb;
         for (size_t i = 0; i < image.size(); ++i)
         {
             const auto gray = static_cast<unsigned char>(std::lround((1.f - image[i]) * 255));
@@ -150,7 +150,7 @@ namespace g1_parkour
         glEnable(GL_TEXTURE_2D);
         glBindTexture(GL_TEXTURE_2D, this->PreviewTexture__);
         glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 32, 18, 0, GL_RGB, GL_UNSIGNED_BYTE, rgb.data());
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, ModelLayout::DepthWidth, ModelLayout::DepthHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, rgb.data());
 
         // 图像首行在顶部，与 ONNX 输入方向一致。
         glBegin(GL_QUADS);

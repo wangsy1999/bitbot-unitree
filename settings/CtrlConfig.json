@@ -2,11 +2,100 @@
   "Scheduler": {
     "dt": 0.002,
     "CheckFrequency": true,
+    "DepthTask": {
+      "Frequency": 10
+    },
     "InferTask": {
       "PolicyFrequency": 10
     }
   },
   "Workers": {
+    "DepthImageProcessing": {
+      "Enable": true,
+      "CameraConfig": {
+        "Width": 480,
+        "Height": 270,
+        "FPS": 60,
+        "FrameTimeoutMs": 100,
+        "Serial": ""
+      },
+      "BufferConfig": {
+        "BufferSize": 37,
+        "SelectIndices": [
+          2,
+          7,
+          12,
+          17,
+          22,
+          27,
+          32,
+          37
+        ],
+        "IndexBase": 1
+      },
+      "ResizeConfig": {
+        "Width": 64,
+        "Height": 36,
+        "Interpolation": "nearest"
+      },
+      "CropConfig": {
+        "CropWidth": 32,
+        "CropHeight": 18,
+        "X": 16,
+        "Y": 18
+      },
+      "PostprocessConfig": {
+        "EnablePostprocess": true,
+        "DecimationFilter": {
+          "Enable": false,
+          "Magnitude": 2
+        },
+        "SpatialFilter": {
+          "Enable": false,
+          "SmoothAlpha": 0.5,
+          "SmoothDelta": 20,
+          "HoleFillLevel": 2
+        },
+        "TemporalFilter": {
+          "Enable": false,
+          "SmoothAlpha": 0.4,
+          "SmoothDelta": 20,
+          "PersistencyIndex": 3
+        },
+        "ThresholdFilter": {
+          "Enable": false,
+          "MinDepth": 0.1,
+          "MaxDepth": 2.5
+        },
+        "HoleFillingFilter": {
+          "Enable": true,
+          "FillMode": 2
+        }
+      },
+      "GaussianBlurConfig": {
+        "Enable": true,
+        "KernelSize": 3,
+        "Sigma": 1.0
+      },
+      "NormalizeConfig": {
+        "DepthMin": 0.0,
+        "DepthMax": 2.5,
+        "NormMin": 0.0,
+        "NormMax": 1.0
+      },
+      "SaveConfig": {
+        "EnableSave": false,
+        "SavePath": "/home/wsy/rl/bitbot-unitree/logs/realsense",
+        "SaveRaw": false,
+        "SavePostprocessed": false,
+        "SaveResized": false,
+        "SaveCropped": false,
+        "SaveBlurred": false,
+        "SaveNormalized": true,
+        "SaveVisualization": true,
+        "SaveBin": false
+      }
+    },
     "ResetPosition": {
       "Duration": 3
     },

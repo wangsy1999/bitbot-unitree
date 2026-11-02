@@ -29,7 +29,8 @@ namespace bitbot
         ConfigParser::ParseAttribute2ui(this->Height__, device_node.attribute("height"));
         ConfigParser::ParseAttribute2ui(this->SubsampleSteps__, device_node.attribute("subsample"));
         SetSubsampleSteps(this->SubsampleSteps__);
-        if (this->CameraName__ != "parkour_depth" || this->Width__ != 64 || this->Height__ != 36)
+        if (this->CameraName__ != "parkour_depth" || this->Width__ != g1_parkour::MujocoDepthLayout::Width ||
+            this->Height__ != g1_parkour::MujocoDepthLayout::Height)
         {
             throw std::runtime_error("Parkour depth camera requires parkour_depth at 64x36");
         }

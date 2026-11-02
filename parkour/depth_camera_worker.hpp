@@ -54,12 +54,12 @@ namespace g1_parkour
             const double near_plane = model->vis.map.znear * model->stat.extent;
             const double far_plane = model->vis.map.zfar * model->stat.extent;
             RawDepthImage depth;
-            for (int y = 0; y < 36; ++y)
+            for (int y = 0; y < MujocoDepthLayout::Height; ++y)
             {
-                for (int x = 0; x < 64; ++x)
+                for (int x = 0; x < MujocoDepthLayout::Width; ++x)
                 {
-                    const float value = buffer[(35 - y) * 64 + x];
-                    depth[y * 64 + x] = value >= 1.f ? std::numeric_limits<float>::infinity()
+                    const float value = buffer[(MujocoDepthLayout::Height - 1 - y) * MujocoDepthLayout::Width + x];
+                    depth[y * MujocoDepthLayout::Width + x] = value >= 1.f ? std::numeric_limits<float>::infinity()
                         : static_cast<float>(near_plane / (1.0 - value * (1.0 - near_plane / far_plane)));
                 }
             }
@@ -67,7 +67,7 @@ namespace g1_parkour
             const auto image = Policy::Preprocess(depth);
             if (this->DepthHistory__.empty())
             {
-                this->DepthHistory__.assign(37, image);
+                this->DepthHistory__.assign(policy.GetDepthHistorySize(), image);
             }
             else
             {
@@ -80,15 +80,15 @@ namespace g1_parkour
             observation.Generation = generation;
             observation.Time = this->Camera__.GetFrameTime();
             size_t cursor = 0;
-            const int stride = policy.GetDepthHistoryStride();
-            for (int offset = 7 * stride; offset >= 0; offset -= stride)
+            const auto indices = MakeDepthHistoryIndices(this->DepthHistory__.size(),
+                policy.GetDepthHistoryStride(), policy.GetDepthDelay());
+            for (const auto index : indices)
             {
-                const auto& entry = this->DepthHistory__[
-                    this->DepthHistory__.size() - 1 - policy.GetDepthDelay() - offset];
+                const auto& entry = this->DepthHistory__[index];
                 std::copy(entry.begin(), entry.end(), observation.DepthHistory.begin() + cursor);
                 cursor += entry.size();
             }
-            for (size_t i = 0; i < 29; ++i)
+            for (size_t i = 0; i < ModelLayout::JointCount; ++i)
             {
                 observation.JointPosition[i] = policy.JointSign[i] * data->qpos[this->JointPositionAddress__[i]];
                 observation.JointVelocity[i] = policy.JointSign[i] * data->qvel[this->JointVelocityAddress__[i]];
@@ -117,7 +117,7 @@ namespace g1_parkour
             {
                 throw std::runtime_error("Parkour expects 2ms MuJoCo steps");
             }
-            for (size_t i = 0; i < 29; ++i)
+            for (size_t i = 0; i < ModelLayout::JointCount; ++i)
             {
                 const int joint = mj_name2id(model, mjOBJ_JOINT, policy.JointNames[i].c_str());
                 if (joint < 0)
@@ -132,8 +132,8 @@ namespace g1_parkour
         const bitbot::MujocoBus& Bus__;
         const bitbot::MujocoDepthCamera& Camera__;
         const InferenceWorkerType& InferenceWorker__;
-        std::array<int, 29> JointPositionAddress__{};
-        std::array<int, 29> JointVelocityAddress__{};
+        std::array<int, ModelLayout::JointCount> JointPositionAddress__{};
+        std::array<int, ModelLayout::JointCount> JointVelocityAddress__{};
         std::deque<Image> DepthHistory__;
         int TorsoId__ = -1;
         uint64_t Generation__ = 0;

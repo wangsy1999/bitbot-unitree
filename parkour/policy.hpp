@@ -5,6 +5,7 @@
  */
 #pragma once
 
+#include "depth_config.hpp"
 #include <onnxruntime_cxx_api.h>
 #include <nlohmann/json.hpp>
 #include <algorithm>
@@ -13,6 +14,7 @@
 #include <cstdint>
 #include <deque>
 #include <fstream>
+#include <filesystem>
 #include <memory>
 #include <stdexcept>
 #include <string>
@@ -21,9 +23,9 @@
 
 namespace g1_parkour
 {
-    using Joints = std::array<float, 29>;
-    using Image = std::array<float, 18 * 32>;
-    using RawDepthImage = std::array<float, 36 * 64>;
+    using Joints = std::array<float, ModelLayout::JointCount>;
+    using Image = std::array<float, ModelLayout::DepthPixels>;
+    using RawDepthImage = std::array<float, MujocoDepthLayout::Pixels>;
 
     /** @brief 同一物理时刻的完整观测；关节向量使用策略顺序。 */
     struct Observation
@@ -36,13 +38,13 @@ namespace g1_parkour
         std::array<float, 3> AngularVelocity{};
         std::array<float, 3> ProjectedGravity{};
         float Height = 0;
-        std::array<float, 8 * 18 * 32> DepthHistory{}; // 观测层处理后的深度历史，从旧到新。
+        std::array<float, ModelLayout::DepthHistorySize> DepthHistory{}; // 观测层处理后的深度历史，从旧到新。
     };
 
     class Policy
     {
     public:
-        std::array<int, 29> JointIds{}; // 策略顺序 -> DDS 设备顺序。
+        std::array<int, ModelLayout::JointCount> JointIds{}; // 策略顺序 -> DDS 设备顺序。
         Joints DefaultJointPosition{};
         Joints PositionKp{};
         Joints VelocityKd{};
@@ -50,7 +52,7 @@ namespace g1_parkour
         Joints JointSign{};
         Joints EffortLimit{};
         std::vector<std::string> JointNames;
-        double StepTime = 0.02;
+        double StepTime = ModelLayout::PolicyStepTime;
 
         Policy(const std::string& model_directory, const std::string& config_path)
         {
@@ -61,36 +63,44 @@ namespace g1_parkour
             }
 
             const auto cfg = nlohmann::json::parse(input);
-            this->DefaultJointPosition = ReadArray<29>(cfg.at("default_joint_pos"));
-            this->PositionKp = ReadArray<29>(cfg.at("kp"));
-            this->VelocityKd = ReadArray<29>(cfg.at("kd"));
-            this->ActionScale = ReadArray<29>(cfg.at("action_scale"));
-            this->JointSign = ReadArray<29>(cfg.at("joint_sign"));
-            this->EffortLimit = ReadArray<29>(cfg.at("effort_limit"));
+            this->DefaultJointPosition = ReadArray<ModelLayout::JointCount>(cfg.at("default_joint_pos"));
+            this->PositionKp = ReadArray<ModelLayout::JointCount>(cfg.at("kp"));
+            this->VelocityKd = ReadArray<ModelLayout::JointCount>(cfg.at("kd"));
+            this->ActionScale = ReadArray<ModelLayout::JointCount>(cfg.at("action_scale"));
+            this->JointSign = ReadArray<ModelLayout::JointCount>(cfg.at("joint_sign"));
+            this->EffortLimit = ReadArray<ModelLayout::JointCount>(cfg.at("effort_limit"));
             this->DepthDelay__ = cfg.at("depth_delay_frames").get<int>();
             this->StepTime = cfg.at("step_dt").get<double>();
-            this->DepthHistoryStride__ = cfg.value("depth_history_skip_frames", 5);
+            this->DepthHistoryStride__ = cfg.at("depth_history_skip_frames").get<int>();
+            this->DepthHistorySize__ = cfg.at("depth_history_buffer_size").get<size_t>();
+            MakeDepthHistoryIndices(this->DepthHistorySize__, this->DepthHistoryStride__, this->DepthDelay__);
+            this->AngularVelocityScale__ = cfg.at("observation_scales").at("ang_vel").get<float>();
+            this->JointVelocityScale__ = cfg.at("observation_scales").at("dof_vel").get<float>();
 
-            if ((this->DepthDelay__ != 0 && this->DepthDelay__ != 1) ||
-                !std::isfinite(this->StepTime) || std::abs(this->StepTime - 0.02) > 1e-8 ||
-                this->DepthHistoryStride__ != 5 || cfg.value("training_camera_fps", 50) != 50)
+            if (!std::isfinite(this->StepTime) ||
+                std::abs(this->StepTime - ModelLayout::PolicyStepTime) > 1e-8 ||
+                !std::isfinite(this->AngularVelocityScale__) || !std::isfinite(this->JointVelocityScale__))
             {
-                throw std::runtime_error("Expected 50Hz parkour policy, stride 5 and delay 0 or 1");
+                throw std::runtime_error("Policy timing/scales do not match the supported model interface");
             }
 
             this->JointNames = cfg.at("joint_names").get<std::vector<std::string>>();
             ConfigureJointMap();
 
+            const auto& networks = cfg.at("networks");
             Ort::SessionOptions options;
-            options.SetIntraOpNumThreads(1);
-            options.SetInterOpNumThreads(1);
-            this->Encoder__ = std::make_unique<Ort::Session>(
-                this->Environment__, (model_directory + "/0-depth_encoder.onnx").c_str(), options);
-            this->Actor__ = std::make_unique<Ort::Session>(
-                this->Environment__, (model_directory + "/actor.onnx").c_str(), options);
-            ValidateNetwork(*this->Encoder__, {1, 8, 18, 32}, {1, 128},
+            options.SetIntraOpNumThreads(networks.at("intra_op_threads").get<int>());
+            options.SetInterOpNumThreads(networks.at("inter_op_threads").get<int>());
+            const auto encoder_path = std::filesystem::path(model_directory) /
+                networks.at("depth_encoder").get<std::string>();
+            const auto actor_path = std::filesystem::path(model_directory) /
+                networks.at("actor").get<std::string>();
+            this->Encoder__ = std::make_unique<Ort::Session>(this->Environment__, encoder_path.c_str(), options);
+            this->Actor__ = std::make_unique<Ort::Session>(this->Environment__, actor_path.c_str(), options);
+            ValidateNetwork(*this->Encoder__, {1, ModelLayout::HistoryFrames, ModelLayout::DepthHeight,
+                ModelLayout::DepthWidth}, {1, ModelLayout::DepthLatentSize},
                 this->EncoderInputName__, this->EncoderOutputName__);
-            ValidateNetwork(*this->Actor__, {1, 896}, {1, 29},
+            ValidateNetwork(*this->Actor__, {1, ModelLayout::ActorInputSize}, {1, ModelLayout::JointCount},
                 this->ActorInputName__, this->ActorOutputName__);
         }
 
@@ -108,8 +118,9 @@ namespace g1_parkour
 
         int GetDepthDelay() const { return this->DepthDelay__; }
         int GetDepthHistoryStride() const { return this->DepthHistoryStride__; }
+        size_t GetDepthHistorySize() const { return this->DepthHistorySize__; }
 
-        /** @brief 裁剪、Gaussian 滤波及归一化，输出 18×32 深度图。 */
+        /** @brief 仿真深度裁剪、3×3 Gaussian 滤波（sigma=1）及归一化。 */
         static Image Preprocess(const RawDepthImage& depth)
         {
             for (float value : depth)
@@ -130,23 +141,27 @@ namespace g1_parkour
                 return index < 0 ? -index : (index >= size ? 2 * size - 2 - index : index);
             };
 
-            for (int y = 0; y < 18; ++y)
+            for (int y = 0; y < static_cast<int>(ModelLayout::DepthHeight); ++y)
             {
-                for (int x = 0; x < 32; ++x)
+                for (int x = 0; x < static_cast<int>(ModelLayout::DepthWidth); ++x)
                 {
                     double value = 0;
                     for (int j = -1; j <= 1; ++j)
                     {
                         for (int i = -1; i <= 1; ++i)
                         {
-                            const float distance = depth[
-                                (reflect(y + j, 18) + 18) * 64 + reflect(x + i, 32) + 16];
+                            const auto source_row = reflect(y + j, ModelLayout::DepthHeight) +
+                                MujocoDepthLayout::Height - ModelLayout::DepthHeight;
+                            const auto source_column = reflect(x + i, ModelLayout::DepthWidth) +
+                                (MujocoDepthLayout::Width - ModelLayout::DepthWidth) / 2;
+                            const float distance = depth[source_row * MujocoDepthLayout::Width + source_column];
                             // 无命中像素在滤波和截断后仍按远处处理。
                             value += weights[j + 1] * weights[i + 1] *
                                 (std::isinf(distance) ? 1e30 : double(distance));
                         }
                     }
-                    image[y * 32 + x] = std::clamp(value, 0.0, 2.5) / 2.5;
+                    image[y * ModelLayout::DepthWidth + x] = std::clamp(value, 0.0,
+                        MujocoDepthLayout::MaximumDepth) / MujocoDepthLayout::MaximumDepth;
                 }
             }
             return image;
@@ -156,17 +171,17 @@ namespace g1_parkour
         std::pair<std::vector<float>, std::vector<float>> Observe(
             const Observation& observation, const std::array<float, 3>& command)
         {
-            std::array<float, 96> frame{};
+            std::array<float, ModelLayout::ObservationSize> frame{};
             for (int i = 0; i < 3; ++i)
             {
-                frame[i] = observation.AngularVelocity[i] * 0.25f;
+                frame[i] = observation.AngularVelocity[i] * this->AngularVelocityScale__;
                 frame[3 + i] = observation.ProjectedGravity[i];
                 frame[6 + i] = command[i];
             }
-            for (int i = 0; i < 29; ++i)
+            for (int i = 0; i < static_cast<int>(ModelLayout::JointCount); ++i)
             {
                 frame[9 + i] = observation.JointPosition[i] - this->DefaultJointPosition[i];
-                frame[38 + i] = observation.JointVelocity[i] * 0.05f;
+                frame[38 + i] = observation.JointVelocity[i] * this->JointVelocityScale__;
                 frame[67 + i] = this->LastAction__[i];
             }
             for (float value : frame)
@@ -179,7 +194,7 @@ namespace g1_parkour
 
             if (this->ObservationHistory__.empty())
             {
-                this->ObservationHistory__.assign(8, frame);
+                this->ObservationHistory__.assign(ModelLayout::HistoryFrames, frame);
             }
             else
             {
@@ -189,10 +204,15 @@ namespace g1_parkour
 
             std::vector<float> proprioception;
             std::vector<float> depth;
-            proprioception.reserve(768);
-            depth.reserve(8 * 18 * 32);
-            const std::array<int, 6> starts{0, 3, 6, 9, 38, 67};
-            const std::array<int, 6> sizes{3, 3, 3, 29, 29, 29};
+            proprioception.reserve(ModelLayout::ProprioceptionSize);
+            depth.reserve(ModelLayout::DepthHistorySize);
+            constexpr int SpatialSize = ModelLayout::SpatialDimensions;
+            constexpr int PositionStart = 3 * SpatialSize;
+            constexpr int VelocityStart = PositionStart + ModelLayout::JointCount;
+            constexpr int ActionStart = VelocityStart + ModelLayout::JointCount;
+            const std::array<int, 6> starts{0, SpatialSize, 2 * SpatialSize, PositionStart, VelocityStart, ActionStart};
+            const std::array<size_t, 6> sizes{SpatialSize, SpatialSize, SpatialSize,
+                ModelLayout::JointCount, ModelLayout::JointCount, ModelLayout::JointCount};
             for (int term = 0; term < 6; ++term)
             {
                 for (const auto& entry : this->ObservationHistory__)
@@ -209,14 +229,15 @@ namespace g1_parkour
         Joints Step(const Observation& observation, const std::array<float, 3>& command)
         {
             auto inputs = Observe(observation, command);
-            const auto latent = RunNetwork(*this->Encoder__, inputs.second, {1, 8, 18, 32},
+            const auto latent = RunNetwork(*this->Encoder__, inputs.second,
+                {1, ModelLayout::HistoryFrames, ModelLayout::DepthHeight, ModelLayout::DepthWidth},
                 this->EncoderInputName__, this->EncoderOutputName__);
             inputs.first.insert(inputs.first.end(), latent.begin(), latent.end());
-            const auto actions = RunNetwork(*this->Actor__, inputs.first, {1, 896},
+            const auto actions = RunNetwork(*this->Actor__, inputs.first, {1, ModelLayout::ActorInputSize},
                 this->ActorInputName__, this->ActorOutputName__);
 
             Joints target{};
-            for (int i = 0; i < 29; ++i)
+            for (int i = 0; i < static_cast<int>(ModelLayout::JointCount); ++i)
             {
                 this->LastAction__[i] = actions[i];
                 target[this->JointIds[i]] = this->JointSign[i] *
@@ -232,7 +253,7 @@ namespace g1_parkour
         Joints GetDefaultDevicePosition() const
         {
             Joints position{};
-            for (int i = 0; i < 29; ++i)
+            for (int i = 0; i < static_cast<int>(ModelLayout::JointCount); ++i)
             {
                 position[this->JointIds[i]] = this->JointSign[i] * this->DefaultJointPosition[i];
             }
@@ -270,13 +291,13 @@ namespace g1_parkour
                 "left_wrist_pitch_joint", "left_wrist_yaw_joint", "right_shoulder_pitch_joint", "right_shoulder_roll_joint",
                 "right_shoulder_yaw_joint", "right_elbow_joint", "right_wrist_roll_joint", "right_wrist_pitch_joint",
                 "right_wrist_yaw_joint"};
-            if (this->JointNames.size() != 29)
+            if (this->JointNames.size() != ModelLayout::JointCount)
             {
                 throw std::runtime_error("Expected 29 policy joints");
             }
 
-            std::array<bool, 29> seen{};
-            for (int i = 0; i < 29; ++i)
+            std::array<bool, ModelLayout::JointCount> seen{};
+            for (int i = 0; i < static_cast<int>(ModelLayout::JointCount); ++i)
             {
                 const auto found = std::find(device_names.begin(), device_names.end(), this->JointNames[i]);
                 if (found == device_names.end() || seen[found - device_names.begin()])
@@ -345,9 +366,12 @@ namespace g1_parkour
         std::string EncoderOutputName__;
         std::string ActorInputName__;
         std::string ActorOutputName__;
-        std::deque<std::array<float, 96>> ObservationHistory__;
+        std::deque<std::array<float, ModelLayout::ObservationSize>> ObservationHistory__;
         Joints LastAction__{};
         int DepthDelay__ = 0;
-        int DepthHistoryStride__ = 5;
+        int DepthHistoryStride__ = 0;
+        size_t DepthHistorySize__ = 0;
+        float AngularVelocityScale__ = 0;
+        float JointVelocityScale__ = 0;
     };
 }

@@ -24,8 +24,15 @@
 #include "Workers/NN/DreamWaQInferenceWorker.hpp"
 #include "Workers/MITMotorControlWorker.hpp"
 
-#ifdef BUILD_SIMULATION
+#if defined(BUILD_SIMULATION) || defined(BUILD_REALSENSE)
 #include "parkour/inference_worker.hpp"
+#endif
+#ifdef BUILD_REALSENSE
+#include "parkour/realsense_depth_worker.hpp"
+#include "parkour/realsense_observation.hpp"
+#endif
+
+#ifdef BUILD_SIMULATION
 #include "parkour/depth_camera_worker.hpp"
 #include "bitbot_mujoco/device/mujoco_imu.h"
 #include "bitbot_mujoco/device/mujoco_joint.h"
@@ -103,8 +110,13 @@ constexpr z::CTSPair<z::concat(WalkNetName, "InferenceTime"), RealNumber> WalkIn
 constexpr z::CTSPair<z::concat(WalkNetName, "NetProjectedGravity"), Vec3> WalkNetProjectedGravityPair;
 constexpr z::CTSPair<z::concat(WalkNetName, "NetUserCommand3"), Vec3> WalkNetUserCommand3Pair;
 
-#ifdef BUILD_SIMULATION
+#if defined(BUILD_SIMULATION) || defined(BUILD_REALSENSE)
 constexpr z::CTSPair<"ParkourObservation", g1_parkour::Observation> ParkourObservationPair;
+#endif
+
+#ifdef BUILD_REALSENSE
+constexpr z::CTSPair<"DepthMapFlattenedValue", z::math::Vector<RealNumber, g1_parkour::ModelLayout::DepthHistorySize>> DepthMapFlattenedValuePair;
+constexpr z::CTSPair<"RealsenseDepthFrame", g1_parkour::RealsenseDepthFrame> RealsenseDepthFramePair;
 #endif
 
 // define scheduler
@@ -114,8 +126,11 @@ using SchedulerType = z::AbstractScheduler<ImuAccRawPair, ImuGyroRawPair, ImuMag
     TargetMotorTorquePair, TargetMotorDampingPair, TargetMotorStiffnessPair,
     NetLastActionPair, InferenceTimePair, DanceNet1OutPair, Net1RefTrajPair, Net1RefVelPair, ImuAlterAngleFilteredPair,
     WalkNetLastActionPair, WalkNet1OutPair, WalkInferenceTimePair, WalkNetProjectedGravityPair, WalkNetUserCommand3Pair
-#ifdef BUILD_SIMULATION
+#if defined(BUILD_SIMULATION) || defined(BUILD_REALSENSE)
     , ParkourObservationPair
+#endif
+#ifdef BUILD_REALSENSE
+    , DepthMapFlattenedValuePair, RealsenseDepthFramePair
 #endif
     >;
 
@@ -140,10 +155,17 @@ using BeyondMimicUnitreeInferWorkerType = z::BeyondMimicUnitreeInferenceWorker<S
 using DreamWaQInferWorkerType = z::DreamWaQInferenceWorker<SchedulerType, WalkNetName, RealNumber, JOINT_NUMBER>; // stack 5 frames of history
 
 
-#ifdef BUILD_SIMULATION
+#if defined(BUILD_SIMULATION) || defined(BUILD_REALSENSE)
 using WalkInferWorkerType = g1_parkour::WalkInferenceWorker<SchedulerType, WalkNetName, RealNumber, JOINT_NUMBER>;
 using DepthObsWorkerType = z::SimpleCallbackWorker<SchedulerType>;
-using DepthObservationPublisherType = g1_parkour::DepthObservationPublisher<SchedulerType, WalkInferWorkerType>;
 #else
 using WalkInferWorkerType = DreamWaQInferWorkerType;
+#endif
+
+#ifdef BUILD_SIMULATION
+using DepthObservationPublisherType = g1_parkour::DepthObservationPublisher<SchedulerType, WalkInferWorkerType>;
+#elif defined(BUILD_REALSENSE)
+using RealsenseDepthWorkerType = z::RealsenseDepthWorker<SchedulerType, RealNumber>;
+using RealsenseObservationPublisherType = g1_parkour::RealsenseObservationPublisher<
+    SchedulerType, WalkInferWorkerType, DeviceJoint*, DeviceImu*>;
 #endif

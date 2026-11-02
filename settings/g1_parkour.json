@@ -253,5 +253,16 @@
   ],
   "camera_depth_fps": 60,
   "training_camera_fps": 50,
-  "depth_history_skip_frames": 5
+  "depth_history_skip_frames": 5,
+  "depth_history_buffer_size": 37,
+  "observation_scales": {
+    "ang_vel": 0.25,
+    "dof_vel": 0.05
+  },
+  "networks": {
+    "depth_encoder": "0-depth_encoder.onnx",
+    "actor": "actor.onnx",
+    "intra_op_threads": 1,
+    "inter_op_threads": 1
+  }
 }

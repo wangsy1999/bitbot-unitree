@@ -4,6 +4,7 @@
  */
 #pragma once
 
+#include "depth_config.hpp"
 #include <mujoco/mujoco.h>
 #include <array>
 #include <atomic>
@@ -19,7 +20,7 @@ namespace g1_parkour
     class DepthCamera
     {
     public:
-        using RawDepthImage = std::array<float, 36 * 64>;
+        using RawDepthImage = std::array<float, MujocoDepthLayout::Pixels>;
 
         explicit DepthCamera(const mjModel* model);
         ~DepthCamera();

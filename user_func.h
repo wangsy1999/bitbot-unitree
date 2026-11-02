@@ -39,6 +39,10 @@ struct UserData
     DeviceDepthCam* DepthCamera = nullptr;
     std::unique_ptr<DepthObservationPublisherType> DepthObservationPublisher;
     DepthObsWorkerType* DepthObsWorker = nullptr;
+#elif defined(BUILD_REALSENSE)
+    RealsenseDepthWorkerType* DepthCameraWorker = nullptr;
+    std::unique_ptr<RealsenseObservationPublisherType> RealsenseObservationPublisher;
+    DepthObsWorkerType* DepthObsWorker = nullptr;
 #endif
     MotorResetWorkerType* MotorResetWorker;
     ActionManagementWorkerType* ActionManagementWorker;

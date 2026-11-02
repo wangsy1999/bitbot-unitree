@@ -80,6 +80,45 @@ void ConfigFunc(const KernelBus& bus, UserData& d)
                 d.DepthObservationPublisher->Publish(scheduler);
             });
     }
+#elif defined(BUILD_REALSENSE)
+    d.WalkNetInferWorker = d.TaskScheduler->template CreateWorker<WalkInferWorkerType>(
+        cfg_workers["WalkNet1"], cfg_workers["MotorControl"], JOINT_ID_MAP);
+    if (d.WalkNetInferWorker->IsParkour())
+    {
+        d.WalkNetInferWorker->ConfigureMotor(cfg_workers);
+        if (!cfg_workers["DepthImageProcessing"].value("Enable", true))
+        {
+            throw std::runtime_error("Hardware Parkour requires DepthImageProcessing.Enable=true");
+        }
+        // 按策略的图像历史间隔和延迟生成一基索引，避免配置与网络不一致。
+        const auto& policy = d.WalkNetInferWorker->GetPolicy();
+        const double depth_period = cfg_root["Scheduler"]["dt"].get<double>() *
+            cfg_root["Scheduler"]["DepthTask"]["Frequency"].get<double>();
+        if (std::abs(depth_period - policy.StepTime) > 1e-9)
+        {
+            throw std::runtime_error("DepthTask period must match Parkour step_dt");
+        }
+        const size_t buffer_size = policy.GetDepthHistorySize();
+        cfg_workers["DepthImageProcessing"]["BufferConfig"]["BufferSize"] = buffer_size;
+        cfg_workers["DepthImageProcessing"]["BufferConfig"]["SelectIndices"] =
+            g1_parkour::MakeDepthHistoryIndices(buffer_size, policy.GetDepthHistoryStride(), policy.GetDepthDelay(),
+                g1_parkour::ModelLayout::HistoryFrames, 1);
+        cfg_workers["DepthImageProcessing"]["BufferConfig"]["IndexBase"] = 1;
+        d.RealsenseObservationPublisher = std::make_unique<RealsenseObservationPublisherType>(
+            *d.WalkNetInferWorker, d.JointsPtr, d.ImuAlterPtr, JOINT_ID_MAP);
+        d.DepthObsWorker = d.TaskScheduler->template CreateWorker<DepthObsWorkerType>(
+            [&d](SchedulerType::Ptr scheduler)
+            {
+                d.RealsenseObservationPublisher->Publish(scheduler);
+            });
+    }
+    if (cfg_workers["DepthImageProcessing"].value("Enable", true))
+    {
+        d.DepthCameraWorker = d.TaskScheduler->template CreateWorker<RealsenseDepthWorkerType>(
+            cfg_workers["DepthImageProcessing"], [&d] { return d.WalkNetInferWorker->GetGeneration(); });
+        d.TaskScheduler->CreateTaskList("DepthTask", cfg_root["Scheduler"]["DepthTask"]["Frequency"]);
+        d.TaskScheduler->AddWorker("DepthTask", d.DepthCameraWorker);
+    }
 #else
     d.WalkNetInferWorker = d.TaskScheduler->template CreateWorker<WalkInferWorkerType>(
         cfg_workers["WalkNet1"], cfg_workers["MotorControl"]);
@@ -106,7 +145,7 @@ void ConfigFunc(const KernelBus& bus, UserData& d)
             d.AlterImuWorker,
             d.MotorWorker
         });
-#ifdef BUILD_SIMULATION
+#if defined(BUILD_SIMULATION) || defined(BUILD_REALSENSE)
     if (d.DepthObsWorker)
     {
         d.TaskScheduler->AddWorker("MainTask", d.DepthObsWorker);
@@ -141,10 +180,23 @@ void ConfigFunc(const KernelBus& bus, UserData& d)
 
     //开始调度器
     d.TaskScheduler->Start();
+#ifdef BUILD_REALSENSE
+    if (d.DepthCameraWorker)
+    {
+        d.TaskScheduler->EnableTaskList("DepthTask");
+    }
+#endif
 }
 
 void FinishFunc(UserData& d)
 {
+#ifdef BUILD_REALSENSE
+    if (d.DepthCameraWorker)
+    {
+        // 等采集线程结束并调用 TaskDestroy，停止 RealSense pipeline。
+        d.TaskScheduler->DestroyTaskList("DepthTask");
+    }
+#endif
 #ifdef BUILD_SIMULATION
     if (d.DepthCamera)
     {
