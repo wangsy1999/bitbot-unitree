@@ -139,9 +139,9 @@
         "IntraNumberThreads": 1
       },
       "Network": {
-        //"ModelPath": "../../CheckPoints/policy_102.onnx",
-        "ModelPath": "../../CheckPoints/policy_gangnam.onnx",
-        //"ModelPath": "../../CheckPoints/policy_kuailechongbai.onnx",
+        //"ModelPath": "/home/wsy/rl/bitbot-unitree/CheckPoints/policy_102.onnx",
+        "ModelPath": "/home/wsy/rl/bitbot-unitree/CheckPoints/policy_gangnam.onnx",
+        //"ModelPath": "/home/wsy/rl/bitbot-unitree/CheckPoints/policy_kuailechongbai.onnx",
         "InputNodeNames": [
           "obs"
         ],
@@ -152,9 +152,9 @@
         //"Cycle_time": 0.02
       },
       "Preprocess": {
-        //"trajectory_path": "../../CheckPoints/G1_Take_102.bvh_60hz.csv",
-        "trajectory_path": "../../CheckPoints/G1_gangnam_style_V01.bvh_60hz.csv",
-        //"trajectory_path": "../../CheckPoints/jiaqi_KuaileChongbai2.csv",
+        //"trajectory_path": "/home/wsy/rl/bitbot-unitree/CheckPoints/G1_Take_102.bvh_60hz.csv",
+        "trajectory_path": "/home/wsy/rl/bitbot-unitree/CheckPoints/G1_gangnam_style_V01.bvh_60hz.csv",
+        //"trajectory_path": "/home/wsy/rl/bitbot-unitree/CheckPoints/jiaqi_KuaileChongbai2.csv",
         "include_velocity": false
       },
       "Postprocess": {
@@ -223,12 +223,15 @@
       ]
     },
     "WalkNet1": {
+      "Policy": "Parkour",
+      "ParkourModels": "/home/wsy/rl/bitbot-unitree/CheckPoints/parkour",
+      "ParkourConfig": "/home/wsy/rl/bitbot-unitree/settings/g1_parkour.json",
       "Inference": {
         "WarmUpModel": false,
         "IntraNumberThreads": 1
       },
       "Network": {
-        "ModelPath": "CheckPoints/policy_dwaq.onnx",
+        "ModelPath": "/home/wsy/rl/bitbot-unitree/CheckPoints/policy_dwaq.onnx",
         "InputNodeNames": [
           "observation",
           "observation_history"

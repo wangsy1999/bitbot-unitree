@@ -8,3 +8,7 @@
 /build
 /builds
 /vcpkg_installed
+
+# Local runtime logs
+/log/
+/logs/

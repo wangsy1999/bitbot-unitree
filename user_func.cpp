@@ -59,6 +59,32 @@ void ConfigFunc(const KernelBus& bus, UserData& d)
     //创建调度器
     d.TaskScheduler = SchedulerType::Create(cfg_root["Scheduler"]);
 
+    //创建行走推理 Worker，复用原有状态和事件接口。
+#ifdef BUILD_SIMULATION
+    d.WalkNetInferWorker = d.TaskScheduler->template CreateWorker<WalkInferWorkerType>(
+        cfg_workers["WalkNet1"], cfg_workers["MotorControl"], JOINT_ID_MAP);
+    d.DepthCamera = bus.GetDevice<DeviceDepthCam>(DEPTH_CAMERA_ID).value();
+    d.DepthCamera->InitializeRender(bus.GetMujocoModel());
+    if (d.WalkNetInferWorker->IsParkour())
+    {
+        d.WalkNetInferWorker->ConfigureMotor(cfg_workers);
+        const auto& policy = d.WalkNetInferWorker->GetPolicy();
+        const unsigned subsample_steps = static_cast<unsigned>(std::max<long>(1, std::lround(
+            policy.StepTime / bus.GetMujocoModel()->opt.timestep)));
+        d.DepthCamera->SetSubsampleSteps(subsample_steps);
+        d.DepthObservationPublisher = std::make_unique<DepthObservationPublisherType>(
+            bus, *d.DepthCamera, *d.WalkNetInferWorker);
+        d.DepthObsWorker = d.TaskScheduler->template CreateWorker<DepthObsWorkerType>(
+            [&d](SchedulerType::Ptr scheduler)
+            {
+                d.DepthObservationPublisher->Publish(scheduler);
+            });
+    }
+#else
+    d.WalkNetInferWorker = d.TaskScheduler->template CreateWorker<WalkInferWorkerType>(
+        cfg_workers["WalkNet1"], cfg_workers["MotorControl"]);
+#endif
+
     //初始化各个worker
     d.ImuWorker = d.TaskScheduler->template CreateWorker<ImuWorkerType>(d.ImuPtr, cfg_workers["ImuProcess"]);
     d.MotorWorker = d.TaskScheduler->template CreateWorker<MotorWorkerType>(cfg_workers["MotorControl"], d.JointsPtr);
@@ -80,6 +106,12 @@ void ConfigFunc(const KernelBus& bus, UserData& d)
             d.AlterImuWorker,
             d.MotorWorker
         });
+#ifdef BUILD_SIMULATION
+    if (d.DepthObsWorker)
+    {
+        d.TaskScheduler->AddWorker("MainTask", d.DepthObsWorker);
+    }
+#endif
 
     //创建推理任务列表，并添加worker，设置推理任务频率
     d.DanceNetInferWorker = d.TaskScheduler->template CreateWorker<BeyondMimicUnitreeInferWorkerType>(cfg_workers["DanceNet1"], cfg_workers["DanceNet1"], JOINT_ID_MAP);
@@ -92,7 +124,6 @@ void ConfigFunc(const KernelBus& bus, UserData& d)
         });
 
     //创建走路的推理任务列表，并添加worker，设置推理任务频率
-    d.WalkNetInferWorker = d.TaskScheduler->template CreateWorker<DreamWaQInferWorkerType>(cfg_workers["WalkNet1"], cfg_workers["MotorControl"]);
     d.WalkCmdWorker = d.TaskScheduler->template CreateWorker<CmdWorkerType>(cfg_workers["WalkCmd"]);
     d.TaskScheduler->CreateTaskList("InferWalkTask", cfg_root["Scheduler"]["InferTask"]["PolicyFrequency"]);
     d.TaskScheduler->AddWorkers("InferWalkTask",
@@ -114,6 +145,12 @@ void ConfigFunc(const KernelBus& bus, UserData& d)
 
 void FinishFunc(UserData& d)
 {
+#ifdef BUILD_SIMULATION
+    if (d.DepthCamera)
+    {
+        d.DepthCamera->ReleaseRender(); //在 UI 线程释放设备的 GLFW 资源。
+    }
+#endif
     std::cout << "Finishing user functions..." << std::endl;
     std::cout << "Goodbye!" << std::endl;
 }

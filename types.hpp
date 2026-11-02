@@ -25,8 +25,11 @@
 #include "Workers/MITMotorControlWorker.hpp"
 
 #ifdef BUILD_SIMULATION
+#include "parkour/inference_worker.hpp"
+#include "parkour/depth_camera_worker.hpp"
 #include "bitbot_mujoco/device/mujoco_imu.h"
 #include "bitbot_mujoco/device/mujoco_joint.h"
+using DeviceDepthCam = bitbot::MujocoDepthCamera;
 using DeviceImu = bitbot::MujocoImu;
 using DeviceJoint = bitbot::MujocoJoint;
 #else
@@ -54,6 +57,7 @@ constexpr std::array<size_t, JOINT_NUMBER> JOINT_ID_MAP = {
 };
 constexpr size_t IMU_ID_MAP = 29;
 constexpr size_t ALTER_IMU_ID_MAP = 30;
+constexpr size_t DEPTH_CAMERA_ID = 31;
 #else
 constexpr std::array<size_t, JOINT_NUMBER> JOINT_ID_MAP = {
     0, 6, 12, 1, 7, 13, 2, 8, 14, 3, 9, 15, 22, 4, 10, 16, 23, 5, 11, 17, 24, 18, 25, 19, 26, 20, 27, 21, 28
@@ -99,13 +103,21 @@ constexpr z::CTSPair<z::concat(WalkNetName, "InferenceTime"), RealNumber> WalkIn
 constexpr z::CTSPair<z::concat(WalkNetName, "NetProjectedGravity"), Vec3> WalkNetProjectedGravityPair;
 constexpr z::CTSPair<z::concat(WalkNetName, "NetUserCommand3"), Vec3> WalkNetUserCommand3Pair;
 
+#ifdef BUILD_SIMULATION
+constexpr z::CTSPair<"ParkourObservation", g1_parkour::Observation> ParkourObservationPair;
+#endif
+
 // define scheduler
 using SchedulerType = z::AbstractScheduler<ImuAccRawPair, ImuGyroRawPair, ImuMagRawPair,
     ImuAccFilteredPair, ImuGyroFilteredPair, ImuMagFilteredPair,
     TargetMotorPosPair, TargetMotorVelPair, CurrentMotorPosPair, CurrentMotorVelPair, CurrentMotorTorquePair,
     TargetMotorTorquePair, TargetMotorDampingPair, TargetMotorStiffnessPair,
     NetLastActionPair, InferenceTimePair, DanceNet1OutPair, Net1RefTrajPair, Net1RefVelPair, ImuAlterAngleFilteredPair,
-    WalkNetLastActionPair, WalkNet1OutPair, WalkInferenceTimePair, WalkNetProjectedGravityPair, WalkNetUserCommand3Pair>;
+    WalkNetLastActionPair, WalkNet1OutPair, WalkInferenceTimePair, WalkNetProjectedGravityPair, WalkNetUserCommand3Pair
+#ifdef BUILD_SIMULATION
+    , ParkourObservationPair
+#endif
+    >;
 
 
 //define workers
@@ -127,3 +139,11 @@ using ActionManagementWorkerType = z::ActionAndMotorPropertiesManagementWorker<S
 using BeyondMimicUnitreeInferWorkerType = z::BeyondMimicUnitreeInferenceWorker<SchedulerType, Net1Name, RealNumber, JOINT_NUMBER, DANCE_TRAJECTORY_LENGTH>;
 using DreamWaQInferWorkerType = z::DreamWaQInferenceWorker<SchedulerType, WalkNetName, RealNumber, JOINT_NUMBER>; // stack 5 frames of history
 
+
+#ifdef BUILD_SIMULATION
+using WalkInferWorkerType = g1_parkour::WalkInferenceWorker<SchedulerType, WalkNetName, RealNumber, JOINT_NUMBER>;
+using DepthObsWorkerType = z::SimpleCallbackWorker<SchedulerType>;
+using DepthObservationPublisherType = g1_parkour::DepthObservationPublisher<SchedulerType, WalkInferWorkerType>;
+#else
+using WalkInferWorkerType = DreamWaQInferWorkerType;
+#endif

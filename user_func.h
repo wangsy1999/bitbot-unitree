@@ -34,7 +34,12 @@ struct UserData
     MotorWorkerType* MotorWorker;
     LoggerWorkerType* Logger;
     BeyondMimicUnitreeInferWorkerType* DanceNetInferWorker;
-    DreamWaQInferWorkerType* WalkNetInferWorker;
+    WalkInferWorkerType* WalkNetInferWorker;
+#ifdef BUILD_SIMULATION
+    DeviceDepthCam* DepthCamera = nullptr;
+    std::unique_ptr<DepthObservationPublisherType> DepthObservationPublisher;
+    DepthObsWorkerType* DepthObsWorker = nullptr;
+#endif
     MotorResetWorkerType* MotorResetWorker;
     ActionManagementWorkerType* ActionManagementWorker;
     CmdWorkerType* WalkCmdWorker;

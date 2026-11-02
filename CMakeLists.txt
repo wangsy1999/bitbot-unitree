@@ -63,3 +63,12 @@ target_link_libraries(main_app
 
 target_compile_options(main_app PUBLIC)
 target_compile_features(main_app PUBLIC cxx_std_20)
+
+if(BUILD_SIMULATION)
+  find_package(OpenGL REQUIRED)
+  target_sources(main_app PRIVATE
+    parkour/depth_camera.cpp
+    parkour/mujoco_depth_camera.cpp
+  )
+  target_link_libraries(main_app OpenGL::GL)
+endif()
