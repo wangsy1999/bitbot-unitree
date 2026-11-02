@@ -33,10 +33,10 @@ namespace bitbot
         };
         monitor_data_.resize(monitor_header_.headers.size());
 
-        double dead_zone, smooth;
-        ConfigParser::ParseAttribute2d(dead_zone, device_node.attribute("dead_zone"));
-        ConfigParser::ParseAttribute2d(smooth, device_node.attribute("smooth"));
-        this->gamepad_ = new Gamepad(smooth, dead_zone);
+        const double dead_zone = device_node.attribute("dead_zone").as_double(0.01);
+        const double smooth = device_node.attribute("smooth").as_double(0.03);
+        const double axis_publish_hz = device_node.attribute("axis_publish_hz").as_double(50.0);
+        this->gamepad_ = new Gamepad(smooth, dead_zone, axis_publish_hz);
     }
 
     UnitreeGamepad::~UnitreeGamepad()
@@ -58,7 +58,7 @@ namespace bitbot
 
     void UnitreeGamepad::ProcessJoystickEvent(const Joystick& joystick, const std::string& key)
     {
-        if (joystick.moved && this->KeyEventMap.count(key) != 0 && this->EventMap.count(this->KeyEventMap[key]) != 0)
+        if (this->gamepad_->ShouldPublishJoystick(joystick) && this->KeyEventMap.count(key) != 0 && this->EventMap.count(this->KeyEventMap[key]) != 0)
         {
             this->kernel_interface->EmitEvent(this->EventMap[this->KeyEventMap[key]], joystick.value * 32768.0);
         }
