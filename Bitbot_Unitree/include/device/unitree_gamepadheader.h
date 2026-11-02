@@ -75,8 +75,15 @@ namespace bitbot
         Joystick() {}
         void update(float value)
         {
-            this->moved = std::abs(value - last_value) > 0.05;
-            this->last_value = value;
+            // Compare against the last emitted value so small filtered steps accumulate.
+            // Always emit the transition to zero, but keep an idle stick silent so
+            // it does not overwrite commands entered from the keyboard.
+            this->moved = std::abs(value - last_value) > 0.05f ||
+                (value == 0.0f && this->value != 0.0f);
+            if (this->moved)
+            {
+                this->last_value = value;
+            }
             this->value = value;
         }
 
@@ -94,11 +101,11 @@ namespace bitbot
 
         void update(xRockerBtnDataStruct& key_data)
         {
-            lx = lx * (1 - smooth) + (std::fabs(key_data.lx) < dead_zone ? 0.0 : key_data.lx) * smooth;
-            rx = rx * (1 - smooth) + (std::fabs(key_data.rx) < dead_zone ? 0.0 : key_data.rx) * smooth;
-            ry = ry * (1 - smooth) + (std::fabs(key_data.ry) < dead_zone ? 0.0 : key_data.ry) * smooth;
-            l2 = l2 * (1 - smooth) + (std::fabs(key_data.L2) < dead_zone ? 0.0 : key_data.L2) * smooth;
-            ly = ly * (1 - smooth) + (std::fabs(key_data.ly) < dead_zone ? 0.0 : key_data.ly) * smooth;
+            lx = FilterAxis(key_data.lx, lx);
+            rx = FilterAxis(key_data.rx, rx);
+            ry = FilterAxis(key_data.ry, ry);
+            l2 = FilterAxis(key_data.L2, l2);
+            ly = FilterAxis(key_data.ly, ly);
 
             lx_joystick.update(lx);
             rx_joystick.update(rx);
@@ -122,6 +129,16 @@ namespace bitbot
             right.update(key_data.btn.components.right);
             down.update(key_data.btn.components.down);
             left.update(key_data.btn.components.left);
+        }
+
+        float FilterAxis(float input, float previous) const
+        {
+            // Snap to zero on release instead of leaving an asymptotic filter tail.
+            if (!std::isfinite(input) || std::fabs(input) <= dead_zone)
+            {
+                return 0.0f;
+            }
+            return previous * (1.0f - smooth) + input * smooth;
         }
 
         float lx = 0.;
