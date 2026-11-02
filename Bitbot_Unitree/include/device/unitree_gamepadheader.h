@@ -1,9 +1,6 @@
 #pragma once
-#include <algorithm>
-#include <chrono>
-#include <cmath>
-#include <cstdint>
-#include <stdexcept>
+#include "cmath"
+#include "cstdint"
 
 namespace bitbot
 {
@@ -78,14 +75,12 @@ namespace bitbot
         Joystick() {}
         void update(float value)
         {
-            this->returned_to_center = value == 0 && this->last_value != 0;
-            this->moved = value != this->last_value;
+            this->moved = std::abs(value - last_value) > 0.05;
             this->last_value = value;
             this->value = value;
         }
 
         bool moved = false;
-        bool returned_to_center = false;
         float value = 0;
         float last_value = 0;
     };
@@ -93,38 +88,17 @@ namespace bitbot
     class Gamepad
     {
     public:
-        using Clock = std::chrono::steady_clock;
-
-        Gamepad(float smooth = 0.03, float dead_zone = 0.01, double axis_publish_hz = 50.0)
-            :smooth(smooth), dead_zone(dead_zone)
-        {
-            if (!std::isfinite(smooth) || smooth <= 0 || smooth > 1 ||
-                !std::isfinite(dead_zone) || dead_zone < 0 || dead_zone >= 1 ||
-                !std::isfinite(axis_publish_hz) || axis_publish_hz <= 0)
-            {
-                throw std::invalid_argument("Invalid gamepad smoothing, dead zone or axis publication rate");
-            }
-            this->axis_publish_period_ = std::chrono::duration_cast<Clock::duration>(
-                std::chrono::duration<double>(1.0 / axis_publish_hz));
-            if (this->axis_publish_period_ <= Clock::duration::zero())
-            {
-                throw std::invalid_argument("Gamepad axis publication rate exceeds clock resolution");
-            }
+        Gamepad(float smooth = 0.03, float dead_zone = 0.01)
+            :smooth(smooth), dead_zone(dead_zone) {
         }
 
-        void update(xRockerBtnDataStruct& key_data, Clock::time_point now = Clock::now())
+        void update(xRockerBtnDataStruct& key_data)
         {
-            this->publish_axes_ = now >= this->next_axis_publish_;
-            if (this->publish_axes_)
-            {
-                this->next_axis_publish_ = now + this->axis_publish_period_;
-            }
-
-            lx = FilterAxis(lx, key_data.lx);
-            rx = FilterAxis(rx, key_data.rx);
-            ry = FilterAxis(ry, key_data.ry);
-            l2 = FilterAxis(l2, key_data.L2);
-            ly = FilterAxis(ly, key_data.ly);
+            lx = lx * (1 - smooth) + (std::fabs(key_data.lx) < dead_zone ? 0.0 : key_data.lx) * smooth;
+            rx = rx * (1 - smooth) + (std::fabs(key_data.rx) < dead_zone ? 0.0 : key_data.rx) * smooth;
+            ry = ry * (1 - smooth) + (std::fabs(key_data.ry) < dead_zone ? 0.0 : key_data.ry) * smooth;
+            l2 = l2 * (1 - smooth) + (std::fabs(key_data.L2) < dead_zone ? 0.0 : key_data.L2) * smooth;
+            ly = ly * (1 - smooth) + (std::fabs(key_data.ly) < dead_zone ? 0.0 : key_data.ly) * smooth;
 
             lx_joystick.update(lx);
             rx_joystick.update(rx);
@@ -148,11 +122,6 @@ namespace bitbot
             right.update(key_data.btn.components.right);
             down.update(key_data.btn.components.down);
             left.update(key_data.btn.components.left);
-        }
-
-        bool ShouldPublishJoystick(const Joystick& joystick) const
-        {
-            return this->publish_axes_ || joystick.returned_to_center;
         }
 
         float lx = 0.;
@@ -186,24 +155,5 @@ namespace bitbot
         Button right;
         Button down;
         Button left;
-
-    private:
-        float FilterAxis(float previous, float raw) const
-        {
-            // 回中和无效输入立即归零，不残留平滑衰减或非有限速度命令。
-            if (!std::isfinite(raw) || std::fabs(raw) <= this->dead_zone)
-            {
-                return 0;
-            }
-            if (!std::isfinite(previous))
-            {
-                previous = 0;
-            }
-            return previous * (1 - this->smooth) + std::clamp(raw, -1.f, 1.f) * this->smooth;
-        }
-
-        Clock::duration axis_publish_period_{};
-        Clock::time_point next_axis_publish_{};
-        bool publish_axes_ = false;
     };
 };

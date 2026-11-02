@@ -38,6 +38,6 @@
         <device id="31" type="UnitreeImu" name="alter_imu"/>
         <device id="32" type="UnitreeBattery" name="battery"/>
         <device id="33" type="UnitreeMotherboard" name="mothorboard"/>
-        <device id="34" type="UnitreeGamepad" name="unitree_gamepad" dead_zone="0.01" smooth="0.03" axis_publish_hz="50"/>
+        <device id="34" type="UnitreeGamepad" name="unitree_gamepad" dead_zone="0.01" smooth="0.03"/>
     </bus>
 </bitbot>
