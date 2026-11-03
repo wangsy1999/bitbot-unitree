@@ -3,6 +3,7 @@
 Parkour 使用原来的 `main_app`、`types.hpp`、`user_func` 和 CtrlZ 调度器。
 `main.cpp`、`user_command.h/.cpp` 未修改，复位、行走、跳舞切换沿用原有事件和状态机。
 不再提供独立的 `parkour_sim` 入口或专用按键配置。
+独立 DWAQ 程序为 `dwaq_app`，配置与相机程序分开，见 [DWAQ 说明](DWAQ.md)。
 
 ## 编译与运行
 

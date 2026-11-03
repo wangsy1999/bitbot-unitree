@@ -16,6 +16,8 @@ include(bitbot.cmake)
 
 option(BUILD_SIMULATION "Build simulation" ON)
 option(BUILD_REALSENSE "Build the hardware RealSense depth worker" ON)
+option(BUILD_CAMERA_APP "Build the camera/Parkour application" ON)
+option(BUILD_DWAQ_APP "Build the standalone DreamWaQ application" ON)
 
 if(BUILD_SIMULATION)
   add_definitions(-DBUILD_SIMULATION)
@@ -42,51 +44,58 @@ set(PROJECT_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 add_definitions(-DPROJECT_ROOT_DIR="${PROJECT_ROOT_DIR}")
 message("PROJECT_ROOT_DIR: ${PROJECT_ROOT_DIR}")
 
-add_executable(main_app
-  main.cpp
-  types.hpp
-  user_func.h
-  user_func.cpp
-  user_command.h
-  user_command.cpp
-)
-
-if(BUILD_SIMULATION)
-  target_link_libraries(main_app BitbotMujoco)
-else()
-  target_link_libraries(main_app bitbotUnitree)
-endif()
-
-target_link_libraries(main_app
-  BitbotKernel
-  CtrlZ
-)
-
-target_compile_options(main_app PUBLIC)
-target_compile_features(main_app PUBLIC cxx_std_20)
-
-if(BUILD_SIMULATION)
-  find_package(OpenGL REQUIRED)
-  target_sources(main_app PRIVATE
-    parkour/depth_camera.cpp
-    parkour/mujoco_depth_camera.cpp
+# Each application owns its main/types/user callbacks; SDK and CtrlZ remain common dependencies.
+function(BitbotAddApplication target source_directory)
+  add_executable(${target}
+    "${source_directory}/main.cpp"
+    "${source_directory}/types.hpp"
+    "${source_directory}/user_func.h"
+    "${source_directory}/user_func.cpp"
+    "${source_directory}/user_command.h"
+    "${source_directory}/user_command.cpp"
   )
-  target_link_libraries(main_app OpenGL::GL)
+  target_include_directories(${target} PRIVATE "${PROJECT_SOURCE_DIR}")
+  if(BUILD_SIMULATION)
+    target_link_libraries(${target} BitbotMujoco)
+  else()
+    target_link_libraries(${target} bitbotUnitree)
+  endif()
+  target_link_libraries(${target} BitbotKernel CtrlZ)
+  target_compile_features(${target} PUBLIC cxx_std_20)
+endfunction()
+
+if(BUILD_CAMERA_APP)
+  BitbotAddApplication(main_app "${PROJECT_SOURCE_DIR}")
+  if(BUILD_SIMULATION)
+    find_package(OpenGL REQUIRED)
+    target_sources(main_app PRIVATE
+      parkour/depth_camera.cpp
+      parkour/mujoco_depth_camera.cpp
+    )
+    target_link_libraries(main_app OpenGL::GL)
+  elseif(BUILD_REALSENSE)
+    find_package(realsense2 CONFIG REQUIRED)
+    find_package(OpenCV REQUIRED COMPONENTS core imgproc imgcodecs)
+    target_compile_definitions(main_app PRIVATE BUILD_REALSENSE)
+    target_include_directories(main_app PRIVATE ${OpenCV_INCLUDE_DIRS})
+    target_link_libraries(main_app ${OpenCV_LIBS})
+    if(TARGET realsense2::realsense2)
+      target_link_libraries(main_app realsense2::realsense2)
+    elseif(TARGET realsense2)
+      target_link_libraries(main_app realsense2)
+    else()
+      target_include_directories(main_app PRIVATE ${realsense2_INCLUDE_DIR})
+      target_link_libraries(main_app ${realsense2_LIBRARY})
+    endif()
+  endif()
 endif()
 
-# RealSense is a hardware-only camera source; simulation retains MuJoCo depth.
-if(NOT BUILD_SIMULATION AND BUILD_REALSENSE)
-  find_package(realsense2 CONFIG REQUIRED)
-  find_package(OpenCV REQUIRED COMPONENTS core imgproc imgcodecs)
-  target_compile_definitions(main_app PRIVATE BUILD_REALSENSE)
-  target_include_directories(main_app PRIVATE ${OpenCV_INCLUDE_DIRS})
-  target_link_libraries(main_app ${OpenCV_LIBS})
-  if(TARGET realsense2::realsense2)
-    target_link_libraries(main_app realsense2::realsense2)
-  elseif(TARGET realsense2)
-    target_link_libraries(main_app realsense2)
-  else()
-    target_include_directories(main_app PRIVATE ${realsense2_INCLUDE_DIR})
-    target_link_libraries(main_app ${realsense2_LIBRARY})
-  endif()
+if(BUILD_DWAQ_APP)
+  BitbotAddApplication(dwaq_app "${PROJECT_SOURCE_DIR}/src_dwaq")
+  target_sources(dwaq_app PRIVATE src_dwaq/app_config.hpp)
+  target_compile_definitions(dwaq_app PRIVATE
+    BITBOT_CTRL_CONFIG="src_dwaq/settings/CtrlConfig.json"
+    BITBOT_MUJOCO_CONFIG="src_dwaq/settings/bitbot_mujoco.xml"
+    BITBOT_UNITREE_CONFIG="src_dwaq/settings/bitbot_unitree.xml"
+  )
 endif()

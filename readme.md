@@ -47,7 +47,12 @@ Bitbot Unitree支持一键切换mujoco仿真器和实物机器人部署，通过
 
 ## 运行阶段
 
-默认行走策略已适配 DreamWaQ（DWAQ），模型 `CheckPoints/policy_dwaq.onnx` 复制自
+当前提供两个独立程序：`main_app` 使用 camera/Parkour 配置，`dwaq_app` 使用 DreamWaQ，
+DWAQ 的入口、types、user_func、user_command 和配置独立放在 `src_dwaq/`，
+两者使用最新设备驱动。构建和部署方法见 [DWAQ 程序说明](docs/DWAQ.md)，
+相机说明见 [Parkour 说明](docs/PARKOUR.md)。
+
+`dwaq_app` 的行走策略为 DreamWaQ（DWAQ），模型 `CheckPoints/policy_dwaq.onnx` 复制自
 `/home/wsy/rl/g1_deploy/models/policy.onnx`，参数对应该项目的 `config/g1_locomotion.yaml`。
 行走使用 `DreamWaQInferenceWorker`，自动识别 ONNX 输入名称及单/双输入接口；当前模型为
 `float32 [1,96] + [1,480] → [1,29]`。历史为 5 帧，按观测项排列，各项内部从旧到新，
@@ -56,7 +61,7 @@ Bitbot Unitree支持一键切换mujoco仿真器和实物机器人部署，通过
 控制周期 2ms，行走推理周期 20ms（50Hz）；PD 增益已从源配置的 DDS 顺序转换为策略关节顺序，
 速度范围为 x `[-0.6,1.0]`、y `[-0.5,0.5]` m/s、yaw `[-1.57,1.57]` rad/s。
 原始动作裁剪为 ±100，策略不额外裁剪关节目标，与源配置的 `actions.clip: null` 一致。
-行走模型路径相对项目根目录解析，修改模型可编辑 `settings/CtrlConfig.json` 的
+行走模型路径相对项目根目录解析，修改 DWAQ 模型可编辑 `src_dwaq/settings/CtrlConfig.json` 的
 `Workers.WalkNet1.Network.ModelPath`。跳舞模型和切换操作保持原有设置。
 
 适配已通过编译及与 `g1_deploy` 的离线推理对照（含历史推进及复位），未进行仿真或实机验证。
