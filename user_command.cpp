@@ -15,6 +15,7 @@ std::optional<bitbot::StateId> EventInitPoseFunc(bitbot::EventValue value, UserD
 {
     if (value == static_cast<bitbot::EventValue>(bitbot::KeyboardEvent::Up))
     {
+        d.WalkNetInferWorker->reset();
         d.MotorResetWorker->StartReset(); //开始复位
         d.TaskScheduler->EnableTaskList("ResetTask"); //在复位任务列表中启用复位任务
         return static_cast<bitbot::StateId>(States::StateInitPose);
@@ -27,7 +28,8 @@ std::optional<bitbot::StateId> EventPolicyRunFunc(bitbot::EventValue value, User
 {
     if (value == static_cast<bitbot::EventValue>(bitbot::KeyboardEvent::Up))
     {
-        std::cout << "policy run\n";
+        std::cout << "policy run (DreamWaQ)\n";
+        d.WalkNetInferWorker->reset();
         d.MotorResetWorker->StopReset(); //停止复位
         d.TaskScheduler->DisableTaskList("ResetTask"); //在复位任务列表中禁用复位任务
         d.ActionManagementWorker->template SwitchTo<WalkNet1OutPair>();

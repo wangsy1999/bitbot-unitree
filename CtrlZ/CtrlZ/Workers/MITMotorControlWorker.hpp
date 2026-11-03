@@ -133,7 +133,10 @@ namespace z
         {
             MotorValVec MotorPos;
             MotorValVec TargetVel = MotorValVec::zeros();
-            this->Scheduler->template GetData<"CurrentMotorPosition">(MotorPos);
+            // Read live joint feedback: the scheduler cache may predate START.
+            MotorPos.apply([this](MotorPrecision& val, size_t i) {
+                val = this->Joints[i]->GetActualPosition();
+                });
 
             this->Scheduler->template SetData<"TargetMotorPosition">(MotorPos);
             this->Scheduler->template SetData<"TargetMotorVelocity">(TargetVel);

@@ -13,7 +13,7 @@
 
 #include "Utils/StaticStringUtils.hpp"
 #include "Utils/MathTypes.hpp"
-#include "DWAQInferenceWorker.hpp"
+
 #include "Workers/AbstractWorker.hpp"
 #include "Workers/AsyncLoggerWorker.hpp"
 #include "Workers/ImuProcessWorker.hpp"
@@ -21,11 +21,22 @@
 #include "Workers/NetCmdWorker.hpp"
 #include "Workers/ActionManagementWorker.hpp"
 #include "Workers/NN/BeyondMimicWorker.hpp"
-#include "Workers/NN/UnitreeRlLabVelocityInferenceWorker.hpp"
+#include "Workers/NN/DreamWaQInferenceWorker.hpp"
 #include "Workers/MITMotorControlWorker.hpp"
+
+#if defined(BUILD_SIMULATION) || defined(BUILD_REALSENSE)
+#include "parkour/inference_worker.hpp"
+#endif
+#ifdef BUILD_REALSENSE
+#include "parkour/realsense_depth_worker.hpp"
+#include "parkour/realsense_observation.hpp"
+#endif
+
 #ifdef BUILD_SIMULATION
+#include "parkour/depth_camera_worker.hpp"
 #include "bitbot_mujoco/device/mujoco_imu.h"
 #include "bitbot_mujoco/device/mujoco_joint.h"
+using DeviceDepthCam = bitbot::MujocoDepthCamera;
 using DeviceImu = bitbot::MujocoImu;
 using DeviceJoint = bitbot::MujocoJoint;
 #else
@@ -42,7 +53,6 @@ using DeviceJoint = bitbot::UnitreeJoint;
 using RealNumber = float;
 constexpr size_t JOINT_NUMBER = 29;
 using Vec3 = z::math::Vector<RealNumber, 3>;
-using Vec4 = z::math::Vector<RealNumber, 4>;
 using MotorVec = z::math::Vector<RealNumber, JOINT_NUMBER>;
 //constexpr size_t DANCE_TRAJECTORY_LENGTH = 1749; //NOTE: remember to change this when changing dancing trajectories dance 102
 constexpr size_t DANCE_TRAJECTORY_LENGTH = 1942; //NOTE: remember to change this when changing dancing trajectories gannam style
@@ -54,6 +64,7 @@ constexpr std::array<size_t, JOINT_NUMBER> JOINT_ID_MAP = {
 };
 constexpr size_t IMU_ID_MAP = 29;
 constexpr size_t ALTER_IMU_ID_MAP = 30;
+constexpr size_t DEPTH_CAMERA_ID = 31;
 #else
 constexpr std::array<size_t, JOINT_NUMBER> JOINT_ID_MAP = {
     0, 6, 12, 1, 7, 13, 2, 8, 14, 3, 9, 15, 22, 4, 10, 16, 23, 5, 11, 17, 24, 18, 25, 19, 26, 20, 27, 21, 28
@@ -98,7 +109,15 @@ constexpr z::CTSPair<z::concat(WalkNetName, "Action"), MotorVec> WalkNet1OutPair
 constexpr z::CTSPair<z::concat(WalkNetName, "InferenceTime"), RealNumber> WalkInferenceTimePair;
 constexpr z::CTSPair<z::concat(WalkNetName, "NetProjectedGravity"), Vec3> WalkNetProjectedGravityPair;
 constexpr z::CTSPair<z::concat(WalkNetName, "NetUserCommand3"), Vec3> WalkNetUserCommand3Pair;
-constexpr z::CTSPair<z::concat(WalkNetName, "NetClockVector"), Vec4> ClockPair;
+
+#if defined(BUILD_SIMULATION) || defined(BUILD_REALSENSE)
+constexpr z::CTSPair<"ParkourObservation", g1_parkour::Observation> ParkourObservationPair;
+#endif
+
+#ifdef BUILD_REALSENSE
+constexpr z::CTSPair<"DepthMapFlattenedValue", z::math::Vector<RealNumber, g1_parkour::ModelLayout::DepthHistorySize>> DepthMapFlattenedValuePair;
+constexpr z::CTSPair<"RealsenseDepthFrame", g1_parkour::RealsenseDepthFrame> RealsenseDepthFramePair;
+#endif
 
 // define scheduler
 using SchedulerType = z::AbstractScheduler<ImuAccRawPair, ImuGyroRawPair, ImuMagRawPair,
@@ -106,7 +125,14 @@ using SchedulerType = z::AbstractScheduler<ImuAccRawPair, ImuGyroRawPair, ImuMag
     TargetMotorPosPair, TargetMotorVelPair, CurrentMotorPosPair, CurrentMotorVelPair, CurrentMotorTorquePair,
     TargetMotorTorquePair, TargetMotorDampingPair, TargetMotorStiffnessPair,
     NetLastActionPair, InferenceTimePair, DanceNet1OutPair, Net1RefTrajPair, Net1RefVelPair, ImuAlterAngleFilteredPair,
-    WalkNetLastActionPair, WalkNet1OutPair, WalkInferenceTimePair, WalkNetProjectedGravityPair, WalkNetUserCommand3Pair,ClockPair>;
+    WalkNetLastActionPair, WalkNet1OutPair, WalkInferenceTimePair, WalkNetProjectedGravityPair, WalkNetUserCommand3Pair
+#if defined(BUILD_SIMULATION) || defined(BUILD_REALSENSE)
+    , ParkourObservationPair
+#endif
+#ifdef BUILD_REALSENSE
+    , DepthMapFlattenedValuePair, RealsenseDepthFramePair
+#endif
+    >;
 
 
 //define workers
@@ -119,13 +145,27 @@ using LoggerWorkerType = z::AsyncLoggerWorker<SchedulerType, RealNumber, ImuAccR
     TargetMotorPosPair, TargetMotorVelPair, CurrentMotorPosPair, CurrentMotorVelPair, CurrentMotorTorquePair,
     TargetMotorTorquePair, TargetMotorDampingPair, TargetMotorStiffnessPair,
     NetLastActionPair, InferenceTimePair, DanceNet1OutPair, Net1RefTrajPair, Net1RefVelPair, ImuAlterAngleFilteredPair,
-    WalkNetLastActionPair, WalkNet1OutPair, WalkInferenceTimePair, WalkNetProjectedGravityPair, WalkNetUserCommand3Pair,ClockPair>;
+    WalkNetLastActionPair, WalkNet1OutPair, WalkInferenceTimePair, WalkNetProjectedGravityPair, WalkNetUserCommand3Pair>;
 
 using CmdWorkerType = z::NetCmdWorker<SchedulerType, RealNumber, WalkNetUserCommand3Pair>;
 using ActionManagementWorkerType = z::ActionAndMotorPropertiesManagementWorker<SchedulerType, RealNumber, DanceNet1OutPair, WalkNet1OutPair>;
 
 /******define actor net************/
 using BeyondMimicUnitreeInferWorkerType = z::BeyondMimicUnitreeInferenceWorker<SchedulerType, Net1Name, RealNumber, JOINT_NUMBER, DANCE_TRAJECTORY_LENGTH>;
-using UnitreeRlLabVelocityInferWorkerType = z::DWAQInferenceWorker<SchedulerType, WalkNetName, RealNumber, 5, JOINT_NUMBER>; // stack 5 frames of history
+using DreamWaQInferWorkerType = z::DreamWaQInferenceWorker<SchedulerType, WalkNetName, RealNumber, JOINT_NUMBER>; // stack 5 frames of history
 
-// using UnitreeRlLabVelocityInferWorkerType = z::DWAQInferenceWorker<SchedulerType, WalkNetName, RealNumber, 5, JOINT_NUMBER>; // stack 5 frames of history
+
+#if defined(BUILD_SIMULATION) || defined(BUILD_REALSENSE)
+using WalkInferWorkerType = g1_parkour::WalkInferenceWorker<SchedulerType, WalkNetName, RealNumber, JOINT_NUMBER>;
+using DepthObsWorkerType = z::SimpleCallbackWorker<SchedulerType>;
+#else
+using WalkInferWorkerType = DreamWaQInferWorkerType;
+#endif
+
+#ifdef BUILD_SIMULATION
+using DepthObservationPublisherType = g1_parkour::DepthObservationPublisher<SchedulerType, WalkInferWorkerType>;
+#elif defined(BUILD_REALSENSE)
+using RealsenseDepthWorkerType = z::RealsenseDepthWorker<SchedulerType, RealNumber>;
+using RealsenseObservationPublisherType = g1_parkour::RealsenseObservationPublisher<
+    SchedulerType, WalkInferWorkerType, DeviceJoint*, DeviceImu*>;
+#endif

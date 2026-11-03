@@ -11,3 +11,7 @@
 /dependencies/onnxruntime-*/
 
 /dependencies/mujoco-*.tar.gz
+
+# Local runtime logs
+/log/
+/logs/

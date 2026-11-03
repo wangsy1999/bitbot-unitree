@@ -28,7 +28,7 @@ namespace bitbot {
         virtual void UpdateRuntimeData() final;
 
         void ProcessButtonEvent(const Button& button, const std::string& key);
-        void ProcessJoystickEvent(float joystick, const std::string& key);
+        void ProcessJoystickEvent(const Joystick& joystick, const std::string& key);
 
     private:
         Gamepad* gamepad_;

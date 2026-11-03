@@ -8,8 +8,8 @@ if [[ "$(uname -s)" != Darwin ]]; then
 fi
 mode="${1:-build}"
 case "$mode" in
-  build|test|run) ;;
-  *) echo "Usage: $0 [build|test|run]" >&2; exit 1 ;;
+  build|test|run|run-dwaq) ;;
+  *) echo "Usage: $0 [build|test|run|run-dwaq]" >&2; exit 1 ;;
 esac
 root="$(cd "$(dirname "$0")/.." && pwd)"
 build_dir="$root/build"
@@ -49,14 +49,17 @@ fi
 
 "$cmake_bin" -S "$root" -B "$build_dir" \
   -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES="$arch" \
-  -DBUILD_SIMULATION=ON -DBITBOT_MUJOCO_BUILD_TESTS=ON \
+  -DBUILD_SIMULATION=ON -DBUILD_CAMERA_APP=ON -DBUILD_DWAQ_APP=ON \
+  -DBITBOT_MUJOCO_BUILD_TESTS=ON \
   -DONNXRUNTIME_ROOT="$ort_root"
-"$cmake_bin" --build "$build_dir" --target main_app bitbot_mujoco_smoke_test \
+"$cmake_bin" --build "$build_dir" --target main_app dwaq_app bitbot_mujoco_smoke_test \
   --parallel "${JOBS:-$(sysctl -n hw.logicalcpu)}"
 if [[ "$mode" == test ]]; then
   "$(dirname "$cmake_bin")/ctest" --test-dir "$build_dir" --output-on-failure
-elif [[ "$mode" == run ]]; then
-  # Existing policy/trajectory paths are relative to build/bin.
+elif [[ "$mode" == run || "$mode" == run-dwaq ]]; then
   cd "$build_dir/bin"
+  if [[ "$mode" == run-dwaq ]]; then
+    exec ./dwaq_app
+  fi
   exec ./main_app
 fi

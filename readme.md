@@ -19,16 +19,17 @@ macOS 仅支持 MuJoCo 仿真（`BUILD_SIMULATION=ON`），不构建实物机器
 需要 Xcode Command Line Tools（`xcode-select --install`）和 Python 3；无需 Homebrew。
 
 ```bash
-./scripts/macos.sh build  # 下载依赖并编译 main_app
+./scripts/macos.sh build  # 下载依赖并编译 main_app 和 dwaq_app
 ./scripts/macos.sh test   # 编译并运行无窗口物理兼容性测试
-./scripts/macos.sh run    # 编译并打开 MuJoCo 仿真窗口
+./scripts/macos.sh run    # 启动 camera/Parkour 仿真和深度预览
+./scripts/macos.sh run-dwaq # 启动独立 DWAQ 仿真
 ```
 
 脚本默认使用本机架构（Apple Silicon 为 arm64），将 CMake 3.31.6（系统未安装时）
 及 ONNX Runtime 1.23.2 放在忽略的 `build/tools` 下，首次配置需要联网获取
 MuJoCo 3.14.0 及其依赖。可用 `ONNXRUNTIME_ROOT` 指定已安装的原生开发包，
-用 `JOBS=8` 设置编译并行数。产物为 `build/bin/main_app`；手动启动时先
-`cd build/bin`，以正确解析现有策略和轨迹的相对路径。
+用 `JOBS=8` 设置编译并行数。产物为 `build/bin/main_app` 和 `build/bin/dwaq_app`。模型和轨迹路径相对项目根目录
+解析，也支持绝对路径；两个程序分别使用根目录和 `src_dwaq/` 中的配置。
 
 `CtrlZ/` 源码已直接纳入本仓库，不再使用 submodule。关闭 MuJoCo 窗口即可退出。
 仿真初始为暂停状态；控制事件仍通过 Bitbot Copilot 发送。
@@ -69,6 +70,25 @@ Bitbot Unitree支持一键切换mujoco仿真器和实物机器人部署，通过
 > 在使用实物机器人部署时，机器人会自动切换至unitree开发者模式，无需使用unitree遥控器切换。
 
 ## 运行阶段
+
+当前提供两个独立程序：`main_app` 使用 camera/Parkour 配置，`dwaq_app` 使用 DreamWaQ，
+DWAQ 的入口、types、user_func、user_command 和配置独立放在 `src_dwaq/`，
+两者使用最新设备驱动。构建和部署方法见 [DWAQ 程序说明](docs/DWAQ.md)，
+相机说明见 [Parkour 说明](docs/PARKOUR.md)。
+
+`dwaq_app` 的行走策略为 DreamWaQ（DWAQ），模型 `CheckPoints/policy_dwaq.onnx` 复制自
+`/home/wsy/rl/g1_deploy/models/policy.onnx`，参数对应该项目的 `config/g1_locomotion.yaml`。
+行走使用 `DreamWaQInferenceWorker`，自动识别 ONNX 输入名称及单/双输入接口；当前模型为
+`float32 [1,96] + [1,480] → [1,29]`。历史为 5 帧，按观测项排列，各项内部从旧到新，
+首帧重复填满历史；每次进入行走时清空上一动作并重新初始化历史。主 IMU 使用 pelvis
+机体系角速度和重力方向，角速度缩放为 1，关节速度缩放为 0.05，动作缩放为 0.25。
+控制周期 2ms，行走推理周期 20ms（50Hz）；PD 增益已从源配置的 DDS 顺序转换为策略关节顺序，
+速度范围为 x `[-0.6,1.0]`、y `[-0.5,0.5]` m/s、yaw `[-1.57,1.57]` rad/s。
+原始动作裁剪为 ±100，策略不额外裁剪关节目标，与源配置的 `actions.clip: null` 一致。
+行走模型路径相对项目根目录解析，修改 DWAQ 模型可编辑 `src_dwaq/settings/CtrlConfig.json` 的
+`Workers.WalkNet1.Network.ModelPath`。跳舞模型和切换操作保持原有设置。
+
+适配已通过编译及与 `g1_deploy` 的离线推理对照（含历史推进及复位），未进行仿真或实机验证。
 
 **机器人运行时请务必注意安全!**
 机器人程序运行后可以使用[Bitbot Copilot](https://github.com/ZzzzzzS/BitbotCopilot)进行控制。连接到机器人后依次点击键盘``9``，``8``，``p``按钮来完成机器人上电，运行，复位功能，在机器人复位完成后点击键盘``r``按钮启动机器人平衡控制，演示结束时点击键盘``空格键``退出程序。*该流程用户可自定义，这里展示的是默认的操作流程*。
