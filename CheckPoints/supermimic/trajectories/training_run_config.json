@@ -1,0 +1,461 @@
+{
+  "run": {
+    "algo": "supermimic",
+    "task": "G1SuperMimic",
+    "sim_backend": "mjwarp",
+    "device": "cuda:0",
+    "collector_tensor_device": null,
+    "seed": {
+      "configured_seed": 0,
+      "configured_seed_source": "algo.seed",
+      "effective_seed": 0
+    }
+  },
+  "config": {
+    "algo": {
+      "algo": "supermimic",
+      "algo_log_name": "supermimic",
+      "load_run": "-1",
+      "checkpoint": -1,
+      "resume": false,
+      "seed": 0,
+      "num_envs": 4096,
+      "iterations": 12000,
+      "buffer_steps": 1000,
+      "utd": 0.4,
+      "horizon": 32,
+      "goal_frames": 10,
+      "hist": 10,
+      "z_dim": 32,
+      "wm_hidden": [
+        2048,
+        2048,
+        2048
+      ],
+      "policy_hidden": [
+        2048,
+        1024,
+        512,
+        256
+      ],
+      "critic_hidden": [
+        256,
+        128
+      ],
+      "wm_window": 8,
+      "wm_batches": 10,
+      "wm_batch": 2048,
+      "pi_batch": 4096,
+      "lr": 0.0002,
+      "gamma": 0.99,
+      "lam": 0.95,
+      "action_noise": 0.1,
+      "critic_epochs": 5,
+      "critic_minibatches": 4,
+      "no_critic": false,
+      "warmup_steps": 64,
+      "wm_only_iters": 500,
+      "lr_decay_iters": 250000,
+      "ckpt_every": 2000,
+      "log_every": 50,
+      "log_backend": "tensorboard",
+      "amp": "bf16",
+      "compile": true,
+      "test_hidden_dims": null
+    },
+    "training": {
+      "task_name": "G1SuperMimic",
+      "sim_backend": "mjwarp",
+      "collector_tensor_device": "auto",
+      "play_only": false,
+      "no_play": true,
+      "sim2sim_strict": true,
+      "play_render_mode": "none",
+      "play_env_num": 40,
+      "log_root": null,
+      "log_dir": null
+    },
+    "env": {
+      "seed": null,
+      "scene": {
+        "model_file": "src/unisupermimic/assets/robots/g1/scene_supermimic.xml",
+        "default_keyframe_name": "stand",
+        "entities": {
+          "robot": {
+            "root_body_name": "pelvis",
+            "joint_names": [
+              "left_hip_pitch_joint",
+              "left_hip_roll_joint",
+              "left_hip_yaw_joint",
+              "left_knee_joint",
+              "left_ankle_pitch_joint",
+              "left_ankle_roll_joint",
+              "right_hip_pitch_joint",
+              "right_hip_roll_joint",
+              "right_hip_yaw_joint",
+              "right_knee_joint",
+              "right_ankle_pitch_joint",
+              "right_ankle_roll_joint",
+              "waist_yaw_joint",
+              "waist_roll_joint",
+              "waist_pitch_joint",
+              "left_shoulder_pitch_joint",
+              "left_shoulder_roll_joint",
+              "left_shoulder_yaw_joint",
+              "left_elbow_joint",
+              "left_wrist_roll_joint",
+              "left_wrist_pitch_joint",
+              "left_wrist_yaw_joint",
+              "right_shoulder_pitch_joint",
+              "right_shoulder_roll_joint",
+              "right_shoulder_yaw_joint",
+              "right_elbow_joint",
+              "right_wrist_roll_joint",
+              "right_wrist_pitch_joint",
+              "right_wrist_yaw_joint"
+            ],
+            "actuator_names": [
+              "left_hip_pitch_joint",
+              "left_hip_roll_joint",
+              "left_hip_yaw_joint",
+              "left_knee_joint",
+              "left_ankle_pitch_joint",
+              "left_ankle_roll_joint",
+              "right_hip_pitch_joint",
+              "right_hip_roll_joint",
+              "right_hip_yaw_joint",
+              "right_knee_joint",
+              "right_ankle_pitch_joint",
+              "right_ankle_roll_joint",
+              "waist_yaw_joint",
+              "waist_roll_joint",
+              "waist_pitch_joint",
+              "left_shoulder_pitch_joint",
+              "left_shoulder_roll_joint",
+              "left_shoulder_yaw_joint",
+              "left_elbow_joint",
+              "left_wrist_roll_joint",
+              "left_wrist_pitch_joint",
+              "left_wrist_yaw_joint",
+              "right_shoulder_pitch_joint",
+              "right_shoulder_roll_joint",
+              "right_shoulder_yaw_joint",
+              "right_elbow_joint",
+              "right_wrist_roll_joint",
+              "right_wrist_pitch_joint",
+              "right_wrist_yaw_joint"
+            ],
+            "body_names": [
+              "pelvis",
+              "left_hip_roll_link",
+              "left_knee_link",
+              "left_ankle_roll_link",
+              "right_hip_roll_link",
+              "right_knee_link",
+              "right_ankle_roll_link",
+              "torso_link",
+              "left_shoulder_roll_link",
+              "left_elbow_link",
+              "left_wrist_yaw_link",
+              "right_shoulder_roll_link",
+              "right_elbow_link",
+              "right_wrist_yaw_link"
+            ]
+          },
+          "ground": {
+            "geom_names": [
+              "floor"
+            ]
+          }
+        }
+      },
+      "sim_dt": 0.005,
+      "ctrl_dt": 0.02,
+      "max_episode_seconds": 10.0,
+      "auto_reset": true,
+      "scale_rewards_by_dt": false,
+      "observations": {
+        "policy": {
+          "enable_corruption": false,
+          "terms": {
+            "obs": {
+              "func": "unisupermimic.tasks.motion_tracking.g1.supermimic.manager_terms.supermimic_obs",
+              "params": {
+                "command_name": "motion"
+              }
+            }
+          }
+        },
+        "future": {
+          "enable_corruption": false,
+          "terms": {
+            "goal": {
+              "func": "unisupermimic.tasks.motion_tracking.g1.supermimic.manager_terms.supermimic_goal",
+              "params": {
+                "command_name": "motion",
+                "num_frames": 10
+              }
+            }
+          }
+        }
+      },
+      "actions": {
+        "joint_pos": {
+          "_target_": "unisupermimic.tasks.motion_tracking.g1.supermimic.manager_terms.SuperMimicActionCfg",
+          "entity_name": "robot",
+          "command_name": "motion"
+        }
+      },
+      "commands": {
+        "motion": {
+          "_target_": "unisupermimic.tasks.motion_tracking.g1.supermimic.manager_terms.SuperMimicCommandCfg",
+          "entity_name": "robot",
+          "mjcf_path": "src/unisupermimic/assets/robots/g1/supermimic.xml",
+          "eval_mode": false,
+          "gamma": 0.99,
+          "src_fps": 30.0,
+          "reset_noise": true,
+          "max_episode_steps": 500,
+          "goal_frames": 10,
+          "context_dim": 33,
+          "resampling_time_range": [
+            1000000000.0,
+            1000000000.0
+          ],
+          "motion_files": [
+            "src/unisupermimic/assets/motions/g1/lafan1_supermimic/dance1_subject1.csv",
+            "src/unisupermimic/assets/motions/g1/lafan1_supermimic/dance1_subject2.csv",
+            "src/unisupermimic/assets/motions/g1/lafan1_supermimic/dance1_subject3.csv",
+            "src/unisupermimic/assets/motions/g1/lafan1_supermimic/dance2_subject1.csv",
+            "src/unisupermimic/assets/motions/g1/lafan1_supermimic/dance2_subject2.csv",
+            "src/unisupermimic/assets/motions/g1/lafan1_supermimic/dance2_subject3.csv",
+            "src/unisupermimic/assets/motions/g1/lafan1_supermimic/dance2_subject4.csv",
+            "src/unisupermimic/assets/motions/g1/lafan1_supermimic/dance2_subject5.csv",
+            "src/unisupermimic/assets/motions/g1/lafan1_supermimic/fallAndGetUp1_subject1.csv",
+            "src/unisupermimic/assets/motions/g1/lafan1_supermimic/fallAndGetUp1_subject4.csv",
+            "src/unisupermimic/assets/motions/g1/lafan1_supermimic/fallAndGetUp1_subject5.csv",
+            "src/unisupermimic/assets/motions/g1/lafan1_supermimic/fallAndGetUp2_subject2.csv",
+            "src/unisupermimic/assets/motions/g1/lafan1_supermimic/fallAndGetUp2_subject3.csv",
+            "src/unisupermimic/assets/motions/g1/lafan1_supermimic/fallAndGetUp3_subject1.csv",
+            "src/unisupermimic/assets/motions/g1/lafan1_supermimic/fight1_subject2.csv",
+            "src/unisupermimic/assets/motions/g1/lafan1_supermimic/fight1_subject3.csv",
+            "src/unisupermimic/assets/motions/g1/lafan1_supermimic/fight1_subject5.csv",
+            "src/unisupermimic/assets/motions/g1/lafan1_supermimic/fightAndSports1_subject1.csv",
+            "src/unisupermimic/assets/motions/g1/lafan1_supermimic/fightAndSports1_subject4.csv",
+            "src/unisupermimic/assets/motions/g1/lafan1_supermimic/jumps1_subject1.csv",
+            "src/unisupermimic/assets/motions/g1/lafan1_supermimic/jumps1_subject2.csv",
+            "src/unisupermimic/assets/motions/g1/lafan1_supermimic/jumps1_subject5.csv",
+            "src/unisupermimic/assets/motions/g1/lafan1_supermimic/run1_subject2.csv",
+            "src/unisupermimic/assets/motions/g1/lafan1_supermimic/run1_subject5.csv",
+            "src/unisupermimic/assets/motions/g1/lafan1_supermimic/run2_subject1.csv",
+            "src/unisupermimic/assets/motions/g1/lafan1_supermimic/run2_subject4.csv",
+            "src/unisupermimic/assets/motions/g1/lafan1_supermimic/sprint1_subject2.csv",
+            "src/unisupermimic/assets/motions/g1/lafan1_supermimic/sprint1_subject4.csv",
+            "src/unisupermimic/assets/motions/g1/lafan1_supermimic/walk1_subject1.csv",
+            "src/unisupermimic/assets/motions/g1/lafan1_supermimic/walk1_subject2.csv",
+            "src/unisupermimic/assets/motions/g1/lafan1_supermimic/walk1_subject5.csv",
+            "src/unisupermimic/assets/motions/g1/lafan1_supermimic/walk2_subject1.csv",
+            "src/unisupermimic/assets/motions/g1/lafan1_supermimic/walk2_subject3.csv",
+            "src/unisupermimic/assets/motions/g1/lafan1_supermimic/walk2_subject4.csv",
+            "src/unisupermimic/assets/motions/g1/lafan1_supermimic/walk3_subject1.csv",
+            "src/unisupermimic/assets/motions/g1/lafan1_supermimic/walk3_subject2.csv",
+            "src/unisupermimic/assets/motions/g1/lafan1_supermimic/walk3_subject3.csv",
+            "src/unisupermimic/assets/motions/g1/lafan1_supermimic/walk3_subject4.csv",
+            "src/unisupermimic/assets/motions/g1/lafan1_supermimic/walk3_subject5.csv",
+            "src/unisupermimic/assets/motions/g1/lafan1_supermimic/walk4_subject1.csv"
+          ]
+        }
+      },
+      "events": {
+        "startup_context": {
+          "_target_": "unilab.managers.EventTermCfg",
+          "func": "unisupermimic.tasks.motion_tracking.g1.supermimic.manager_terms.SuperMimicContextEvent",
+          "mode": "startup",
+          "params": {
+            "command_name": "motion",
+            "asset_cfg": {
+              "_target_": "unilab.managers.SceneEntityCfg",
+              "name": "robot"
+            },
+            "ground_asset_cfg": {
+              "_target_": "unilab.managers.SceneEntityCfg",
+              "name": "ground",
+              "geom_names": [
+                "floor"
+              ]
+            }
+          }
+        },
+        "reset_context": {
+          "_target_": "unilab.managers.EventTermCfg",
+          "func": "unisupermimic.tasks.motion_tracking.g1.supermimic.manager_terms.SuperMimicContextEvent",
+          "mode": "reset",
+          "params": {
+            "command_name": "motion",
+            "asset_cfg": {
+              "_target_": "unilab.managers.SceneEntityCfg",
+              "name": "robot"
+            },
+            "ground_asset_cfg": {
+              "_target_": "unilab.managers.SceneEntityCfg",
+              "name": "ground",
+              "geom_names": [
+                "floor"
+              ]
+            }
+          }
+        },
+        "joint_offsets": {
+          "_target_": "unilab.managers.EventTermCfg",
+          "func": "unisupermimic.tasks.motion_tracking.g1.supermimic.manager_terms.SuperMimicJointOffsetEvent",
+          "mode": "reset",
+          "params": {
+            "command_name": "motion"
+          }
+        }
+      },
+      "terminations": {
+        "hard": {
+          "_target_": "unilab.managers.TerminationTermCfg",
+          "func": "unisupermimic.tasks.motion_tracking.g1.supermimic.manager_terms.supermimic_termination",
+          "params": {
+            "command_name": "motion"
+          }
+        },
+        "timeout": {
+          "_target_": "unilab.managers.TerminationTermCfg",
+          "func": "unisupermimic.tasks.motion_tracking.g1.supermimic.manager_terms.supermimic_timeout",
+          "time_out": true,
+          "params": {
+            "command_name": "motion"
+          }
+        },
+        "clip_end": {
+          "_target_": "unilab.managers.TerminationTermCfg",
+          "func": "unisupermimic.tasks.motion_tracking.g1.supermimic.manager_terms.supermimic_clip_end",
+          "time_out": true,
+          "params": {
+            "command_name": "motion"
+          }
+        }
+      },
+      "policy_observation_group": "policy",
+      "critic_observation_group": "future",
+      "mjwarp_nconmax": 128,
+      "mjwarp_njmax": 500
+    },
+    "reward": {
+      "tracking": {
+        "_target_": "unilab.managers.RewardTermCfg",
+        "func": "unisupermimic.tasks.motion_tracking.g1.supermimic.manager_terms.supermimic_reward",
+        "weight": 1.0,
+        "params": {
+          "command_name": "motion"
+        }
+      }
+    }
+  },
+  "contract_snapshot": {
+    "env.observations": {
+      "policy": {
+        "enable_corruption": false,
+        "terms": {
+          "obs": {
+            "func": "unisupermimic.tasks.motion_tracking.g1.supermimic.manager_terms.supermimic_obs",
+            "params": {
+              "command_name": "motion"
+            }
+          }
+        }
+      },
+      "future": {
+        "enable_corruption": false,
+        "terms": {
+          "goal": {
+            "func": "unisupermimic.tasks.motion_tracking.g1.supermimic.manager_terms.supermimic_goal",
+            "params": {
+              "command_name": "motion",
+              "num_frames": 10
+            }
+          }
+        }
+      }
+    },
+    "env.actions": {
+      "joint_pos": {
+        "_target_": "unisupermimic.tasks.motion_tracking.g1.supermimic.manager_terms.SuperMimicActionCfg",
+        "entity_name": "robot",
+        "command_name": "motion"
+      }
+    },
+    "env.policy_observation_group": "policy",
+    "env.critic_observation_group": "future",
+    "env.ctrl_dt": 0.02,
+    "algo.goal_frames": 10,
+    "algo.hist": 10,
+    "algo.z_dim": 32,
+    "algo.wm_hidden": [
+      2048,
+      2048,
+      2048
+    ],
+    "algo.policy_hidden": [
+      2048,
+      1024,
+      512,
+      256
+    ],
+    "algo.critic_hidden": [
+      256,
+      128
+    ],
+    "algo.wm_window": 8,
+    "algo.horizon": 32,
+    "algo.amp": "bf16",
+    "env.commands.motion.goal_frames": 10,
+    "env.commands.motion.context_dim": 33,
+    "env.commands.motion.motion_files": [
+      "src/unisupermimic/assets/motions/g1/lafan1_supermimic/dance1_subject1.csv",
+      "src/unisupermimic/assets/motions/g1/lafan1_supermimic/dance1_subject2.csv",
+      "src/unisupermimic/assets/motions/g1/lafan1_supermimic/dance1_subject3.csv",
+      "src/unisupermimic/assets/motions/g1/lafan1_supermimic/dance2_subject1.csv",
+      "src/unisupermimic/assets/motions/g1/lafan1_supermimic/dance2_subject2.csv",
+      "src/unisupermimic/assets/motions/g1/lafan1_supermimic/dance2_subject3.csv",
+      "src/unisupermimic/assets/motions/g1/lafan1_supermimic/dance2_subject4.csv",
+      "src/unisupermimic/assets/motions/g1/lafan1_supermimic/dance2_subject5.csv",
+      "src/unisupermimic/assets/motions/g1/lafan1_supermimic/fallAndGetUp1_subject1.csv",
+      "src/unisupermimic/assets/motions/g1/lafan1_supermimic/fallAndGetUp1_subject4.csv",
+      "src/unisupermimic/assets/motions/g1/lafan1_supermimic/fallAndGetUp1_subject5.csv",
+      "src/unisupermimic/assets/motions/g1/lafan1_supermimic/fallAndGetUp2_subject2.csv",
+      "src/unisupermimic/assets/motions/g1/lafan1_supermimic/fallAndGetUp2_subject3.csv",
+      "src/unisupermimic/assets/motions/g1/lafan1_supermimic/fallAndGetUp3_subject1.csv",
+      "src/unisupermimic/assets/motions/g1/lafan1_supermimic/fight1_subject2.csv",
+      "src/unisupermimic/assets/motions/g1/lafan1_supermimic/fight1_subject3.csv",
+      "src/unisupermimic/assets/motions/g1/lafan1_supermimic/fight1_subject5.csv",
+      "src/unisupermimic/assets/motions/g1/lafan1_supermimic/fightAndSports1_subject1.csv",
+      "src/unisupermimic/assets/motions/g1/lafan1_supermimic/fightAndSports1_subject4.csv",
+      "src/unisupermimic/assets/motions/g1/lafan1_supermimic/jumps1_subject1.csv",
+      "src/unisupermimic/assets/motions/g1/lafan1_supermimic/jumps1_subject2.csv",
+      "src/unisupermimic/assets/motions/g1/lafan1_supermimic/jumps1_subject5.csv",
+      "src/unisupermimic/assets/motions/g1/lafan1_supermimic/run1_subject2.csv",
+      "src/unisupermimic/assets/motions/g1/lafan1_supermimic/run1_subject5.csv",
+      "src/unisupermimic/assets/motions/g1/lafan1_supermimic/run2_subject1.csv",
+      "src/unisupermimic/assets/motions/g1/lafan1_supermimic/run2_subject4.csv",
+      "src/unisupermimic/assets/motions/g1/lafan1_supermimic/sprint1_subject2.csv",
+      "src/unisupermimic/assets/motions/g1/lafan1_supermimic/sprint1_subject4.csv",
+      "src/unisupermimic/assets/motions/g1/lafan1_supermimic/walk1_subject1.csv",
+      "src/unisupermimic/assets/motions/g1/lafan1_supermimic/walk1_subject2.csv",
+      "src/unisupermimic/assets/motions/g1/lafan1_supermimic/walk1_subject5.csv",
+      "src/unisupermimic/assets/motions/g1/lafan1_supermimic/walk2_subject1.csv",
+      "src/unisupermimic/assets/motions/g1/lafan1_supermimic/walk2_subject3.csv",
+      "src/unisupermimic/assets/motions/g1/lafan1_supermimic/walk2_subject4.csv",
+      "src/unisupermimic/assets/motions/g1/lafan1_supermimic/walk3_subject1.csv",
+      "src/unisupermimic/assets/motions/g1/lafan1_supermimic/walk3_subject2.csv",
+      "src/unisupermimic/assets/motions/g1/lafan1_supermimic/walk3_subject3.csv",
+      "src/unisupermimic/assets/motions/g1/lafan1_supermimic/walk3_subject4.csv",
+      "src/unisupermimic/assets/motions/g1/lafan1_supermimic/walk3_subject5.csv",
+      "src/unisupermimic/assets/motions/g1/lafan1_supermimic/walk4_subject1.csv"
+    ],
+    "env.commands.motion.mjcf_path": "src/unisupermimic/assets/robots/g1/supermimic.xml"
+  }
+}

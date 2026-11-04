@@ -18,6 +18,7 @@ option(BUILD_SIMULATION "Build simulation" ON)
 option(BUILD_REALSENSE "Build the hardware RealSense depth worker" ON)
 option(BUILD_CAMERA_APP "Build the camera/Parkour application" ON)
 option(BUILD_DWAQ_APP "Build the standalone DreamWaQ application" ON)
+option(BUILD_SUPERMIMIC_APP "Build the standalone SuperMimic application" ON)
 
 if(BUILD_SIMULATION)
   add_definitions(-DBUILD_SIMULATION)
@@ -97,5 +98,15 @@ if(BUILD_DWAQ_APP)
     BITBOT_CTRL_CONFIG="src_dwaq/settings/CtrlConfig.json"
     BITBOT_MUJOCO_CONFIG="src_dwaq/settings/bitbot_mujoco.xml"
     BITBOT_UNITREE_CONFIG="src_dwaq/settings/bitbot_unitree.xml"
+  )
+endif()
+
+if(BUILD_SUPERMIMIC_APP)
+  BitbotAddApplication(supermimic_app "${PROJECT_SOURCE_DIR}/src_supermimic")
+  target_sources(supermimic_app PRIVATE src_supermimic/app_config.hpp)
+  target_compile_definitions(supermimic_app PRIVATE
+    BITBOT_CTRL_CONFIG="src_supermimic/settings/CtrlConfig.json"
+    BITBOT_MUJOCO_CONFIG="src_supermimic/settings/bitbot_mujoco.xml"
+    BITBOT_UNITREE_CONFIG="src_supermimic/settings/bitbot_unitree.xml"
   )
 endif()

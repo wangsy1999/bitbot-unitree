@@ -1,0 +1,16 @@
+<mujoco model="g1_29dof supermimic scene">
+  <include file="supermimic.xml" />
+  <option integrator="implicitfast" timestep="0.002" cone="pyramidal" />
+  <statistic center="0 0 0.76" extent="0.5" />
+  <asset>
+    <texture type="skybox" builtin="gradient" rgb1="0.55 0.55 0.57" rgb2="0.55 0.55 0.57" width="512" height="3072" />
+    <texture type="2d" name="groundplane" builtin="checker" rgb1="0.62 0.62 0.63" rgb2="0.49 0.49 0.51" width="300" height="300" />
+    <material name="groundplane" texture="groundplane" texuniform="true" texrepeat="1.25 1.25" reflectance="0.0" />
+  </asset>
+  <worldbody>
+    <geom name="floor" size="0 0 0.05" type="plane" material="groundplane" friction="0.3 0.005 0.0001" />
+  </worldbody>
+  <keyframe>
+    <key name="stand" qpos="0 0 0.76 1 0 0 0 -0.312 0 0 0.669 -0.363 0 -0.312 0 0 0.669 -0.363 0 0 0 0 0.2 0.2 0 0.6 0 0 0 0.2 -0.2 0 0.6 0 0 0" ctrl="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0" />
+  </keyframe>
+</mujoco>

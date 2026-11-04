@@ -47,7 +47,11 @@ Bitbot Unitree支持一键切换mujoco仿真器和实物机器人部署，通过
 
 ## 运行阶段
 
-当前提供两个独立程序：`main_app` 使用 camera/Parkour 配置，`dwaq_app` 使用 DreamWaQ，
+另提供独立的 `supermimic_app`，用户代码和配置放在 `src_supermimic/`，
+使用 Uni-SuperMimic 的动作跟踪策略并保留 DWAQ 行走切换。
+构建、模型导出与操作方法见 [SuperMimic 程序说明](docs/SUPERMIMIC.md)。
+
+相机和行走程序分别为：`main_app` 使用 camera/Parkour 配置，`dwaq_app` 使用 DreamWaQ，
 DWAQ 的入口、types、user_func、user_command 和配置独立放在 `src_dwaq/`，
 两者使用最新设备驱动。构建和部署方法见 [DWAQ 程序说明](docs/DWAQ.md)，
 相机说明见 [Parkour 说明](docs/PARKOUR.md)。

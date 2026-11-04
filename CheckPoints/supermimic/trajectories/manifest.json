@@ -1,0 +1,312 @@
+{
+  "SchemaVersion": 1,
+  "PathBase": "manifest directory",
+  "Motions": [
+    {
+      "Name": "dance1_subject1",
+      "Path": "supermimic/dance1_subject1.csv",
+      "SourceFPS": 30.0,
+      "SHA256": "e2a369e92e5ad076c5acffff7bce53157a0e6cd9e7e9f6a08dadfb1eb2928d8f",
+      "OriginalPath": "/home/wsy/rl/Uni-SuperMimic/src/unisupermimic/assets/motions/g1/lafan1_supermimic/dance1_subject1.csv"
+    },
+    {
+      "Name": "dance1_subject2",
+      "Path": "supermimic/dance1_subject2.csv",
+      "SourceFPS": 30.0,
+      "SHA256": "3c2d37391ab08af18224f7a63ea55f1cd83480bdec779c320acb4d0b3062633e",
+      "OriginalPath": "/home/wsy/rl/Uni-SuperMimic/src/unisupermimic/assets/motions/g1/lafan1_supermimic/dance1_subject2.csv"
+    },
+    {
+      "Name": "dance1_subject3",
+      "Path": "supermimic/dance1_subject3.csv",
+      "SourceFPS": 30.0,
+      "SHA256": "983ab290f7ac70fcd4baa56ea5321bc48522f613980986e4a0a83c884b940884",
+      "OriginalPath": "/home/wsy/rl/Uni-SuperMimic/src/unisupermimic/assets/motions/g1/lafan1_supermimic/dance1_subject3.csv"
+    },
+    {
+      "Name": "dance2_subject1",
+      "Path": "supermimic/dance2_subject1.csv",
+      "SourceFPS": 30.0,
+      "SHA256": "f8611569a28fff323577ccb53021b0b189114510a284f76b234fc6e0e9f089e1",
+      "OriginalPath": "/home/wsy/rl/Uni-SuperMimic/src/unisupermimic/assets/motions/g1/lafan1_supermimic/dance2_subject1.csv"
+    },
+    {
+      "Name": "dance2_subject2",
+      "Path": "supermimic/dance2_subject2.csv",
+      "SourceFPS": 30.0,
+      "SHA256": "85af86f623b3f7cf329bed84088382989f11df11025d305ad5aa1600e8f6828a",
+      "OriginalPath": "/home/wsy/rl/Uni-SuperMimic/src/unisupermimic/assets/motions/g1/lafan1_supermimic/dance2_subject2.csv"
+    },
+    {
+      "Name": "dance2_subject3",
+      "Path": "supermimic/dance2_subject3.csv",
+      "SourceFPS": 30.0,
+      "SHA256": "487bcfa3710811acf6fcb2b6c916a79cec8e84fb5494b9b04361c0800852d83a",
+      "OriginalPath": "/home/wsy/rl/Uni-SuperMimic/src/unisupermimic/assets/motions/g1/lafan1_supermimic/dance2_subject3.csv"
+    },
+    {
+      "Name": "dance2_subject4",
+      "Path": "supermimic/dance2_subject4.csv",
+      "SourceFPS": 30.0,
+      "SHA256": "e057410a0e7ec0618f58a5d5eceafe686ca292c9ad4dd3c4068eaad15283a46f",
+      "OriginalPath": "/home/wsy/rl/Uni-SuperMimic/src/unisupermimic/assets/motions/g1/lafan1_supermimic/dance2_subject4.csv"
+    },
+    {
+      "Name": "dance2_subject5",
+      "Path": "supermimic/dance2_subject5.csv",
+      "SourceFPS": 30.0,
+      "SHA256": "2d10031bb293d20ccf6fd8aa76e00d4a5d8dc92cba5f59773d48cc9c8b25637f",
+      "OriginalPath": "/home/wsy/rl/Uni-SuperMimic/src/unisupermimic/assets/motions/g1/lafan1_supermimic/dance2_subject5.csv"
+    },
+    {
+      "Name": "fallAndGetUp1_subject1",
+      "Path": "supermimic/fallAndGetUp1_subject1.csv",
+      "SourceFPS": 30.0,
+      "SHA256": "97e98a9cac5150917bc5a2ca3517759a3f3c380582cde5e92ad663c1e0553e12",
+      "OriginalPath": "/home/wsy/rl/Uni-SuperMimic/src/unisupermimic/assets/motions/g1/lafan1_supermimic/fallAndGetUp1_subject1.csv"
+    },
+    {
+      "Name": "fallAndGetUp1_subject4",
+      "Path": "supermimic/fallAndGetUp1_subject4.csv",
+      "SourceFPS": 30.0,
+      "SHA256": "5e9cf9acddc62a8646151567fffac09c7e088186d87a9a8543743cac517ddf0b",
+      "OriginalPath": "/home/wsy/rl/Uni-SuperMimic/src/unisupermimic/assets/motions/g1/lafan1_supermimic/fallAndGetUp1_subject4.csv"
+    },
+    {
+      "Name": "fallAndGetUp1_subject5",
+      "Path": "supermimic/fallAndGetUp1_subject5.csv",
+      "SourceFPS": 30.0,
+      "SHA256": "55a22ca723f26170aae8529ccb26dbda9bf2cb816b4f29eed3c57260dadb05ca",
+      "OriginalPath": "/home/wsy/rl/Uni-SuperMimic/src/unisupermimic/assets/motions/g1/lafan1_supermimic/fallAndGetUp1_subject5.csv"
+    },
+    {
+      "Name": "fallAndGetUp2_subject2",
+      "Path": "supermimic/fallAndGetUp2_subject2.csv",
+      "SourceFPS": 30.0,
+      "SHA256": "49ae9726ae176b10b1213b441535946ffcca93586e1091e8398e239f4a049a47",
+      "OriginalPath": "/home/wsy/rl/Uni-SuperMimic/src/unisupermimic/assets/motions/g1/lafan1_supermimic/fallAndGetUp2_subject2.csv"
+    },
+    {
+      "Name": "fallAndGetUp2_subject3",
+      "Path": "supermimic/fallAndGetUp2_subject3.csv",
+      "SourceFPS": 30.0,
+      "SHA256": "fa6e33725a450789160c8f3220b0a5e9001798f023fd14e3ff6c230a0829d75d",
+      "OriginalPath": "/home/wsy/rl/Uni-SuperMimic/src/unisupermimic/assets/motions/g1/lafan1_supermimic/fallAndGetUp2_subject3.csv"
+    },
+    {
+      "Name": "fallAndGetUp3_subject1",
+      "Path": "supermimic/fallAndGetUp3_subject1.csv",
+      "SourceFPS": 30.0,
+      "SHA256": "fc00701411a270a9ab61c321ba836ba36437c61630c65f8fe276ac851f23ccd7",
+      "OriginalPath": "/home/wsy/rl/Uni-SuperMimic/src/unisupermimic/assets/motions/g1/lafan1_supermimic/fallAndGetUp3_subject1.csv"
+    },
+    {
+      "Name": "fight1_subject2",
+      "Path": "supermimic/fight1_subject2.csv",
+      "SourceFPS": 30.0,
+      "SHA256": "c9ae5b9d90258061dfc79f617eaded73f2dde581fe37ac2d8e6b229c1a4a0ecb",
+      "OriginalPath": "/home/wsy/rl/Uni-SuperMimic/src/unisupermimic/assets/motions/g1/lafan1_supermimic/fight1_subject2.csv"
+    },
+    {
+      "Name": "fight1_subject3",
+      "Path": "supermimic/fight1_subject3.csv",
+      "SourceFPS": 30.0,
+      "SHA256": "013b7219ddbbb37d17483d2bd0c28ae3d4307c2fec6d4180feed27c65d2acfcd",
+      "OriginalPath": "/home/wsy/rl/Uni-SuperMimic/src/unisupermimic/assets/motions/g1/lafan1_supermimic/fight1_subject3.csv"
+    },
+    {
+      "Name": "fight1_subject5",
+      "Path": "supermimic/fight1_subject5.csv",
+      "SourceFPS": 30.0,
+      "SHA256": "d1490265b7b8ee5ac488853a3933ebdaee8ba6c9ecb5ef300146330b51b8c0dc",
+      "OriginalPath": "/home/wsy/rl/Uni-SuperMimic/src/unisupermimic/assets/motions/g1/lafan1_supermimic/fight1_subject5.csv"
+    },
+    {
+      "Name": "fightAndSports1_subject1",
+      "Path": "supermimic/fightAndSports1_subject1.csv",
+      "SourceFPS": 30.0,
+      "SHA256": "076c2614df1a155e52c2b14074da8aa3b209176d930d2e3ffd059a9e9847fdc2",
+      "OriginalPath": "/home/wsy/rl/Uni-SuperMimic/src/unisupermimic/assets/motions/g1/lafan1_supermimic/fightAndSports1_subject1.csv"
+    },
+    {
+      "Name": "fightAndSports1_subject4",
+      "Path": "supermimic/fightAndSports1_subject4.csv",
+      "SourceFPS": 30.0,
+      "SHA256": "83e2f3ec77ab9d3edc43c73e1894b0be2d9d0b2361098294bb178ab5cf32a1d9",
+      "OriginalPath": "/home/wsy/rl/Uni-SuperMimic/src/unisupermimic/assets/motions/g1/lafan1_supermimic/fightAndSports1_subject4.csv"
+    },
+    {
+      "Name": "jumps1_subject1",
+      "Path": "supermimic/jumps1_subject1.csv",
+      "SourceFPS": 30.0,
+      "SHA256": "3f55c1a0f87564044a71817d62dc2a40aa76332aa1cab3f1c817333a197c78c2",
+      "OriginalPath": "/home/wsy/rl/Uni-SuperMimic/src/unisupermimic/assets/motions/g1/lafan1_supermimic/jumps1_subject1.csv"
+    },
+    {
+      "Name": "jumps1_subject2",
+      "Path": "supermimic/jumps1_subject2.csv",
+      "SourceFPS": 30.0,
+      "SHA256": "fde765a738e3aa586be3694163795502d4dc932757178956f4512e7c9d317a58",
+      "OriginalPath": "/home/wsy/rl/Uni-SuperMimic/src/unisupermimic/assets/motions/g1/lafan1_supermimic/jumps1_subject2.csv"
+    },
+    {
+      "Name": "jumps1_subject5",
+      "Path": "supermimic/jumps1_subject5.csv",
+      "SourceFPS": 30.0,
+      "SHA256": "2f678d598faa9746aff778e92518970f51f0b1e08a10f05d0423a7cda3b9183c",
+      "OriginalPath": "/home/wsy/rl/Uni-SuperMimic/src/unisupermimic/assets/motions/g1/lafan1_supermimic/jumps1_subject5.csv"
+    },
+    {
+      "Name": "run1_subject2",
+      "Path": "supermimic/run1_subject2.csv",
+      "SourceFPS": 30.0,
+      "SHA256": "ec02af4447a62214a6fec6afff60c75d0ecc8f80f8fb45e3cd4119fed9ceac8d",
+      "OriginalPath": "/home/wsy/rl/Uni-SuperMimic/src/unisupermimic/assets/motions/g1/lafan1_supermimic/run1_subject2.csv"
+    },
+    {
+      "Name": "run1_subject5",
+      "Path": "supermimic/run1_subject5.csv",
+      "SourceFPS": 30.0,
+      "SHA256": "eacc38d7d6f5d7f32bfefcdf5d91510fea5f815000be870f91cc6e3483a126f6",
+      "OriginalPath": "/home/wsy/rl/Uni-SuperMimic/src/unisupermimic/assets/motions/g1/lafan1_supermimic/run1_subject5.csv"
+    },
+    {
+      "Name": "run2_subject1",
+      "Path": "supermimic/run2_subject1.csv",
+      "SourceFPS": 30.0,
+      "SHA256": "ae64767c4b4e8f59578c22c5848cefc569923fea8bd3755c8dfb02b5313773da",
+      "OriginalPath": "/home/wsy/rl/Uni-SuperMimic/src/unisupermimic/assets/motions/g1/lafan1_supermimic/run2_subject1.csv"
+    },
+    {
+      "Name": "run2_subject4",
+      "Path": "supermimic/run2_subject4.csv",
+      "SourceFPS": 30.0,
+      "SHA256": "2f0331426b74be03e87a2364733f8bf3262debdea54ab2c5059c2b707cff06f7",
+      "OriginalPath": "/home/wsy/rl/Uni-SuperMimic/src/unisupermimic/assets/motions/g1/lafan1_supermimic/run2_subject4.csv"
+    },
+    {
+      "Name": "sprint1_subject2",
+      "Path": "supermimic/sprint1_subject2.csv",
+      "SourceFPS": 30.0,
+      "SHA256": "7babbd9d0a3cebf040709cb75fbf4268e925e337a2d44600dcce3d3b2d24a818",
+      "OriginalPath": "/home/wsy/rl/Uni-SuperMimic/src/unisupermimic/assets/motions/g1/lafan1_supermimic/sprint1_subject2.csv"
+    },
+    {
+      "Name": "sprint1_subject4",
+      "Path": "supermimic/sprint1_subject4.csv",
+      "SourceFPS": 30.0,
+      "SHA256": "96d207b15323ef823274aa73ea1c2aaea7e98b4fe0f6de217332763bdf04ce00",
+      "OriginalPath": "/home/wsy/rl/Uni-SuperMimic/src/unisupermimic/assets/motions/g1/lafan1_supermimic/sprint1_subject4.csv"
+    },
+    {
+      "Name": "walk1_subject1",
+      "Path": "supermimic/walk1_subject1.csv",
+      "SourceFPS": 30.0,
+      "SHA256": "68c7887438e94f1f3d9ebacd3a8ce59251a22c7b05129a0f5d7cacaedc48c28d",
+      "OriginalPath": "/home/wsy/rl/Uni-SuperMimic/src/unisupermimic/assets/motions/g1/lafan1_supermimic/walk1_subject1.csv"
+    },
+    {
+      "Name": "walk1_subject2",
+      "Path": "supermimic/walk1_subject2.csv",
+      "SourceFPS": 30.0,
+      "SHA256": "f8e6ccd5df574dcc5343a0a83d12efddfb5b34578b8b2f00582cb8098ed7fffc",
+      "OriginalPath": "/home/wsy/rl/Uni-SuperMimic/src/unisupermimic/assets/motions/g1/lafan1_supermimic/walk1_subject2.csv"
+    },
+    {
+      "Name": "walk1_subject5",
+      "Path": "supermimic/walk1_subject5.csv",
+      "SourceFPS": 30.0,
+      "SHA256": "5421216dfbd2f16a90b5a7a52d4530b6269f7f9407f7ccfd09b5e5d3a72117af",
+      "OriginalPath": "/home/wsy/rl/Uni-SuperMimic/src/unisupermimic/assets/motions/g1/lafan1_supermimic/walk1_subject5.csv"
+    },
+    {
+      "Name": "walk2_subject1",
+      "Path": "supermimic/walk2_subject1.csv",
+      "SourceFPS": 30.0,
+      "SHA256": "51cf310f14ecbb8be1f41ea09345df0c89024ff884fb9ab881cac339f820c787",
+      "OriginalPath": "/home/wsy/rl/Uni-SuperMimic/src/unisupermimic/assets/motions/g1/lafan1_supermimic/walk2_subject1.csv"
+    },
+    {
+      "Name": "walk2_subject3",
+      "Path": "supermimic/walk2_subject3.csv",
+      "SourceFPS": 30.0,
+      "SHA256": "43a4342a9534ebb49e0dd9ef11ff40bf8a11d4925dac86352ebc7e7ae1220644",
+      "OriginalPath": "/home/wsy/rl/Uni-SuperMimic/src/unisupermimic/assets/motions/g1/lafan1_supermimic/walk2_subject3.csv"
+    },
+    {
+      "Name": "walk2_subject4",
+      "Path": "supermimic/walk2_subject4.csv",
+      "SourceFPS": 30.0,
+      "SHA256": "d8e8d0383a64f0277218c0c490d55e4fcc20bd14776c0c8772f38a0cd4b88679",
+      "OriginalPath": "/home/wsy/rl/Uni-SuperMimic/src/unisupermimic/assets/motions/g1/lafan1_supermimic/walk2_subject4.csv"
+    },
+    {
+      "Name": "walk3_subject1",
+      "Path": "supermimic/walk3_subject1.csv",
+      "SourceFPS": 30.0,
+      "SHA256": "22ab870d9957a62c1dfe3c1ec0a8a9af84c6c965065fff6fc936c3fac21d16eb",
+      "OriginalPath": "/home/wsy/rl/Uni-SuperMimic/src/unisupermimic/assets/motions/g1/lafan1_supermimic/walk3_subject1.csv"
+    },
+    {
+      "Name": "walk3_subject2",
+      "Path": "supermimic/walk3_subject2.csv",
+      "SourceFPS": 30.0,
+      "SHA256": "55e8b8fe0e6a9a62b1f437985c4456055d750c75f46a17adbcbe3392fd33c674",
+      "OriginalPath": "/home/wsy/rl/Uni-SuperMimic/src/unisupermimic/assets/motions/g1/lafan1_supermimic/walk3_subject2.csv"
+    },
+    {
+      "Name": "walk3_subject3",
+      "Path": "supermimic/walk3_subject3.csv",
+      "SourceFPS": 30.0,
+      "SHA256": "2819b75eceef11856e9c3e7aea931eafcd03dddb0d5c1f68353ba0b3dd9fc574",
+      "OriginalPath": "/home/wsy/rl/Uni-SuperMimic/src/unisupermimic/assets/motions/g1/lafan1_supermimic/walk3_subject3.csv"
+    },
+    {
+      "Name": "walk3_subject4",
+      "Path": "supermimic/walk3_subject4.csv",
+      "SourceFPS": 30.0,
+      "SHA256": "11a79dd8c534a562b99abdb42a221064b2b2166948d088f7ca9b63ac13f25368",
+      "OriginalPath": "/home/wsy/rl/Uni-SuperMimic/src/unisupermimic/assets/motions/g1/lafan1_supermimic/walk3_subject4.csv"
+    },
+    {
+      "Name": "walk3_subject5",
+      "Path": "supermimic/walk3_subject5.csv",
+      "SourceFPS": 30.0,
+      "SHA256": "2f2878a45d6345d78d5f7a1d35ab05cc96cf5d22b1be822bb4b07eab99096b85",
+      "OriginalPath": "/home/wsy/rl/Uni-SuperMimic/src/unisupermimic/assets/motions/g1/lafan1_supermimic/walk3_subject5.csv"
+    },
+    {
+      "Name": "walk4_subject1",
+      "Path": "supermimic/walk4_subject1.csv",
+      "SourceFPS": 30.0,
+      "SHA256": "03fe681190873e70d2b5635dc35aa228084136fcd61f1a0dcfcd6c25e12cdbaa",
+      "OriginalPath": "/home/wsy/rl/Uni-SuperMimic/src/unisupermimic/assets/motions/g1/lafan1_supermimic/walk4_subject1.csv"
+    },
+    {
+      "Name": "dance_102",
+      "Path": "unitree_rl_lab/G1_Take_102.bvh_60hz.csv",
+      "SourceFPS": 60.0,
+      "SHA256": "2fe91cef5de23a6ebf318c130dccf7ecc6c10859675452ea28f077198f06d1e2",
+      "OriginalPath": "/home/wsy/rl/unitree_rl_lab/deploy/robots/g1_29dof/config/policy/mimic/dance_102/params/G1_Take_102.bvh_60hz.csv"
+    },
+    {
+      "Name": "gangnam_style",
+      "Path": "unitree_rl_lab/G1_gangnam_style_V01.bvh_60hz.csv",
+      "SourceFPS": 60.0,
+      "SHA256": "d74f54662546969826a25386a21f429b6b7f8fd4793578c9923ca5ce4e9ee0aa",
+      "OriginalPath": "/home/wsy/rl/unitree_rl_lab/deploy/robots/g1_29dof/config/policy/mimic/gangnam_style/params/G1_gangnam_style_V01.bvh_60hz.csv",
+      "Range": {
+        "StartTime": 5.2,
+        "EndTime": 25.5
+      }
+    },
+    {
+      "Name": "jiaqi_KuaileChongbai2",
+      "Path": "custom/jiaqi_KuaileChongbai2.csv",
+      "SourceFPS": 50.0,
+      "SHA256": "e536aad73476e6d148a4cd86ec21720fbfeb687b5b0acd24dfd67891b2c9b78e",
+      "OriginalPath": "/home/wsy/rl/bitbot-unitree/CheckPoints/jiaqi_KuaileChongbai2.csv"
+    }
+  ],
+  "ControlDt": 0.02
+}

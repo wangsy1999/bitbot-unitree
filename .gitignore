@@ -12,3 +12,8 @@
 # Local runtime logs
 /log/
 /logs/
+
+# Legacy generated SuperMimic references; runtime reads CSV directly.
+/CheckPoints/supermimic/motion.bin
+/CheckPoints/supermimic/motion.json
+/CheckPoints/supermimic/motion_data/

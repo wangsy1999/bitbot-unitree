@@ -1,0 +1,13 @@
+UniSuperMimic
+Copyright 2026 UniSuperMimic Authors
+
+This repository provides a downstream SuperMimic implementation for UniLab.
+UniLab and UniSim are separate upstream projects licensed under Apache-2.0.
+
+The implementation was developed with reference to the SuperMimic reference
+code in supermimic_vibed, whose MIT license and original copyright notice are
+preserved in LICENSES/MIT-supermimic.txt.
+
+SuperMimic paper:
+"SuperMimic: Scaling Humanoid Whole-Body Control with One Differentiable
+World Model", Qiayuan Liao et al., https://supermimic.github.io
